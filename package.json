@@ -1,0 +1,22 @@
+{
+  "name": "jamsesh",
+  "version": "0.0.1",
+  "description": "An application that helps you meet people and make connections in music.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sportnak/jamsesh.git"
+  },
+  "author": "Michael Nakayama",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sportnak/jamsesh/issues"
+  },
+  "homepage": "https://github.com/sportnak/jamsesh#readme"
+}
