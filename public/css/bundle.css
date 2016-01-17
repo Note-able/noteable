@@ -18,7 +18,13 @@
   font-family: 'Icomoon';
   src: url('/fonts/icomoon.ttf');
 }
-body {
+.login-container {
+  float: left;
+  height: 200px;
+  margin: 250px;
+  width: 150px;
+}
+/**body {
   background-image: url('/images/ted-background.jpg');
   background-size: cover;
-}
+}**/

@@ -5,6 +5,9 @@ var React = require('react');
 var Router = require('react-router');
 var BodyParser = require('body-parser');
 var routes = require('../routes');
+var passport = require('passport');
+var FacebookStrategy = require('passport-facebook');
+var session = require('express-session');
 
 const app = express();
 app.use(express.static(__dirname + '/../../public'));
@@ -17,6 +20,46 @@ app.use(BodyParser.json());
 
 app.set('views', './views');
 app.set('view engine', 'jade');
+app.use(session({ secret: 'theAssyrianCameDownLikeAWolfOnTheFold' }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
+
+//set up passport
+passport.use(new FacebookStrategy({
+    clientID: '1668133090067160',
+    clientSecret: '3e4ad4e3d0d1f5602797b46753be7e01',
+    callbackURL: "http://local.jamsesh.com:3000/auth/facebook/callback",
+    enableProof: false
+  },
+  function(accessToken, refreshToken, profile, done) {
+    /**User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+      return done(err, user);
+    });**/
+    return done(null, profile);
+  }
+));
+
+app.get('/auth/facebook',
+  passport.authenticate('facebook'));
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+});
+
+app.get('/test', ensureAuthenticated, function (req, res) {
+  res.render('index');
+})
 
 app.get('/*', function (req, res) {
   if (req.path.indexOf('/database') == -1) {
@@ -30,3 +73,8 @@ var server = app.listen(port, function () {
 
   console.log('JamSesh is listening at http://%s:%s', host, port);
 });
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { res.redirect('/success'); }
+  res.redirect('/')
+}
