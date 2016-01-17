@@ -1,0 +1,24 @@
+@font-face {
+  font-family: 'Playfair';
+  src: url('/fonts/PlayfairDisplay-Regular.ttf');
+}
+@font-face {
+  font-family: 'Poiret';
+  src: url('/fonts/PoiretOne-Regular.ttf');
+}
+@font-face {
+  font-family: 'Ubuntu';
+  src: url('/fonts/Ubuntu-Light.ttf');
+}
+@font-face {
+  font-family: 'Ubuntu-Italic';
+  src: url('/fonts/Ubuntu-MediumItalic.ttf');
+}
+@font-face {
+  font-family: 'Icomoon';
+  src: url('/fonts/icomoon.ttf');
+}
+body {
+  background-image: url('/images/ted-background.jpg');
+  background-size: cover;
+}
