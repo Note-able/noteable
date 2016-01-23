@@ -83,6 +83,7 @@ app.get('/test', ensureAuthenticated, function (req, res) {
 require('./api-routes')(app, pg, {auth: ensureAuthenticated, connect: ConnectToDb, database: connectionString});
 
 app.get('/logout', function(req, res) {
+  return;
   req.logout();
   res.redirect('/test');
 });

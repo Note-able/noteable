@@ -49,6 +49,16 @@ module.exports = function (app, pg, options) {
     }
   });
 
+  /**POST USER**/
+
+  app.post('/user/edit', options.auth, function (req, res) {
+    console.log(req.body) // <- standard for getting things out post.
+
+    options.connect(options.database, function (connection) {
+
+    })
+  });
+
   /**
   Events API - consider moving the queries to elasticsearch to order by popularity of events and user ratings
   **/
@@ -62,8 +72,8 @@ module.exports = function (app, pg, options) {
     if (req.params.instrument.length === 0 && req.params.type.length === 0) {
       res.status(400).send();
     } else {
-      let index = 0;
-      let query = '';
+      var index = 0;
+      var query = '';
       if (req.params.instrument.length == 0) {
         query = "type = '" + req.params.type + "'";
       } else if (req.params.type.length == 0) {
@@ -72,7 +82,7 @@ module.exports = function (app, pg, options) {
         query = "instrument '"+ req.params.instrument + "' AND type = '" + req.params.type + "'";
       }
       if (req.params.index) {
-        let index = req.params.index;
+        var index = req.params.index;
       }
       options.connect(options.database, function (connection) {
         const events = [];
