@@ -50,7 +50,7 @@ module.exports = function (app, pg, options) {
   });
 
   /**
-  Events API
+  Events API - consider moving the queries to elasticsearch to order by popularity of events and user ratings
   **/
 
   app.get('/events/nearby/{location}', options.auth, function (req, res) {
@@ -58,19 +58,27 @@ module.exports = function (app, pg, options) {
     //how the hell do you search based on location?
   });
 
-  app.get('/events/instrument/{instrument}/{index}', options.auth, function (req, res) {
-    if (req.params.instrument.length === 0) {
+  app.get('/events/filter/{type}/{instrument}/{index}', options.auth, function (req, res) {
+    if (req.params.instrument.length === 0 && req.params.type.length === 0) {
       res.status(400).send();
     } else {
-      const index = 0;
+      let index = 0;
+      let query = '';
+      if (req.params.instrument.length == 0) {
+        query = "type = '" + req.params.type + "'";
+      } else if (req.params.type.length == 0) {
+        query = "instrument '" + req.params.instrument + "'";
+      } else {
+        query = "instrument '"+ req.params.instrument + "' AND type = '" + req.params.type + "'";
+      }
       if (req.params.index) {
-        const index = req.params.index;
+        let index = req.params.index;
       }
       options.connect(options.database, function (connection) {
         const events = [];
 
         connection.client
-        .query("SELECT * FROM public.events WHERE instrument = '" + req.params.instrument + "' LIMIT 10 OFFSET " + 10 * index + ";")
+        .query("SELECT * FROM public.events WHERE " + query + " LIMIT 10 OFFSET " + 10 * index + ";")
         .on('row', function (row) {
           events.push(row);
         }).on('end', function (result) {
