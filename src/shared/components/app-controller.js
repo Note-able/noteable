@@ -3,8 +3,19 @@
 var React = require('react');
 var Router = require('react-router');
 var Login = require('./login/login');
+var Logout = require('./login/logout');
 
 module.exports = class AppController extends React.Component {
+  renderLogin() {
+    return (
+      <Login/>
+    );
+  }
+  renderLogout() {
+    return (
+      <Logout/>
+    );
+  }
   renderGrid() {
     return (
       <div>
@@ -18,7 +29,7 @@ module.exports = class AppController extends React.Component {
       <div>
         <link href='/css/bundle.css' rel='stylesheet' type='text/css'/>
         <div className=''>
-          <Login/>
+          { this.props.route.isLoggedIn === 'false' ? this.renderLogin() : this.renderLogout()}
           { this.props.children }
         </div>
       </div>

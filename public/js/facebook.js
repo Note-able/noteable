@@ -13,3 +13,7 @@ window.fbAsyncInit = function() {
    js.src = "//connect.facebook.net/en_US/sdk.js";
    fjs.parentNode.insertBefore(js, fjs);
  }(document, 'script', 'facebook-jssdk'));
+
+ if (window.location.hash === '#_=_') {
+   window.location.hash = '';
+ }

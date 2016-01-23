@@ -19,12 +19,30 @@
   src: url('/fonts/icomoon.ttf');
 }
 .login-container {
-  float: left;
-  height: 200px;
-  margin: 250px;
+  border: 1px solid #569a00;
+  border-radius: 4px;
+  margin: 100px;
+  text-align: center;
+  width: 275px;
+}
+.login-container__header {
+  color: white;
+  font: 14px BlinkMacSystemFont;
+  line-height: 30px;
+  background: #569a00;
+  text-align: center;
+}
+.login-container__submit-button {
+  background: #3b5998;
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  height: 40px;
+  margin: 15px 0;
   width: 150px;
 }
-/**body {
+body {
   background-image: url('/images/ted-background.jpg');
   background-size: cover;
-}**/
+}
