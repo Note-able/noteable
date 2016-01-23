@@ -62,9 +62,9 @@ module.exports = function (app, pg, options) {
     if (req.params.instrument.length === 0) {
       res.status(400).send();
     } else {
-      let index = 0;
+      const index = 0;
       if (req.params.index) {
-        let index = req.params.index;
+        const index = req.params.index;
       }
       options.connect(options.database, function (connection) {
         const events = [];
@@ -93,8 +93,8 @@ module.exports = function (app, pg, options) {
           events.push(row);
         }).on('end', function (result) {
           res.send(events);
-        })
-      })
+        });
+      });
     }
-  })
+  });
 }

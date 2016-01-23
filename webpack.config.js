@@ -17,7 +17,7 @@ module.exports = {
     loaders: [
       {
         test: /\.js?$/,
-        loaders: ['babel-loader?presets[]=react,presets[]=es2015,plugins[]=transform-es2015-classes,plugins[]=transform-react-jsx'],
+        loaders: ['babel-loader?presets[]=react,presets[]=es2015,plugins[]=transform-es2015-block-scoping,plugins[]=transform-es2015-classes,plugins[]=transform-react-jsx'],
         exclude: /(node_modules)/,
       }
     ]
