@@ -10,6 +10,7 @@ var createBrowserHistory = require('history/lib/createBrowserHistory');
 var AppController = require('../shared/components/app-controller');
 //var ServerErrorController = require('./shared/components/ServerErrorController');
 var SuccessDisplayController = require('../shared/components/success-display-controller'); //use this as a placeholder for successful requests.
+var EditorController = require('../shared/components/editor-controller')
 
 // -v x.13.x
 /**Router.run(routes, Router.HistoryLocation, function (Handler, state) {
@@ -23,6 +24,7 @@ render(
   <Router history={createBrowserHistory()}>
     <Route path='/' component={ AppController } isLoggedIn={node.attributes[1].value} >
   		<Route path='/success' component={ SuccessDisplayController }/>
+		<Route path='/editor' component= { EditorController }/>
   	</Route>
   </Router>
    , node);
