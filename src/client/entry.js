@@ -24,7 +24,7 @@ render(
   <Router history={createBrowserHistory()}>
     <Route path="/" component={ AppController } isLoggedIn={node.attributes[1].value} >
   		<Route path="/success" component={ SuccessDisplayController }/>
-		<Route path="/editor" component= { EditorController }/>
+			<Route path="/editor" component= { EditorController }/>
   	</Route>
   </Router>
    , node);
