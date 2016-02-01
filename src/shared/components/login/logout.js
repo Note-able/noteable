@@ -5,8 +5,8 @@ const React = require(`react`);
 module.exports = class Logout extends React.Component {
   logout () {
     const xhr = new XMLHttpRequest();
-    xhr.onload = () => {
-      if (this.status === 200) {
+    xhr.onload = (response) => {
+      if (response.target.status === 200) {
         window.location.href = `/`;
       } else {
         window.alert(`sorry you failed to log out`);

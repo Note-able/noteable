@@ -8,6 +8,7 @@
         "templateStrings": true
     },
     "rules": {
+        "no-console": 1,
         "no-dupe-args": 2,
         "no-dupe-keys": 2,
         "no-duplicate-case": 2,
