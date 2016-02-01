@@ -11,8 +11,9 @@
     "clean": "rm -rf lib",
     "watch-js": "./node_modules/.bin/babel --plugins transform-es2015-classes src --presets react -d lib",
     "dev-server": "./node_modules/.bin/webpack lib/client/entry.js",
+    "lint": "./node_modules/.bin/eslint ./src",
     "server": "node lib/server/server",
-    "start-dev": "npm run build && npm run dev-server && npm run server",
+    "start-dev": "npm run lint && npm run build && npm run dev-server && npm run server",
     "start": "npm run server",
     "styles": "./node_modules/.bin/lessc ./public/less/bundle.less ./public/css/bundle.css",
     "build": "npm run clean && ./node_modules/.bin/babel --plugins transform-es2015-classes src --presets react -d lib && npm run styles"
@@ -30,6 +31,7 @@
   "devDependencies": {
     "babel-cli": "^6.3.17",
     "babel-core": "^6.3.26",
+    "babel-eslint": "^5.0.0-beta8",
     "babel-loader": "^6.2.0",
     "babel-plugin-syntax-jsx": "^6.3.13",
     "babel-plugin-transform-es2015-block-scoping": "^6.4.0",
@@ -39,6 +41,7 @@
     "babel-preset-react": "^6.3.13",
     "body-parser": "^1.14.2",
     "clean-webpack-plugin": "^0.1.5",
+    "eslint": "^1.10.3",
     "express": "^4.13.3",
     "express-session": "^1.13.0",
     "history": "^1.17.0",

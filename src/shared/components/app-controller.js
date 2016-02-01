@@ -1,22 +1,22 @@
 'use strict';
 
-var React = require('react');
-var Router = require('react-router');
-var Login = require('./login/login');
-var Logout = require('./login/logout');
+var React = require(`react`);
+var Router = require(`react-router`);
+var Login = require(`./login/login`);
+var Logout = require(`./login/logout`);
 
 module.exports = class AppController extends React.Component {
-  renderLogin() {
+  renderLogin () {
     return (
       <Login/>
     );
   }
-  renderLogout() {
+  renderLogout () {
     return (
       <Logout/>
     );
   }
-  renderGrid() {
+  renderGrid () {
     return (
       <div>
         <div className='testing-vertical'></div>
@@ -24,12 +24,12 @@ module.exports = class AppController extends React.Component {
       </div>
     );
   }
-  render() {
+  render () {
     return(
       <div>
         <link href='/css/bundle.css' rel='stylesheet' type='text/css'/>
         <div className=''>
-          { this.props.route.isLoggedIn === 'false' ? this.renderLogin() : this.renderLogout()}
+          { this.props.route.isLoggedIn === `false` ? this.renderLogin() : this.renderLogout()}
           { this.props.children }
         </div>
       </div>

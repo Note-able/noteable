@@ -1,11 +1,11 @@
 'use strict';
 
-var React = require("react");
-var Router = require("react-router");
+var React = require(`react`);
+var Router = require(`react-router`);
 
 module.exports = class Login extends React.Component {
-  loginTry() {
-    window.location.href = 'auth/facebook';
+  loginTry () {
+    window.location.href = `auth/facebook`;
   }
   render () {
     return(
