@@ -118,18 +118,27 @@ class Line extends React.Component {
 		var selected = nextProps.selected ? "selected" : "";
 		var offset = nextProps.offset == null ? 0 : nextProps.offset;
 		this.shouldFocus = nextProps.selected;
+		var text = this.state.text;
+		if(this.props.text)
 		this.setState({ selected: selected, caretOffset: offset });
 	}
 
 	setCaretPosition() {
 		var element = ReactDOM.findDOMNode(this.refs.line);
-		if(element.childNodes.length !== 0) {
+		if(element.childNodes.length !== 0 && this.isFocused) {
+			var caretPos = this.state.caretOffset > element.firstChild.length ? element.firstChild.length : this.state.caretOffset;
 			var selection = window.getSelection();
 			var range = document.createRange();
-			range.setStart(element.childNodes[0], this.state.caretOffset);
+			range.setStart(element.firstChild, caretPos);
+			range.setEnd(element.firstChild, caretPos);
 			selection.removeAllRanges();
 			selection.addRange(range);
 		}
+	}
+
+	handlePaste(e) {
+		console.log('paste');
+		e.preventDefault();
 	}
 
 	handleKeyPress(e) {
@@ -144,6 +153,7 @@ class Line extends React.Component {
 	handleKeyDown(e) {
 		this.keyMap[e.keyCode] = e.type == 'keydown';
 		if(e.keyCode === 13) { //enter
+			e.preventDefault();
 			this.enterPressed = true;
 			var selectionOffset = window.getSelection().baseOffset;
 			var movedText = this.state.text.substring(selectionOffset, this.state.text.length);
@@ -151,9 +161,11 @@ class Line extends React.Component {
 			this.props.handleEnter(movedText, this.props.lineId);
 			this.setState({ text: remainingText });
 		} else if(e.keyCode === 38) { //upArrow
+			e.preventDefault();
 			var selectionOffset = window.getSelection().baseOffset;
 			this.props.handleUpArrow(selectionOffset, this.props.lineId);
 		} else if(e.keyCode === 40) { //downArrow
+			e.preventDefault();
 			var selectionOffset = window.getSelection().baseOffset;
 			this.props.handleDownArrow(selectionOffset, this.props.lineId);
 		}
@@ -190,6 +202,7 @@ class Line extends React.Component {
 			className={ "editor-line " + this.state.selected }
 			name={ this.props.lineId }
 			ref="line"
+			onPaste={ this.handlePaste.bind(this) }
 			onKeyPress={ this.handleKeyPress.bind(this) }
 			onKeyDown={ this.handleKeyDown.bind(this) }
 			onKeyUp={ this.handleKeyUp.bind(this) }
