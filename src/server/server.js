@@ -1,17 +1,12 @@
-var express = require(`express`);
-var path = require(`path`);
-var pg = require(`pg`);
-var React = require(`react`);
-var Router = require(`react-router`);
-var BodyParser = require(`body-parser`);
-var routes = require(`../routes`);
-var passport = require(`passport`);
-var FacebookStrategy = require(`passport-facebook`);
-var session = require(`express-session`);
-var pg = require(`pg`);
+const express = require(`express`);
+const pg = require(`pg`);
+const BodyParser = require(`body-parser`);
+const passport = require(`passport`);
+const FacebookStrategy = require(`passport-facebook`);
+const session = require(`express-session`);
 
 const app = express();
-app.use(express.static(__dirname + `/../../public`));
+app.use(express.static(`${__dirname}/../../public`));
 const connectionString = process.env.DATABASE_URL || `postgres://bxujcozubyosgb:m1rgVoS1lEpdCZVRos6uWZVouU@ec2-54-235-146-58.compute-1.amazonaws.com:5432/d42dnjskegivlt?ssl=true`;
 const port = process.env.PORT || 3000;
 
@@ -29,15 +24,13 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser((user, done) => {
   done(null, user);
 });
 
-passport.deserializeUser(function (obj, done) {
+passport.deserializeUser((obj, done) => {
   done(null, obj);
 });
-
-const users = [10156402243690621];
 
 //set up passport
 passport.use(new FacebookStrategy({
@@ -46,20 +39,20 @@ passport.use(new FacebookStrategy({
   callbackURL: `http://local.jamsesh.com:3000/auth/facebook/callback`,
   enableProof: false
 },
-  function (accessToken, refreshToken, profile, done) {
-    ConnectToDb(connectionString, function (connection){
+  (accessToken, refreshToken, profile, done) => {
+    ConnectToDb(connectionString, (connection) => {
       if(connection.status === `SUCCESS`){
-        var user;
+        let user;
         connection.client
-        .query(`SELECT * FROM public.user WHERE facebook_id = '` + profile.id + `';`)
-        .on(`row`, function (row){
+        .query(`SELECT * FROM public.user WHERE facebook_id = '${profile.id}';`)
+        .on(`row`, (row) => {
           user = row;
           connection.fin();
           if (!user){
             return done(null, false);
-          } else {
-            return done(null, user);
           }
+
+          return done(null, user);
         });
       }
     });
@@ -71,28 +64,28 @@ app.get(`/auth/facebook`,
 
 app.get(`/auth/facebook/callback`,
   passport.authenticate(`facebook`, { failureRedirect: `/login` }),
-  function (req, res) {
+  (req, res) => {
     // Successful authentication, redirect home.
     res.redirect(`/`);
   });
 
-app.get(`/test`, ensureAuthenticated, function (req, res) {
+app.get(`/test`, ensureAuthenticated, (req, res) => {
   res.render(`index`);
 });
 
 require(`./api-routes`)(app, pg, {auth: ensureAuthenticated, connect: ConnectToDb, database: connectionString});
 
-app.get(`/logout`, function (req, res) {
+app.get(`/logout`, (req, res) => {
   return;
   req.logout();
   res.redirect(`/test`);
 });
 
-app.get(`/*`, function (req, res) {
+app.get(`/*`, (req, res) => {
   res.render(`index`, {props : req.isAuthenticated().toString()});
 });
 
-const server = app.listen(port, function () {
+const server = app.listen(port, () => {
   const host = server.address().address;
   const port = server.address().port;
 
@@ -101,32 +94,19 @@ const server = app.listen(port, function () {
 
 
 function ConnectToDb (connectionString, callback){
-  pg.connect(connectionString, function (err, client, done) {
-    var error;
+  pg.connect(connectionString, (err, client, done) => {
+    let error;
     if (err){
       error = err;
     }
     console.log(error);
-    var client = err ? { status : `ERROR`, error : error } : { status : `SUCCESS`, client : client, fin: done };
+    const connection = err ? { status : `ERROR`, error : error } : { status : `SUCCESS`, client : client, fin: done };
     if(callback){
-      callback(client);
+      callback(connection);
       return null;
     }
-    return client;
+    return connection;
   });
-}
-
-function DbConnectionFail (res){
-  var connection;
-  res.status(500).send(`ERR:Database not connected. Attempting to restart.`);
-  //attempt to restart the db
-  connection = ConnectToDb(connectionString);
-  if (connection.status === `ERROR`){
-    console.log(`Connection failed. Email Michael.`);
-    connection = null;
-  } else {
-    console.log(`Successful reconnect`);
-  }
 }
 
 function ensureAuthenticated (req, res, next) {

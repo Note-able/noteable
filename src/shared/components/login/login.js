@@ -1,7 +1,6 @@
 'use strict';
 
-var React = require(`react`);
-var Router = require(`react-router`);
+const React = require(`react`);
 
 module.exports = class Login extends React.Component {
   loginTry () {
@@ -9,9 +8,9 @@ module.exports = class Login extends React.Component {
   }
   render () {
     return(
-      <div className='login-container'>
-        <div className='login-container__header'>Sign In</div>
-        <button className='login-container__submit-button' onClick={this.loginTry}>Login to Facebook</button>
+      <div className="login-container">
+        <div className="login-container__header">Sign In</div>
+        <button className="login-container__submit-button" onClick={this.loginTry}>Login to Facebook</button>
       </div>
     );
   }
