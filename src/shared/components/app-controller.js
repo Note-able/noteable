@@ -1,6 +1,8 @@
 'use strict';
 
 const React = require(`react`);
+const Login = require(`./login/login.js`);
+const Logout = require(`./login/logout.js`);
 
 module.exports = class AppController extends React.Component {
   renderLogin () {

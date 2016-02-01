@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function (app, pg, options) {
   app.get(`/database`, (req, res) => {
     options.connect(options.database, (connection) => {
