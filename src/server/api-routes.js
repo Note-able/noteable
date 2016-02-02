@@ -16,7 +16,7 @@ module.exports = function (app, pg, options) {
   });
 
   app.get(`/user/:id/profile`, options.auth, (req, res) => {
-    if (req.user.id !== req.params.id) {
+    if (req.user.id !== parseInt(req.params.id)) {
       res.status(404).send();
     } else {
       options.connect(options.database, (connection) => {
