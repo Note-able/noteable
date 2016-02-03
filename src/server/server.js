@@ -82,12 +82,11 @@ app.get(`/logout`, (req, res) => {
   res.redirect(`/test`);
 });
 
-app.get(`/`, (req, res) => {
-  console.log(req.path);
-  res.render(`index`, {props : req.isAuthenticated().toString()});
-});
+app.post('/post-blob', (req, res) => {
+  res.status(200).send(req.body);
+})
 
-app.get(`/editor`, (req, res) => {
+app.get(`/*`, (req, res) => {
   console.log(req.path);
   res.render(`index`, {props : req.isAuthenticated().toString()});
 });
