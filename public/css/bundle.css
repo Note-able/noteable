@@ -54,6 +54,9 @@ body {
 .editor p.editor-line.selected {
   outline: none;
 }
+.section {
+  min-height: 50px;
+}
 body {
   background: black;
 }
