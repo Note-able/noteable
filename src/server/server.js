@@ -6,12 +6,15 @@ const BodyParser = require(`body-parser`);
 const passport = require(`passport`);
 const FacebookStrategy = require(`passport-facebook`);
 const session = require(`express-session`);
+const Formidable = require(`formidable`);
+const fs = require('fs');
 
 const app = express();
 app.use(express.static(`${__dirname}/../../public`));
 const connectionString = process.env.DATABASE_URL || `postgres://bxujcozubyosgb:m1rgVoS1lEpdCZVRos6uWZVouU@ec2-54-235-146-58.compute-1.amazonaws.com:5432/d42dnjskegivlt?ssl=true`;
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
+console.log(process.env);
 // set up Jade
 app.use(BodyParser.urlencoded({ extended: false }));
 app.use(BodyParser.json());
@@ -83,11 +86,22 @@ app.get(`/logout`, (req, res) => {
 });
 
 app.post('/post-blob', (req, res) => {
-  res.status(200).send(req.body);
-})
+  const form = new Formidable.IncomingForm();
+  form.uploadDir = '/uploads';
+
+  form.onPart = function (part) {
+    form.handlePart(part);
+  }
+
+  form.parse(req, (err, fields) => {
+    const buffer = new Buffer(fields.file, 'base64');
+    fs.writeFileSync(fields.name, buffer);
+  });
+
+  res.status(200).send();
+});
 
 app.get(`/*`, (req, res) => {
-  console.log(req.path);
   res.render(`index`, {props : req.isAuthenticated().toString()});
 });
 

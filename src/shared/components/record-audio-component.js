@@ -1,17 +1,19 @@
 'use strict';
 
-const React = require(`react`);
+const React = require('react');
 const Login = require(`./login/login.js`);
 const Logout = require(`./login/logout.js`);
 const RecordRTC = require('recordrtc');
+const Moment = require('moment');
 let recorder;
 
 module.exports = class AudioComponent extends React.Component {
-  constructor (props, context) {
-    super(props, context);
+  constructor (props) {
+    super(props);
 
-    this.state = { };
+    this.state = {isRecording: false};
   }
+
   componentDidMount () {
     const mediaConstraints = {
       audio: {
@@ -40,29 +42,42 @@ module.exports = class AudioComponent extends React.Component {
   }
   startRecording () {
     recorder.startRecording();
+    this.setState({
+      isRecording: true
+    });
   }
   stopRecording () {
     recorder.stopRecording((audioURL) => {
-      console.log(audioURL);
-
       const recordedBlob = recorder.getBlob();
 
       recorder.getDataURL((dataURL) => {
         this.setState({
           audioUrl: audioURL,
           dataUrl: dataURL,
-          blob: recordedBlob
+          blob: recordedBlob,
+          isRecording: false
         });
       });
+
+      this.recordButtonFunction = () => {this.startRecording()};
     });
   }
   sendAudioToServer () {
-    const formData = new FormData();
-    formData.append('file', this.state.blob);
+    const reader = new FileReader();
 
-    const request = new XMLHttpRequest();
-    request.open('POST', '/post-blob');
-    request.send(formData);
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      const base64 = dataUrl.split(',')[1];
+      const formData = new FormData();
+      formData.append('name', 'testing.wav');
+      formData.append('file', base64);
+
+      const request = new XMLHttpRequest();
+      request.open('POST', '/post-blob');
+      request.send(formData);
+    };
+
+    reader.readAsDataURL(this.state.blob);
   }
   renderGrid () {
     return (
@@ -77,12 +92,10 @@ module.exports = class AudioComponent extends React.Component {
       <div>
         <link href="/css/bundle.css" rel="stylesheet" type="text/css"/>
         <div>
-          <div onClick={ () => {this.startRecording()} } className="record-button">Record</div>
+          <div onClick={ this.state.isRecording ? () => {this.stopRecording()} : () => {this.startRecording()} } className="record-button">Record</div>
           <div onClick={ () => {this.stopRecording()} } className="stop-button">Stop Recording</div>
           <button onClick= { () => { this.sendAudioToServer() } } >Send</button>
-          <audio controls>
-            <source src={this.state.audioUrl} type="audio/mpeg"/>
-          </audio>
+          <audio src={this.state.audioUrl} controls/>
         </div>
       </div>
     );

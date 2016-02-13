@@ -34,7 +34,6 @@
         "jsx-quotes": [2, "prefer-double"],
         "no-trailing-spaces": 2,
         "quotes": [2, "single", "avoid-escape"],
-        "space-before-function-paren": 2,
         "arrow-body-style": [2, "always"],
         "arrow-spacing": 2,
         "constructor-super": 2,

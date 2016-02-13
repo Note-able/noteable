@@ -14,7 +14,7 @@
     "lint": "./node_modules/.bin/eslint ./src",
     "server": "node lib/server/server",
     "start-dev": "npm run lint && npm run build && npm run dev-server && npm run server",
-    "start": "npm run server",
+    "start": "node lib/server/server",
     "styles": "./node_modules/.bin/lessc ./public/less/bundle.less ./public/css/bundle.css",
     "build": "npm run clean && ./node_modules/.bin/babel --plugins transform-es2015-classes src --presets react -d lib && npm run styles"
   },
@@ -44,8 +44,13 @@
     "eslint": "^1.10.3",
     "express": "^4.13.3",
     "express-session": "^1.13.0",
+    "formidable": "^1.0.17",
+    "fs": "0.0.2",
+    "gcloud": "^0.28.0",
     "history": "^1.17.0",
     "jade": "^1.11.0",
+    "moment": "^2.11.2",
+    "multer": "^1.1.0",
     "nodemon": "^1.8.1",
     "passport": "^0.3.2",
     "passport-facebook": "^2.0.0",
@@ -56,7 +61,11 @@
     "react-hot-loader": "^1.3.0",
     "react-router": "^1.0.3",
     "recordrtc": "^5.2.7",
+    "wav-encoder": "^1.0.0",
     "webpack": "^1.12.9",
     "webpack-dev-server": "^1.14.0"
+  },
+  "engines": {
+    "node": ">=0.12.7"
   }
 }
