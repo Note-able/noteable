@@ -3,9 +3,20 @@
 	height: 100%;
 	background: white;
 
-	p.editor-line.selected {
+	editor-line.selected {
 		outline: none;
 	}
+
+	.editor-line {
+		min-height: 20px;
+		pointer-events: all;
+	}
+}
+
+.section {
+	min-height: 50px;
+	pointer-events: none;
+	outline: none;
 }
 
 body {
