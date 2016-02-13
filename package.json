@@ -14,7 +14,7 @@
     "lint": "./node_modules/.bin/eslint ./src",
     "server": "node lib/server/server",
     "start-dev": "npm run lint && npm run build && npm run dev-server && npm run server",
-    "start": "node lib/server/server",
+    "start": "node --harmony lib/server/server",
     "styles": "./node_modules/.bin/lessc ./public/less/bundle.less ./public/css/bundle.css",
     "build": "npm run clean && ./node_modules/.bin/babel --plugins transform-es2015-classes src --presets react -d lib && npm run styles"
   },
