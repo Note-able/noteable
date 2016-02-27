@@ -1,0 +1,86 @@
+.auth-container {
+    border: 1px solid @grey-medium;
+    border-radius: 4px;
+    bottom: 0;
+    margin: auto;
+    position: absolute;
+    right: 50px;
+    text-align: center;
+    top: 0;
+    transition: all .2s cubic-bezier(0, 1.1, 1, 1);
+    width: 275px;
+}
+
+.login-container, .register-container {
+  &__header {
+    color: white;
+    font: 14px BlinkMacSystemFont;
+    line-height: 30px;
+    background: @green;
+    text-align: center;
+  }
+
+  .signin-form, .register-form {
+    left: 0;
+    margin: 25px auto 10px;
+    overflow: hidden;
+    right: 0;
+    top: 25px;
+    width: 200px;
+
+    &__username, &__password, &__password__verify{
+      border: 1px solid @grey-medium;
+      border-radius: @border-radius;
+      font-size: @normal-font-size;
+      line-height: @normal-line-height;
+      margin: 10px 0;
+      outline: none;
+      padding: 5px;
+      width: 100%;
+    }
+
+    &__submit-button {
+      background: none;
+      border: 1px solid @grey-medium;
+      border-radius: @border-radius;
+      cursor: pointer;
+      float: right;
+      height: 30px;
+      padding: 5px;
+
+      &:hover {
+        background: @blue;
+      }
+    }
+  }
+
+  .button-container {
+    left: 0;
+    margin: auto;
+    right: 0;
+    width: 200px;
+
+    &__open-register {
+      color: @blue;
+      margin: 15px 0 0;
+    }
+
+    &__submit-button {
+      background: @facebook-blue;
+      color: white;
+
+      &:hover {
+        background: @facebook-hover;
+      }
+    }
+
+    &__submit-button, &__open-register {
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: @normal-font-size;
+      height: 30px;
+      width: 100%;
+    }
+  }
+}

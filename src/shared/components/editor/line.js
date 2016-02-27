@@ -21,8 +21,17 @@ module.exports = class Line extends React.Component {
     }
   }
 
-  componentDidUpdate () {
+  componentDidUpdate (prevProps) {
     console.log(`${this.props.lineId} did update`);
+
+    if (this.props.lineId === prevProps.lineId
+      && this.props.text === prevProps.text
+      && this.props.selected === prevProps.selected
+      && this.props.offset === prevProps.offset
+      && this.props.shouldUpdateText === prevProps.shouldUpdateText) {
+      return;
+    }
+
     if(this.props.shouldUpdateText){
       const elem = ReactDOM.findDOMNode(this.refs.line);
       elem.innerHTML = this.props.text;

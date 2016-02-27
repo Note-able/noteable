@@ -18,53 +18,212 @@
   font-family: 'Icomoon';
   src: url('/fonts/icomoon.ttf');
 }
-.login-container {
-  border: 1px solid #569a00;
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans-Regular.ttf');
+}
+@font-face {
+  font-family: 'Open Sans Semibold';
+  src: url('/fonts/OpenSans-Semibold.ttf');
+}
+@font-face {
+  font-family: 'Museo Sans';
+  src: url('/fonts/MuseoSans_500-webfont.ttf');
+}
+@font-face {
+  font-family: 'Cyntho';
+  src: url('/fonts/CynthoPro-Regular-webfont.ttf');
+}
+.auth-container {
+  border: 1px solid #b1b1b1;
   border-radius: 4px;
-  margin: 100px;
+  bottom: 0;
+  margin: auto;
+  position: absolute;
+  right: 50px;
   text-align: center;
+  top: 0;
+  transition: all 0.2s cubic-bezier(0, 1.1, 1, 1);
   width: 275px;
 }
-.login-container__header {
+.login-container__header,
+.register-container__header {
   color: white;
   font: 14px BlinkMacSystemFont;
   line-height: 30px;
   background: #569a00;
   text-align: center;
 }
-.login-container__submit-button {
+.login-container .signin-form,
+.register-container .signin-form,
+.login-container .register-form,
+.register-container .register-form {
+  left: 0;
+  margin: 25px auto 10px;
+  overflow: hidden;
+  right: 0;
+  top: 25px;
+  width: 200px;
+}
+.login-container .signin-form__username,
+.register-container .signin-form__username,
+.login-container .register-form__username,
+.register-container .register-form__username,
+.login-container .signin-form__password,
+.register-container .signin-form__password,
+.login-container .register-form__password,
+.register-container .register-form__password,
+.login-container .signin-form__password__verify,
+.register-container .signin-form__password__verify,
+.login-container .register-form__password__verify,
+.register-container .register-form__password__verify {
+  border: 1px solid #b1b1b1;
+  border-radius: 2px;
+  font-size: 14px;
+  line-height: 20px;
+  margin: 10px 0;
+  outline: none;
+  padding: 5px;
+  width: 100%;
+}
+.login-container .signin-form__submit-button,
+.register-container .signin-form__submit-button,
+.login-container .register-form__submit-button,
+.register-container .register-form__submit-button {
+  background: none;
+  border: 1px solid #b1b1b1;
+  border-radius: 2px;
+  cursor: pointer;
+  float: right;
+  height: 30px;
+  padding: 5px;
+}
+.login-container .signin-form__submit-button:hover,
+.register-container .signin-form__submit-button:hover,
+.login-container .register-form__submit-button:hover,
+.register-container .register-form__submit-button:hover {
+  background: #0088f3;
+}
+.login-container .button-container,
+.register-container .button-container {
+  left: 0;
+  margin: auto;
+  right: 0;
+  width: 200px;
+}
+.login-container .button-container__open-register,
+.register-container .button-container__open-register {
+  color: #0088f3;
+  margin: 15px 0 0;
+}
+.login-container .button-container__submit-button,
+.register-container .button-container__submit-button {
   background: #3b5998;
-  border: none;
-  border-radius: 20px;
   color: white;
-  font-size: 12px;
-  height: 40px;
-  margin: 15px 0;
-  width: 150px;
+}
+.login-container .button-container__submit-button:hover,
+.register-container .button-container__submit-button:hover {
+  background: #5772ac;
+}
+.login-container .button-container__submit-button,
+.register-container .button-container__submit-button,
+.login-container .button-container__open-register,
+.register-container .button-container__open-register {
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  font-size: 14px;
+  height: 30px;
+  width: 100%;
 }
 body {
   /**background-image: url('/images/ted-background.jpg');**/
   background-size: cover;
+  font-family: sans-serif;
+  margin: 0;
 }
-.editor {
-  width: 100%;
-  height: 100%;
+.editor-container {
+  display: flex;
+}
+.editor-container .editor {
   background: white;
+  border: 10px solid black;
+  flex: 3;
+  height: 80%;
+  margin: 20px;
+  padding: 10px;
 }
-.editor editor-line.selected {
+.editor-container .editor editor-line.selected {
   outline: none;
 }
-.editor .editor-line {
+.editor-container .editor .editor-line {
   min-height: 20px;
   pointer-events: all;
 }
-.section {
+.editor-container .record {
+  left: 0;
+  position: absolute;
+}
+.editor-container .messages-container {
+  border-radius: 4px;
+  box-shadow: -1px 0px 7px 2px rgba(0, 0, 0, 0.5);
+  fontfont-size: 13px;
+  height: 100%;
+  position: relative;
+  width: 350px;
+}
+.editor-container .messages-container .messages-wrapper {
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+}
+.editor-container .messages-container .messages-wrapper .message-feed {
+  font: 500 13px 'Cyntho';
+  list-style: none;
+  padding: 5px;
+}
+.editor-container .messages-container .messages-wrapper .message-feed__message {
+  background: rgba(0, 128, 236, 0.4);
+  border-radius: 4px;
+  border-bottom-left-radius: 0;
+  margin: 15px 55px 0 45px;
+  padding: 4px;
+}
+.editor-container .messages-container .messages-wrapper .message-feed__message--me {
+  background: #eeeeee;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 0;
+  margin: 15px 45px 0 55px;
+}
+.editor-container .messages-container .messages-wrapper .message-feed .message-collection {
+  margin: 0 55px 0 0;
+}
+.editor-container .messages-container .messages-wrapper .message-feed .top-message {
+  border-bottom-right-radius: 0;
+}
+.editor-container .messages-container .messages-wrapper .message-feed .middle-message {
+  border-radius: 0;
+}
+.editor-container .messages-container .messages-wrapper .message-feed .bottom-message {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.editor-container .messages-container .messages-wrapper .message-reply-editor {
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  border-top: 2px solid #b1b1b1;
+  font: 500 13px 'Cyntho';
+  height: 50px;
+  outline: none;
+  padding: 10px;
+  resize: none;
+  width: 100%;
+}
+.editor-container .section {
   min-height: 50px;
   pointer-events: none;
   outline: none;
-}
-body {
-  background: black;
 }
 .record-button {
   background: red;

@@ -1,9 +1,7 @@
 'use strict';
 
 const React = require('react');
-const Login = require(`./login/login.js`);
-const Logout = require(`./login/logout.js`);
-const RecordRTC = require('recordrtc');
+let RecordRTC;
 const Moment = require('moment');
 let recorder;
 
@@ -25,6 +23,7 @@ module.exports = class AudioComponent extends React.Component {
         }
       }
     };
+    RecordRTC = require('recordrtc');
 
     navigator.webkitGetUserMedia(mediaConstraints, this.successCallback, this.errorCallback);
   }
@@ -90,7 +89,6 @@ module.exports = class AudioComponent extends React.Component {
   render () {
     return(
       <div>
-        <link href="/css/bundle.css" rel="stylesheet" type="text/css"/>
         <div>
           <div onClick={ this.state.isRecording ? () => {this.stopRecording()} : () => {this.startRecording()} } className="record-button">Record</div>
           <div onClick={ () => {this.stopRecording()} } className="stop-button">Stop Recording</div>

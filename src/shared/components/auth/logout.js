@@ -17,8 +17,8 @@ module.exports = class Logout extends React.Component {
   }
   render () {
     return(
-      <div className="login-container">
-        <button className="login-container__submit-button" onClick={this.logout}>Logout of Facebook</button>
+      <div className="logout-button">
+        <button className="logout-button__submit-button" onClick={this.logout}>Logout of Facebook</button>
       </div>
     );
   }

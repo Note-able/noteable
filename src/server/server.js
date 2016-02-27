@@ -14,7 +14,6 @@ app.use(express.static(`${__dirname}/../../public`));
 const connectionString = process.env.DATABASE_URL || `postgres://bxujcozubyosgb:m1rgVoS1lEpdCZVRos6uWZVouU@ec2-54-235-146-58.compute-1.amazonaws.com:5432/d42dnjskegivlt?ssl=true`;
 const port = process.env.PORT || 8080;
 
-console.log(process.env);
 // set up Jade
 app.use(BodyParser.urlencoded({ extended: false }));
 app.use(BodyParser.json());
@@ -101,7 +100,11 @@ app.post('/post-blob', (req, res) => {
   res.status(200).send();
 });
 
-app.get(`/*`, (req, res) => {
+app.get('/*', (req, res) => {
+  res.render(`index`, {props : req.isAuthenticated().toString()});
+});
+
+app.get('/editor', (req, res) => {
   res.render(`index`, {props : req.isAuthenticated().toString()});
 });
 
@@ -112,6 +115,7 @@ const server = app.listen(port, () => {
   console.log(`JamSesh is listening at http://%s:%s`, host, port);
 });
 
+require('./sockets')(server);
 
 function ConnectToDb (connectionString, callback){
   pg.connect(connectionString, (err, client, done) => {
