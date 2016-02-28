@@ -56,7 +56,34 @@ class Section extends React.Component {
 
   handlePaste (e) {
     console.log('paste');
+    console.log(e);
     e.preventDefault();
+    const plainText = e.clipboardData.getData('text/plain');
+    if(plainText){
+      const lineData = this.state.lineData;
+      const lines = plainText.split('\n').filter((line) => { return line !== '' });
+      let selectedIndex = this.state.selectedIndex;
+      let selected = this.state.selectedLine;
+      lineData[selectedIndex].text = lines[0];
+      this.linesToUpdate[selected.lineId] = true;
+      for(let i = 1; i < lines.length - 1; i++) {
+        this.lines++;
+        const newLine = this.newLine(this.lines, lines[i]);
+        lineData.splice(selectedIndex + i, 0, newLine);
+        this.linesToUpdate[lineData[selectedIndex + i].lineId] = true;
+      }
+      if(lines.length > 1) {
+        this.lines++;
+        const newLine = this.newLine(this.lines, lines[lines.length - 1]);
+        lineData.splice(selectedIndex + lines.length - 1, 0, newLine);
+        this.linesToUpdate[lineData[selectedIndex + lines.length - 1].lineId] = true;
+      }
+
+      selectedIndex = selectedIndex + lines.length - 1;
+      selected = lineData[selectedIndex];
+
+      this.setState({ lineData: lineData, selectedIndex: selectedIndex, selectedLine: selected, updateFunction: this.appendTextAfterDelete }, this.clearLinesToUpdate.bind(this));
+    }
   }
 
   handleKeyDown (e) {
@@ -116,7 +143,7 @@ class Section extends React.Component {
   handleEnter (oldText, movedText) {
     ++this.lines;
     const lineData = this.state.lineData;
-    const newLine = this.newLine(this.lines, movedText)
+    const newLine = this.newLine(this.lines, movedText);
     const selected = this.state.selectedLine;
     let selectedIndex = this.state.selectedIndex;
     let newSelected = null;
