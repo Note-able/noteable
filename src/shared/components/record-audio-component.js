@@ -11,7 +11,7 @@ module.exports = class AudioComponent extends React.Component {
   constructor (props) {
     super(props);
 
-    this.state = {isRecording: false};
+    this.state = { isRecording: false };
   }
 
   componentDidMount () {
@@ -59,7 +59,7 @@ module.exports = class AudioComponent extends React.Component {
         });
       });
 
-      this.recordButtonFunction = () => {this.startRecording()};
+      this.recordButtonFunction = () => { this.startRecording() };
     });
   }
   sendAudioToServer () {
@@ -90,12 +90,11 @@ module.exports = class AudioComponent extends React.Component {
   render () {
     return(
       <div>
-        <link href="/css/bundle.css" rel="stylesheet" type="text/css"/>
         <div>
-          <div onClick={ this.state.isRecording ? () => {this.stopRecording()} : () => {this.startRecording()} } className="record-button">Record</div>
-          <div onClick={ () => {this.stopRecording()} } className="stop-button">Stop Recording</div>
+          <div onClick={ this.state.isRecording ? () => { this.stopRecording() } : () => { this.startRecording() } } className="record-button"></div>
+          <div onClick={ () => { this.stopRecording() } } className="stop-button"></div>
+          <audio src={ this.state.audioUrl } className="audio-player" controls/>
           <button onClick= { () => { this.sendAudioToServer() } } >Send</button>
-          <audio src={this.state.audioUrl} controls/>
         </div>
       </div>
     );

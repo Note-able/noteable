@@ -3,13 +3,14 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 const Line = require('./line');
+const RecordingLine = require('./recordingLine')
 
 module.exports = class Section extends React.Component {
   constructor ( props, context) {
     super(props, context);
 
     this.lines = 0;
-    const lineData = [this.newLine (this.lines, '')];
+    const lineData = [this.newTextLine (this.lines, '')];
     this.state = { lineData: lineData, selectedLine: lineData[0], selectedIndex: 0 };
     this.enterPressed = false;
     this.keyMap = [];
@@ -27,8 +28,12 @@ module.exports = class Section extends React.Component {
     return shouldUpdate;
   }
 
-  newLine (id, text) {
-    return { lineId: id, text: text }
+  newTextLine (id, text) {
+    return { lineId: id, text: text, type: 'text' }
+  }
+
+  newRecordingLine (id) {
+    return { lineId: id, type: 'recording'}
   }
 
   handleClick (e) {
@@ -50,13 +55,13 @@ module.exports = class Section extends React.Component {
       this.linesToUpdate[selected.lineId] = true;
       for(let i = 1; i < lines.length - 1; i++) {
         this.lines++;
-        const newLine = this.newLine(this.lines, lines[i]);
+        const newLine = this.newTextLine(this.lines, lines[i]);
         lineData.splice(selectedIndex + i, 0, newLine);
         this.linesToUpdate[lineData[selectedIndex + i].lineId] = true;
       }
       if(lines.length > 1) {
         this.lines++;
-        const newLine = this.newLine(this.lines, lines[lines.length - 1]);
+        const newLine = this.newTextLine(this.lines, lines[lines.length - 1]);
         lineData.splice(selectedIndex + lines.length - 1, 0, newLine);
         this.linesToUpdate[lineData[selectedIndex + lines.length - 1].lineId] = true;
       }
@@ -70,6 +75,9 @@ module.exports = class Section extends React.Component {
 
   handleKeyDown (e) {
     this.keyMap[e.keyCode] = e.type === 'keydown';
+    /* Note: this is *probably* really bad. It should work by keeping a collection of functions for keycodes that need them,
+      and then calling the function for that keycode if it exists instead of doing if else for all possible keys that have functions.
+      Or I could use a switch statement at the very least. */
     if(e.keyCode === 13) { //enter
       e.preventDefault();
       this.enterPressed = true;
@@ -94,6 +102,12 @@ module.exports = class Section extends React.Component {
         const lineData = this.state.lineData;
         lineData.splice(selectedIndex, 1);
         this.setState({ lineData: lineData, selectedIndex: selectedIndex - 1, selectedLine: lineData[selectedIndex - 1] });
+      }
+    } else if (e.keyCode === 82) {
+      if(this.keyMap[16] && this.keyMap[17]) {
+        const lineData = this.state.lineData;
+        lineData.splice(this.state.selectedIndex + 1, 0, this.newRecordingLine(++this.lines));
+        this.setState({ lineData: lineData });
       }
     }
   }
@@ -125,7 +139,7 @@ module.exports = class Section extends React.Component {
   handleEnter (oldText, movedText) {
     ++this.lines;
     const lineData = this.state.lineData;
-    const newLine = this.newLine(this.lines, movedText);
+    const newLine = this.newTextLine(this.lines, movedText);
     const selected = this.state.selectedLine;
     let selectedIndex = this.state.selectedIndex;
     let newSelected = null;
@@ -186,18 +200,22 @@ module.exports = class Section extends React.Component {
 
   render () {
     const lineElements = this.state.lineData.map((line) => {
-      const selected = line.lineId === this.state.lineData[this.state.selectedIndex].lineId;
-      const offset = selected ? this.state.offset : 0;
-      const shouldUpdateText = this.linesToUpdate[line.lineId]
-      const updateTextFunction = shouldUpdateText ? this.state.updateFunction : null;
-      return (<Line key={ line.lineId } lineId={ line.lineId } text={ line.text } selected={ selected } offset={ offset }
-        updateTextFunction={ updateTextFunction }
-        shouldUpdateText={ shouldUpdateText }
-        updateSelected={ this.updateSelected.bind(this) }
-        handleEnter={ this.handleEnter.bind(this) }
-        handleDelete={ this.handleDelete.bind(this) }
-        handleUpArrow={ this.handleUpArrow.bind(this) }
-        handleDownArrow={ this.handleDownArrow.bind(this) }></Line>);
+      if(line.type === 'text') {
+        const selected = line.lineId === this.state.lineData[this.state.selectedIndex].lineId;
+        const offset = selected ? this.state.offset : 0;
+        const shouldUpdateText = this.linesToUpdate[line.lineId]
+        const updateTextFunction = shouldUpdateText ? this.state.updateFunction : null;
+        return (<Line key={ line.lineId } lineId={ line.lineId } text={ line.text } selected={ selected } offset={ offset }
+          updateTextFunction={ updateTextFunction }
+          shouldUpdateText={ shouldUpdateText }
+          updateSelected={ this.updateSelected.bind(this) }
+          handleEnter={ this.handleEnter.bind(this) }
+          handleDelete={ this.handleDelete.bind(this) }
+          handleUpArrow={ this.handleUpArrow.bind(this) }
+          handleDownArrow={ this.handleDownArrow.bind(this) }></Line>);
+      } else if (line.type === 'recording') {
+        return (<RecordingLine key={ line.lineId } lineId={ line.lineId }></RecordingLine>);
+      }
     });
     return (
     <div className="section" ref="section" name={ this.props.sectionId } contentEditable="true"

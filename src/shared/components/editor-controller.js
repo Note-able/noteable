@@ -10,13 +10,25 @@ module.exports = class EditorController extends React.Component {
     super(props, context);
 
     this.sections = 0;
+    const sectionData = [this.addSection(this.sections, 'text')]
+    this.state = { sectionData: sectionData };
+  }
+
+  newSection (sectionNumber, type) {
+    return { sectionId : sectionNumber, type: type };
+  }
+
+  addSection (type) {
+    return type;
   }
 
   render () {
-    ++this.sections;
+    const sectionElements = this.state.sectionData.map((section) => {
+      return (<Section sectionId = { section.sectionId } sectionType = { section.type } addSection = { this.addSection.bind(this) }></Section>);
+    });
     return (
     <div className="editor" contentEditable="false">
-      <Section sectionId={this.sections}></Section>
+      { sectionElements }
     </div>
     );
   }
