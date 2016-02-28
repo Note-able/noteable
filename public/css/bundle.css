@@ -19,7 +19,7 @@
   src: url('/fonts/icomoon.ttf');
 }
 .login-container {
-  border: 1px solid #569A00;
+  border: 1px solid #569a00;
   border-radius: 4px;
   margin: 100px;
   text-align: center;
@@ -29,11 +29,11 @@
   color: white;
   font: 14px BlinkMacSystemFont;
   line-height: 30px;
-  background: #569A00;
+  background: #569a00;
   text-align: center;
 }
 .login-container__submit-button {
-  background: #3B5998;
+  background: #3b5998;
   border: none;
   border-radius: 20px;
   color: white;

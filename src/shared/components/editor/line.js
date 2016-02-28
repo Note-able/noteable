@@ -14,8 +14,8 @@ module.exports = class Line extends React.Component {
   }
 
   componentDidMount () {
-    const elem = ReactDOM.findDOMNode(this.refs.line);
-    elem.innerHTML = this.props.text;
+    const element = ReactDOM.findDOMNode(this.refs.line);
+    element.innerHTML = this.props.text;
     if(this.props.selected){
       this.setCaretPosition.bind(this)(this.props.offset);
     }
@@ -24,18 +24,24 @@ module.exports = class Line extends React.Component {
   componentDidUpdate () {
     console.log(`${this.props.lineId} did update`);
     if(this.props.shouldUpdateText){
-      const elem = ReactDOM.findDOMNode(this.refs.line);
-      elem.innerHTML = this.props.text;
+      const element = ReactDOM.findDOMNode(this.refs.line);
+      this.props.updateTextFunction(element, this.props.text);
     }
     if(this.props.selected){
       this.setCaretPosition.bind(this)(this.props.offset);
     }
   }
 
+  componentWillUnmount () {
+    if(this.props.handleDelete) {
+      this.props.handleDelete(ReactDOM.findDOMNode(this.refs.line).innerHTML);
+    }
+  }
+
   setCaretInEmptyDiv () {
-    const elem = ReactDOM.findDOMNode(this.refs.line);
+    const element = ReactDOM.findDOMNode(this.refs.line);
     const range = document.createRange();
-    range.selectNodeContents(elem);
+    range.selectNodeContents(element);
     range.collapse(false);
     const sel = window.getSelection();
     sel.removeAllRanges();
@@ -65,14 +71,15 @@ module.exports = class Line extends React.Component {
 
   handleClick (e) {
     console.log('clicked');
-    const elem = e.target;
-    elem.focus();
+    const element = e.target;
+    element.focus();
     this.props.updateSelected(this.props.lineId);
   }
 
   render () {
     return (
-      <p className="editor-line"
+      <p
+      className={ 'editor-line' }
       name={ this.props.lineId }
       ref="line"
       onClick={ this.handleClick.bind(this) }>
