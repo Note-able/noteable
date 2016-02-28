@@ -69,10 +69,7 @@ module.exports = class Line extends React.Component {
     }
   }
 
-  handleClick (e) {
-    console.log('clicked');
-    const element = e.target;
-    element.focus();
+  handleClick () {
     this.props.updateSelected(this.props.lineId);
   }
 
