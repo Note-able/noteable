@@ -5,5 +5,8 @@ dist/
 /tmp*
 .vscode/
 typings
+<<<<<<< HEAD
 lib/
 Noteable-b17f41e4f608.json
+=======
+>>>>>>> 71cb51b... Add simple paste handling for plaintext
