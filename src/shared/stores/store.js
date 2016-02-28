@@ -1,5 +1,20 @@
 const messages = (state = [], action) => {
   switch (action.type) {
+    case 'RECEIVE_MESSAGE':
+      const messageExists = state.messages ? state.messages.filter(message => {
+        return (message.id === action.id);
+      }) : [];
+      if (action.content && messageExists.length === 0) {
+        return [
+          ...state,
+          {
+            content: action.content,
+            userId: action.userId,
+            contextId: action.contextId,
+            id: action.id
+          }
+        ]
+      }
     case 'ADD_MESSAGE':
       if (action.content) {
         return [
@@ -7,7 +22,7 @@ const messages = (state = [], action) => {
           {
             content: action.content,
             userId: state.userId,
-            documentId: state.documentId,
+            contextId: state.documentId,
             id: action.id
           }
         ];
@@ -30,6 +45,12 @@ const messages = (state = [], action) => {
 const editorApp = (state = {}, action) => {
   switch (action.type) {
     case 'ADD_MESSAGE':
+      return Object.assign({},
+        state,
+        {
+          messages: messages(state.messages, action)
+        });
+    case 'RECEIVE_MESSAGE':
       return Object.assign({},
         state,
         {

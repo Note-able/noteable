@@ -77,7 +77,7 @@ app.get(`/test`, ensureAuthenticated, (req, res) => {
   res.render(`index`);
 });
 
-require(`./api-routes`)(app, pg, {auth: ensureAuthenticated, connect: ConnectToDb, database: connectionString});
+require(`./api-routes`)(app, {auth: ensureAuthenticated, connect: ConnectToDb, database: connectionString});
 
 app.get(`/logout`, (req, res) => {
   req.logout();
@@ -115,7 +115,7 @@ const server = app.listen(port, () => {
   console.log(`JamSesh is listening at http://%s:%s`, host, port);
 });
 
-require('./sockets')(server);
+require('./sockets')(server, {auth: ensureAuthenticated, connect: ConnectToDb, database: connectionString});
 
 function ConnectToDb (connectionString, callback){
   pg.connect(connectionString, (err, client, done) => {

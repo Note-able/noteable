@@ -9,14 +9,16 @@ const MessageComponent = require('./messaging/message-component');
 const MessageFeed = require('./messaging/message-feed');
 const { createStore } = require('redux');
 const MessageStore = createStore(require('../stores/store'));
-const socket = require('socket.io-client')('http://localhost:8080');
+let socket;
 
 module.exports = class EditorController extends React.Component {
   constructor (props, context) {
     super(props, context);
 
     this.sections = 0;
-    this.state = { MessageStore.getState() };
+    this.state = MessageStore.getState();
+    socket = require('socket.io-client')('http://localhost:8080', {query: `context=${this.state.contextId}`});//req.params.doc_id
+    socket.on('incoming', (message) => { this.handleNewMessage(message) });
     this.unsubscribe = MessageStore.subscribe(() => { this.handleMessagesUpdate() })
   }
 
@@ -24,14 +26,19 @@ module.exports = class EditorController extends React.Component {
     this.setState(MessageStore.getState());
   }
   
-  sendMessage(content) {
-    socket.emit('message', {documentId: this.state.documentId, message: content}, (id) => {
-      MessageStore.dispatch({
-        type: 'ADD_MESSAGE',
-        content: content,
-        id: id
-      });
+  handleNewMessage(message) {
+    console.log(message);
+    MessageStore.dispatch({
+      type: 'RECEIVE_MESSAGE',
+      userId: message.userId,
+      contextId: message.documentId,
+      content: message.message,
+      id: message.id
     });
+  }
+  
+  sendMessage(content) {
+    socket.emit('message', {documentId: this.state.documentId, message: content, userId: this.state.userId});
   }
 
   render() {
