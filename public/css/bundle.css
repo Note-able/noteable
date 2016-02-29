@@ -83,3 +83,14 @@ body {
   width: 25px;
   display: inline-block;
 }
+.song-list-item {
+  color: #ccc;
+  margin: 4px 4px 4px 4px;
+  padding: 4px 4px 4px 4px;
+  border-bottom: 1px solid #f6f7f8;
+}
+.song-list-item-date,
+.song-list-item-title {
+  color: #ccc;
+  display: inline-block;
+}
