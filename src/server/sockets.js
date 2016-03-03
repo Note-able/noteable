@@ -4,7 +4,7 @@ module.exports = (server, options) => {
   const io = require('socket.io').listen(server);
 
   io.on('connection', (socket) => {
-    socket.join(`hey`);
+    socket.join(`${socket.request._query.context}`);
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });
@@ -25,7 +25,7 @@ module.exports = (server, options) => {
           id = parseInt(row.lastval);
         }).on(`end`, () => {
           const fullMessage = Object.assign({}, message, {id: id});
-          io.sockets.in(`hey`).emit('incoming', fullMessage);
+          io.sockets.in(`${fullMessage.documentId}`).emit('incoming', fullMessage);
         });
       });
     });

@@ -9,6 +9,7 @@ const MessageComponent = require('./messaging/message-component');
 const MessageFeed = require('./messaging/message-feed');
 const { createStore } = require('redux');
 const MessageStore = createStore(require('../stores/store'));
+const AJAX = require('../ajax');
 let socket;
 
 module.exports = class EditorController extends React.Component {
@@ -17,9 +18,24 @@ module.exports = class EditorController extends React.Component {
 
     this.sections = 0;
     this.state = MessageStore.getState();
-    socket = require('socket.io-client')('http://localhost:8080', {query: `context=${this.state.contextId}`});//req.params.doc_id
+    MessageStore.dispatch({
+      type: 'ADD_DETAILS',
+      documentId: this.props.routeParams.documentId,
+      userId: this.props.routeParams.userId
+    });
+    socket = require('socket.io-client')('http://localhost:8080', {query: `context=${this.state.documentId}`});//req.params.doc_id
     socket.on('incoming', (message) => { this.handleNewMessage(message) });
-    this.unsubscribe = MessageStore.subscribe(() => { this.handleMessagesUpdate() })
+    this.unsubscribe = MessageStore.subscribe(() => { this.handleMessagesUpdate() }) 
+  }
+  
+  componentDidMount() {
+    const lastIndex = this.state.messages.length !== 0 ? this.state.messages[this.state.messages.length - 1].id : 0;
+    AJAX.Get(`/messages/${this.state.documentId}/${lastIndex}/${this.props.routeParams.userId}`, (response) => {
+      MessageStore.dispatch({
+        type: 'PAGE_MESSAGES',
+        response: response
+      });
+    });
   }
 
   handleMessagesUpdate() {
@@ -54,7 +70,7 @@ module.exports = class EditorController extends React.Component {
         </div>  
         <div className="messages-container">
           <div className="messages-wrapper">
-            <MessageFeed messages={this.state.messages} />
+            <MessageFeed currenUserId={this.props.routeParams.userId} messages={this.state.messages} />
             <MessageComponent isEditor sendMessage={(content) => {this.sendMessage(content)}}/>
           </div>
         </div>

@@ -28,7 +28,7 @@ render(
       <Route path="/" component={ AppController }>
         <Route path="/signin" component={ SigninController }/>
     		<Route path="/success" component={ SuccessDisplayController }/>
-  			<Route path="/editor" component= { EditorController }/>
+  			<Route path="/editor/:documentId/:userId" component= { EditorController }/>//send userid in via req later.
         <Route path="/audio" component={ AudioComponent }/>
     	</Route>
     </Router>
