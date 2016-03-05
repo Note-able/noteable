@@ -18,22 +18,26 @@ module.exports = class EditorController extends React.Component {
 
     this.sections = 0;
     this.state = MessageStore.getState();
-    MessageStore.dispatch({
-      type: 'ADD_DETAILS',
-      documentId: this.props.routeParams.documentId,
-      userId: this.props.routeParams.userId
+    AJAX.Get('/me', (response) => {
+      const resp = JSON.parse(response);
+      MessageStore.dispatch({
+        type: 'ADD_DETAILS',
+        userId: resp.userId,
+        documentId: this.props.routeParams.documentId
+      });
     });
-    socket = require('socket.io-client')('http://localhost:8080', {query: `context=${this.state.documentId}`});//req.params.doc_id
-    socket.on('incoming', (message) => { this.handleNewMessage(message) });
-    this.unsubscribe = MessageStore.subscribe(() => { this.handleMessagesUpdate() }) 
   }
   
   componentDidMount() {
+    socket = require('socket.io-client')('http://localhost:8080', {query: `context=${this.props.routeParams.documentId}`});
+    socket.on('incoming', (message) => { this.handleNewMessage(message) });
+    this.unsubscribe = MessageStore.subscribe(() => { this.handleMessagesUpdate() }) 
+    
     const lastIndex = this.state.messages.length !== 0 ? this.state.messages[this.state.messages.length - 1].id : 0;
-    AJAX.Get(`/messages/${this.state.documentId}/${lastIndex}/${this.props.routeParams.userId}`, (response) => {
+    AJAX.Get(`/messages/${this.state.documentId}/${lastIndex}`, (response) => {
       MessageStore.dispatch({
         type: 'PAGE_MESSAGES',
-        response: response
+        response: JSON.parse(response)
       });
     });
   }
@@ -70,7 +74,7 @@ module.exports = class EditorController extends React.Component {
         </div>  
         <div className="messages-container">
           <div className="messages-wrapper">
-            <MessageFeed currenUserId={this.props.routeParams.userId} messages={this.state.messages} />
+            <MessageFeed currenUserId={this.state.userId} messages={this.state.messages} />
             <MessageComponent isEditor sendMessage={(content) => {this.sendMessage(content)}}/>
           </div>
         </div>

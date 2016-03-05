@@ -52,11 +52,12 @@ passport.use(new FacebookStrategy({
         .on(`row`, (row) => {
           user = row;
           connection.fin();
-          if (!user){
+          return done(null, user);
+        })
+        .on('end', () => {
+          if (user === null) {
             return done(null, false);
           }
-
-          return done(null, user);
         });
       }
     });
@@ -69,7 +70,6 @@ app.get(`/auth/facebook`,
 app.get(`/auth/facebook/callback`,
   passport.authenticate(`facebook`, { failureRedirect: `/login` }),
   (req, res) => {
-    // Successful authentication, redirect home.
     res.redirect(`/user/me`);
   });
 
@@ -82,6 +82,11 @@ require(`./api-routes`)(app, {auth: ensureAuthenticated, connect: ConnectToDb, d
 app.get(`/logout`, (req, res) => {
   req.logout();
   res.redirect(`/test`);
+});
+
+app.get('/me', ensureAuthenticated, (req, res) => {
+  res.status(200).send({userId: req.user.id});
+  //track here
 });
 
 app.post('/post-blob', (req, res) => {
@@ -101,11 +106,11 @@ app.post('/post-blob', (req, res) => {
 });
 
 app.get('/*', (req, res) => {
-  res.render(`index`, {props : req.isAuthenticated().toString()});
+  res.render(`index`);
 });
 
-app.get('/editor', (req, res) => {
-  res.render(`index`, {props : req.isAuthenticated().toString()});
+app.get('/editor', ensureAuthenticated, (req, res) => {
+  res.render('index');
 });
 
 const server = app.listen(port, () => {

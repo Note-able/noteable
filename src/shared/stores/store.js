@@ -36,8 +36,7 @@ const messages = (state = [], action) => {
     case 'PAGE_MESSAGES':
       let myState = state;
       if (action.response) {
-        const json = JSON.parse(action.response);
-        json.map(message => {
+        action.response.map(message => {
            myState = messages(myState, {type: 'ADD_MESSAGE', content: message.content, userId: message.user_id, documentId: message.document_id, id: message.id} );
         });
         return myState;

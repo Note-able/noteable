@@ -9,7 +9,7 @@ module.exports = (server, options) => {
       console.log('user disconnected');
     });
 
-    socket.on('message', (message, callback) => {
+    socket.on('message', (message) => {
       options.connect(options.database, (connection) => {
         let id = -1;
         connection.client

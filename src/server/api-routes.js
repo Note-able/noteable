@@ -31,6 +31,7 @@ module.exports = function (app, options) {
           user.push(row);
         }).on(`end`, () => {
           res.send(user);
+          connection.fin();
         });
       });
     }
@@ -57,22 +58,23 @@ module.exports = function (app, options) {
   
   /**MESSAGES API***/
   
-  app.get('/messages/:documentId/:index/:userId', /*options.auth,*/ (req, res) => {
+  app.get('/messages/:documentId/:index', options.auth, (req, res) => {
     options.connect(options.database, (connection) => {
-        let messages = [];
-        connection.client
-        .query(`WITH documents as 
-          (SELECT id FROM documents WHERE profiles @> '{${req.params.userId}}'::int[])
-          SELECT * FROM messages WHERE id > ${req.params.index} AND document_id = ${req.params.documentId} AND ${req.params.documentId} IN 
-          (SELECT id FROM documents) ORDER BY id DESC LIMIT 15;`)
-        .on('error', (error) => {
-          console.log(error);
-        })
-        .on('row', (row) => {
-          messages.push(row);
-        }).on('end', () => {
-          res.send(messages.reverse());
-        });
+      const messages = [];
+      connection.client
+      .query(`WITH documents AS 
+        (SELECT id FROM documents WHERE profiles @> '{${req.user.id}}'::int[])
+        SELECT * FROM messages WHERE id > ${req.params.index} AND document_id = ${req.params.documentId} AND ${req.params.documentId} IN 
+        (SELECT id FROM documents) ORDER BY id DESC LIMIT 15;`)
+      .on('error', (error) => {
+        console.log(error);
+      })
+      .on('row', (row) => {
+        messages.push(row);
+      }).on('end', () => {
+        res.send(messages.reverse());
+        connection.fin();
+      });
     });
   });
 
@@ -117,6 +119,7 @@ module.exports = function (app, options) {
           events.push(row);
         }).on(`end`, () => {
           res.send(events);
+          connection.fin();
         });
       });
     }
@@ -135,6 +138,7 @@ module.exports = function (app, options) {
           events.push(row);
         }).on(`end`, () => {
           res.send(events);
+          connection.fin();
         });
       });
     }
