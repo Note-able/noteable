@@ -66,10 +66,11 @@ const editorApp = (state = {}, action) => {
         {
           messages: messages(state.messages, action)
         });
-    case 'ADD_DETAILS':
+    case 'INITIAL_STATE':
       return Object.assign({},
         state,
         {
+          sectionData: action.sectionData,
           userId: action.userId,
           documentId: action.documentId
         });

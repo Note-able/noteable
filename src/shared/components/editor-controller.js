@@ -17,11 +17,13 @@ module.exports = class EditorController extends React.Component {
     super(props, context);
 
     this.sections = 0;
+    const sectionData = [this.addSection(this.sections, 'text')];
     this.state = MessageStore.getState();
     AJAX.Get('/me', (response) => {
       const resp = JSON.parse(response);
       MessageStore.dispatch({
-        type: 'ADD_DETAILS',
+        type: 'INITIAL_STATE',
+        sectionData: sectionData,
         userId: resp.userId,
         documentId: this.props.routeParams.documentId
       });
@@ -63,11 +65,24 @@ module.exports = class EditorController extends React.Component {
 
   render() {
     ++this.sections;
+  }
 
+  newSection (sectionNumber, type) {
+    return { sectionId : sectionNumber, type: type };
+  }
+
+  addSection (type) {
+    return type;
+  }
+
+  render () {
+    const sectionElements = this.state.sectionData.map((section) => {
+      return (<Section sectionId = { section.sectionId } sectionType = { section.type } addSection = { this.addSection.bind(this) }></Section>);
+    });
     return (
       <div className="editor-container">
         <div className="editor" contentEditable="false">
-          <Section sectionId={this.sections}></Section>
+          { sectionElements }
         </div>
         <div className="record">
           <AudioRecord/>
