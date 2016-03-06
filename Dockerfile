@@ -19,4 +19,4 @@ RUN npm install
 # build, if it exists.
 
 EXPOSE 8080
-CMD npm start
+CMD npm run server
