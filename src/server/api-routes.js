@@ -55,16 +55,16 @@ module.exports = function (app, options) {
     });
     res.send(`lol`);
   });
-  
+
   /**MESSAGES API***/
-  
+
   app.get('/messages/:documentId/:index', options.auth, (req, res) => {
     options.connect(options.database, (connection) => {
       const messages = [];
       connection.client
-      .query(`WITH documents AS 
+      .query(`WITH documents AS
         (SELECT id FROM documents WHERE profiles @> '{${req.user.id}}'::int[])
-        SELECT * FROM messages WHERE id > ${req.params.index} AND document_id = ${req.params.documentId} AND ${req.params.documentId} IN 
+        SELECT * FROM messages WHERE id > ${req.params.index} AND document_id = ${req.params.documentId} AND ${req.params.documentId} IN
         (SELECT id FROM documents) ORDER BY id DESC LIMIT 15;`)
       .on('error', (error) => {
         console.log(error);

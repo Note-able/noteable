@@ -16,7 +16,7 @@
     "start-dev": "npm run lint && npm run build && npm run dev-server && npm run server",
     "start": "npm run build && npm run dev-server",
     "styles": "./node_modules/.bin/lessc ./public/less/bundle.less ./public/css/bundle.css",
-    "build": "npm run clean && ./node_modules/.bin/babel --plugins transform-es2015-classes src --presets react -d lib && npm run styles"
+    "build": "npm run clean && ./node_modules/.bin/babel --plugins transform-es2015-classes src --presets react -d lib && npm run styles && npm run lint"
   },
   "repository": {
     "type": "git",

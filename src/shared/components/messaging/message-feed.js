@@ -6,7 +6,7 @@ module.exports = class MessageFeed extends React.Component {
   constructor(props) {
     super(props);
   }
-  
+
   renderMessage(message) {
     let classId = 'single-message';
     switch(message.collection) {

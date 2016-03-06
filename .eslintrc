@@ -5,7 +5,8 @@
         "classes": true,
         "jsx": true,
         "modules": true,
-        "templateStrings": true
+        "templateStrings": true,
+        "experimentalObjectRestSpread": true
     },
     "rules": {
         "no-console": 1,

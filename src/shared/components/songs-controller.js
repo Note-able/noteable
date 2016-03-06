@@ -21,11 +21,14 @@ module.exports = class SongsController extends React.Component {
           </form>
         </div>
         <div className="song-list">
-          { this.state.songData.map((song) => { return (
-            <div className="song-list-item">
-              <div className="song-list-item-title">{ song.title }</div>
-              <div className="song-list-item-date">{ song.dateCreated }</div>
-            </div>); }) 
+          { this.state.songData.map((song) => {
+            return (
+              <div className="song-list-item">
+                <div className="song-list-item-title">{ song.title }</div>
+                <div className="song-list-item-date">{ song.dateCreated }</div>
+              </div>
+            );
+          })
           }
         </div>
       </div>

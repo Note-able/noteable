@@ -7,7 +7,7 @@ const Section = require('./editor/section');
 const AudioRecord = require('./record-audio-component');
 const MessageComponent = require('./messaging/message-component');
 const MessageFeed = require('./messaging/message-feed');
-const { createStore } = require('redux');
+const createStore = require('redux').createStore;
 const MessageStore = createStore(require('../stores/store'));
 const AJAX = require('../ajax');
 let socket;
@@ -29,12 +29,12 @@ module.exports = class EditorController extends React.Component {
       });
     });
   }
-  
+
   componentDidMount() {
     socket = require('socket.io-client')('http://localhost:8080', {query: `context=${this.props.routeParams.documentId}`});
     socket.on('incoming', (message) => { this.handleNewMessage(message) });
-    this.unsubscribe = MessageStore.subscribe(() => { this.handleMessagesUpdate() }) 
-    
+    this.unsubscribe = MessageStore.subscribe(() => { this.handleMessagesUpdate() })
+
     const lastIndex = this.state.messages.length !== 0 ? this.state.messages[this.state.messages.length - 1].id : 0;
     AJAX.Get(`/messages/${this.state.documentId}/${lastIndex}`, (response) => {
       MessageStore.dispatch({
@@ -47,7 +47,7 @@ module.exports = class EditorController extends React.Component {
   handleMessagesUpdate() {
     this.setState(MessageStore.getState());
   }
-  
+
   handleNewMessage(message) {
     console.log(message);
     MessageStore.dispatch({
@@ -58,7 +58,7 @@ module.exports = class EditorController extends React.Component {
       id: message.id
     });
   }
-  
+
   sendMessage(content) {
     socket.emit('message', {documentId: this.state.documentId, message: content, userId: this.state.userId});
   }
@@ -86,7 +86,7 @@ module.exports = class EditorController extends React.Component {
         </div>
         <div className="record">
           <AudioRecord/>
-        </div>  
+        </div>
         <div className="messages-container">
           <div className="messages-wrapper">
             <MessageFeed currenUserId={this.state.userId} messages={this.state.messages} />

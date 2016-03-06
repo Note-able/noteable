@@ -2,47 +2,50 @@ const AJAX = require('../ajax');
 
 const messages = (state = [], action) => {
   switch (action.type) {
-    case 'RECEIVE_MESSAGE':
-      const messageExists = state.messages ? state.messages.filter(message => {
-        return (message.id === action.id);
-      }) : [];
-      if (action.content && messageExists.length === 0) {
-        return [
-          ...state,
-          {
-            content: action.content,
-            userId: action.userId,
-            documentId: action.documentId,
-            destinationId: action.destinationId,
-            id: action.id
-          }
-        ]
-      }
-    case 'ADD_MESSAGE':
-      if (action.content) {
-        return [
-          ...state, 
-          {
-            content: action.content,
-            userId: action.userId,
-            documentId: action.documentId ? action.documentId : null,
-            destinationId: action.destinationid ? action.destinationId : null,
-            id: action.id
-          }
-        ];
-      }
-      
-      return state;
-    case 'PAGE_MESSAGES':
-      let myState = state;
-      if (action.response) {
-        action.response.map(message => {
-           myState = messages(myState, {type: 'ADD_MESSAGE', content: message.content, userId: message.user_id, documentId: message.document_id, id: message.id} );
-        });
-        return myState;
-      };
-    default: 
-      return [];
+  case 'RECEIVE_MESSAGE':
+    const messages = state.messages.filter(message => {
+      return (message.id === action.id);
+    });
+    const messageExists = state.messages ? messages : [];
+
+    if (action.content && messageExists.length === 0) {
+      return [
+        /*eslint-disable */
+        ...state,
+        {
+          content: action.content,
+          userId: action.userId,
+          documentId: action.documentId,
+          destinationId: action.destinationId,
+          id: action.id
+        }
+      ]
+    }
+  case 'ADD_MESSAGE':
+    if (action.content) {
+      return [
+        ...state, 
+        {
+          content: action.content,
+          userId: action.userId,
+          documentId: action.documentId ? action.documentId : null,
+          destinationId: action.destinationid ? action.destinationId : null,
+          id: action.id
+        }
+      ];
+    }
+    
+    return state;
+  case 'PAGE_MESSAGES':
+    let myState = state;
+    if (action.response) {
+      action.response.map(message => {
+          myState = messages(myState, {type: 'ADD_MESSAGE', content: message.content, userId: message.user_id, documentId: message.document_id, id: message.id} );
+      });
+      return myState;
+    };
+  default: 
+    return [];
   }
 }
 
