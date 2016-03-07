@@ -47,6 +47,7 @@ passport.use(new FacebookStrategy({
     ConnectToDb(connectionString, (connection) => {
       if(connection.status === `SUCCESS`){
         let user;
+        console.log(profile.id);
         connection.client
         .query(`SELECT * FROM public.user WHERE facebook_id = '${profile.id}';`)
         .on(`row`, (row) => {

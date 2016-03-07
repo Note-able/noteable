@@ -11,8 +11,10 @@ module.exports = class RecordingLine extends React.Component {
 
   render() {
     return (
-      <div className = "editor-recording" contentEditable="false">
-        <AudioComponent />
+      <div className = "editor-recording">
+        <span contentEditable="false">
+          <AudioComponent />
+        </span>
       </div>
     );
   }

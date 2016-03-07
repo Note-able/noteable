@@ -73,7 +73,6 @@ const editorApp = (state = {}, action) => {
       return Object.assign({},
         state,
         {
-          sectionData: action.sectionData,
           userId: action.userId,
           documentId: action.documentId
         });
