@@ -46,6 +46,7 @@
     "express": "^4.13.3",
     "express-session": "^1.13.0",
     "formidable": "1.0.17",
+    "google-maps": "^3.2.1",
     "history": "^1.17.0",
     "jade": "^1.11.0",
     "less": "2.5.1",

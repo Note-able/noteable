@@ -14,6 +14,9 @@ const EditorController = require(`../shared/components/editor-controller`)
 const AudioComponent = require('../shared/components/record-audio-component');
 const SigninController = require('../shared/components/signin-controller');
 const SongsController = require('../shared/components/songs-controller');
+const EventController = require('../shared/components/event-controller');
+const BrowseEvents = require('../shared/components/events/browse-events');
+const CreateEvent = require('../shared/components/events/create-event');
 
 // -v x.13.x
 /**Router.run(routes, Router.HistoryLocation, function (Handler, state) {
@@ -31,6 +34,10 @@ render(
     		<Route path="/success" component={ SuccessDisplayController }/>
   			<Route path="/editor/:documentId" component= { EditorController }/>//send userid in via req later.
         <Route path="/audio" component={ AudioComponent }/>
+        <Route path="/events" component={ EventController }>
+          <Route path="/events/browse" components={ BrowseEvents }/>
+          <Route path="/events/create" components={ CreateEvent }/>
+        </Route>
       <Route path="/songs" component={ SongsController }/>
     	</Route>
     </Router>

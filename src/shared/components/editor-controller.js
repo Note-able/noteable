@@ -8,7 +8,7 @@ const AudioRecord = require('./record-audio-component');
 const MessageComponent = require('./messaging/message-component');
 const MessageFeed = require('./messaging/message-feed');
 const createStore = require('redux').createStore;
-const MessageStore = createStore(require('../stores/store'));
+const MessageStore = createStore(require('../stores/editor-store'));
 const AJAX = require('../ajax');
 let socket;
 
