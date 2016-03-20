@@ -135,8 +135,6 @@ class Section extends React.Component {
   }
 
   handleEnter (remainingText, movedText) {
-    ++this.lines;
-    const lineData = this.props.section.lineData;
     const selected = this.props.section.selectedLine;
     const selectedIndex = this.props.section.selectedIndex;
 

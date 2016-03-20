@@ -1,57 +1,5 @@
-const AJAX = require('../ajax');
-import { combineReducers } from 'redux';
-
-const messages = (state = [], action) => {
-  switch (action.type) {
-  case 'RECEIVE_MESSAGE':
-    const messages = state.messages.filter(message => {
-      return (message.id === action.id);
-    });
-    const messageExists = state.messages ? messages : [];
-
-    if (action.content && messageExists.length === 0) {
-      return [
-        /*eslint-disable */
-        ...state,
-        {
-          content: action.content,
-          userId: action.userId,
-          documentId: action.documentId,
-          destinationId: action.destinationId,
-          id: action.id
-        }
-      ]
-    }
-  case 'ADD_MESSAGE':
-    if (action.content) {
-      return [
-        ...state, 
-        {
-          content: action.content,
-          userId: action.userId,
-          documentId: action.documentId ? action.documentId : null,
-          destinationId: action.destinationid ? action.destinationId : null,
-          id: action.id
-        }
-      ];
-    }
-    
-    return state;
-  case 'PAGE_MESSAGES':
-    let myState = state;
-    if (action.response) {
-      action.response.map(message => {
-          myState = messages(myState, {type: 'ADD_MESSAGE', content: message.content, userId: message.user_id, documentId: message.document_id, id: message.id} );
-      });
-      return myState;
-    };
-  default: 
-    return [];
-  }
-}
 
 const editorLine = (state = {}, action) => {
-  console.log('EDITOR LINE REDUCER');
   switch (action.type){
   case 'UPDATE_TEXT':
     /*eslint-disable*/
@@ -76,7 +24,6 @@ const editorLine = (state = {}, action) => {
 }
 
 const editorSection = ( state = {}, action) => {
-  console.log('EDITOR SECTION REDUCER');
   switch (action.type){
   case 'ADD_SECTION':
       return {
@@ -166,7 +113,6 @@ const editorSection = ( state = {}, action) => {
 }
 
 const editor = (state = {}, action) => {
-  console.log('STORRRRRRE');
   switch (action.type) {
     case 'DEFAULT_EDITOR':
       return {
@@ -204,45 +150,6 @@ const editor = (state = {}, action) => {
    default:
     return state;
   }
-}
+};
 
-const messageApp = (state = {}, action) => {
-  console.log('STORRRRRRE');
-  switch (action.type) {
-    case 'ADD_MESSAGE':
-      return Object.assign({},
-        state,
-        {
-          messages: messages(state.messages, action)
-        });
-    case 'RECEIVE_MESSAGE':
-      return Object.assign({},
-        state,
-        {
-          messages: messages(state.messages, action)
-        });
-    case 'PAGE_MESSAGES':
-      return Object.assign({},
-        state,
-        {
-          messages: messages(state.messages, action)
-        });
-    case 'INITIAL_STATE':
-      return Object.assign({},
-        state,
-        {
-          userId: action.userId,
-          documentId: action.documentId
-        });
-    default:
-      return {
-        userId: -1,
-        documentId: -1,
-        messages: [],
-      }
-  }
-}
-
-const editorApp = combineReducers({ messageApp: messageApp, editor: editor });
-/*eslint-enable */
-module.exports = editorApp;
+module.exports = editor;
