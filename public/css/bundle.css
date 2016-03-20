@@ -226,6 +226,27 @@ body {
   pointer-events: none;
   outline: none;
 }
+.editor {
+  background: white;
+  border: 10px solid black;
+  flex: 3;
+  height: 80%;
+  margin: 20px;
+  padding: 10px;
+}
+.editor editor-line.selected {
+  outline: none;
+}
+.editor .editor-line,
+.editor .editor-recording {
+  min-height: 20px;
+  pointer-events: all;
+}
+.section {
+  min-height: 50px;
+  pointer-events: none;
+  outline: none;
+}
 .record-button {
   background-image: radial-gradient(#585656 20%, red 20%);
   border-radius: 25px;

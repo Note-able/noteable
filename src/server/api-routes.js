@@ -144,6 +144,9 @@ module.exports = function (app, options) {
     }
   });
 
+/** DOCUMENTS API **/
+
+  //Retrieve all song documents owned by user
   app.get('/songs/user', options.auth, (req, res) => {
     console.log(req.user);
     if(!req.user) {
@@ -154,7 +157,41 @@ module.exports = function (app, options) {
         console.log(`SELECT * FROM public.documents WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents);`);
         connection.client.query(`SELECT id, title, description, date, modified, profiles FROM public.documents WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents);`)
         .on(`row`, (row) => { songs.push(row); })
-        .on(`end`, () => { res.send(songs); })
+        .on(`end`, () => {
+          res.send(songs);
+          connection.fin();
+        });
+      });
+    }
+  });
+
+  app.post('document/{documentId}', options.auth, (req, data, res) => {
+    if(!req.user) {
+      res.status(400).send();
+    }
+    const song = [];
+    connection.client.query(`SELECT id, title, description, date, modified, profiles FROM public.documents
+      WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
+    .on(`row`, (row) => { song.push(row); })
+    .on(`end`, () => {
+      connection.fin();
+    });
+    if(song.length > 0){
+      connection.client.query(`UPDATE public.documents SET content = ${data}, modified = ${new Date().getUTCDate()}
+        WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
+      .on(`row`, (row) => { songs.push(row); })
+      .on(`end`, () => {
+        res.status(200).send();
+        connection.fin();
+      });
+    } else {
+      // create the song
+      connection.client.query(`UPDATE public.documents SET content = ${data}, modified = ${new Date().getUTCDate()}
+        WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
+      .on(`row`, (row) => { songs.push(row); })
+      .on(`end`, () => {
+        res.status(200).send();
+        connection.fin();
       });
     }
   });

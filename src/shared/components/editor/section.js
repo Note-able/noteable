@@ -3,19 +3,28 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 const Line = require('./line');
-const RecordingLine = require('./recordingLine')
+const RecordingLine = require('./recordingLine');
+import { addLine } from './actions/editor-actions';
+import { deleteLine } from './actions/editor-actions';
+import { updateText } from './actions/editor-actions';
+import { updateLines } from './actions/editor-actions';
+import { updateSelected } from './actions/editor-actions';
 
-module.exports = class Section extends React.Component {
+class Section extends React.Component {
   constructor ( props, context) {
     super(props, context);
 
-    this.lines = 0;
-    const lineData = [this.newTextLine (this.lines, '')];
-    this.state = { lineData: lineData, selectedLine: lineData[0], selectedIndex: 0 };
+    this.lines = props.lines;
+    this.state = {lineData: []};
     this.enterPressed = false;
     this.keyMap = [];
-    this.linesToUpdate = [];
     this.shouldUpdate = true;
+    this.newTextLine = this.props.newTextLine;
+    this.newRecordingLine = this.props.newRecordingLine;
+  }
+
+  componentDidMount() {
+    this.props.dispatch(addLine(this.props.sectionId, this.lines++, 0, 'text', ''));
   }
 
   shouldComponentUpdate () {
@@ -28,12 +37,11 @@ module.exports = class Section extends React.Component {
     return shouldUpdate;
   }
 
-  newTextLine (id, text) {
-    return { lineId: id, text: text, type: 'text' }
-  }
-
-  newRecordingLine (id) {
-    return { lineId: id, type: 'recording'}
+  getDataForPost () {
+    console.log('section data being collected');
+    for (const line in this.refs) {
+      this.refs[line].getDataForPost();
+    }
   }
 
   handleClick (e) {
@@ -47,29 +55,24 @@ module.exports = class Section extends React.Component {
     e.preventDefault();
     const plainText = e.clipboardData.getData('text/plain');
     if(plainText){
-      const lineData = this.state.lineData;
+      const lineData = this.props.section.lineData;
       const lines = plainText.split('\n').filter((line) => { return line !== '' });
-      let selectedIndex = this.state.selectedIndex;
-      let selected = this.state.selectedLine;
+      let selectedIndex = this.props.section.selectedIndex;
+      const selected = this.props.section.selectedLine;
       lineData[selectedIndex].text = lines[0];
-      this.linesToUpdate[selected.lineId] = true;
+      const lineActions = [];
+
       for(let i = 1; i < lines.length - 1; i++) {
         this.lines++;
-        const newLine = this.newTextLine(this.lines, lines[i]);
-        lineData.splice(selectedIndex + i, 0, newLine);
-        this.linesToUpdate[lineData[selectedIndex + i].lineId] = true;
+        lineActions.push(addLine(this.props.sectionId, this.lines, selectedIndex + i, 'text', lines[i]));
       }
       if(lines.length > 1) {
         this.lines++;
-        const newLine = this.newTextLine(this.lines, lines[lines.length - 1]);
-        lineData.splice(selectedIndex + lines.length - 1, 0, newLine);
-        this.linesToUpdate[lineData[selectedIndex + lines.length - 1].lineId] = true;
+        lineActions.push(addLine(this.props.sectionId, this.lines, selectedIndex + lines.length - 1, 'text', lines[lines.length - 1]));
       }
-
+      lineActions.push(updateText(this.props.sectionId, selected.lineId, lines[0], 0, this.appendTextAfterDelete));
       selectedIndex = selectedIndex + lines.length - 1;
-      selected = lineData[selectedIndex];
-
-      this.setState({ lineData: lineData, selectedIndex: selectedIndex, selectedLine: selected, updateFunction: this.appendTextAfterDelete }, this.clearLinesToUpdate.bind(this));
+      this.props.dispatch(updateLines(this.props.sectionId, lineActions, selectedIndex, lines[lines.length - 1].length));
     }
   }
 
@@ -90,24 +93,20 @@ module.exports = class Section extends React.Component {
     } else if(e.keyCode === 38) { //upArrow
       e.preventDefault();
       const selectionOffset = window.getSelection().baseOffset;
-      this.handleUpArrow(selectionOffset, this.state.selectedLine.lineId);
+      this.handleUpArrow(selectionOffset, this.props.section.selectedLine.lineId);
     } else if(e.keyCode === 40) { //downArrow
       e.preventDefault();
       const selectionOffset = window.getSelection().baseOffset;
-      this.handleDownArrow(selectionOffset, this.state.selectedLine.lineId);
+      this.handleDownArrow(selectionOffset, this.props.section.selectedLine.lineId);
     } else if (e.keyCode === 8) { //delete
-      if(window.getSelection().baseOffset === 0 && this.state.selectedIndex !== 0) {
+      if(window.getSelection().baseOffset === 0 && this.props.section.selectedIndex !== 0) {
         e.preventDefault();
-        const selectedIndex = this.state.selectedIndex;
-        const lineData = this.state.lineData;
-        lineData.splice(selectedIndex, 1);
-        this.setState({ lineData: lineData, selectedIndex: selectedIndex - 1, selectedLine: lineData[selectedIndex - 1] });
+        const selectedIndex = this.props.section.selectedIndex;
+        this.props.dispatch(deleteLine(this.props.sectionId, selectedIndex));
       }
     } else if (e.keyCode === 82) {
       if(this.keyMap[16] && this.keyMap[17]) {
-        const lineData = this.state.lineData;
-        lineData.splice(this.state.selectedIndex + 1, 0, this.newRecordingLine(++this.lines));
-        this.setState({ lineData: lineData });
+        this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex + 1, 'recording', '', false));
       }
     }
   }
@@ -120,8 +119,8 @@ module.exports = class Section extends React.Component {
 
   handleOnFocus () {
     this.isFocused = true;
-    if(this.state.lineData.length === 1) {
-      this.refs.section.childNodes[this.state.selectedIndex].focus()
+    if(this.props.section.lineData.length === 1) {
+      this.refs.section.childNodes[this.props.section.selectedIndex].focus()
     }
   }
 
@@ -131,58 +130,43 @@ module.exports = class Section extends React.Component {
 
   updateSelected (lineId) {
     this.shouldUpdate = false;
-    const selectedIndex = this.state.lineData.findIndex((e) => { return e.lineId === lineId });
-    const selectedLine = this.state.lineData[selectedIndex];
-    this.setState({ selectedLine : selectedLine, selectedIndex : selectedIndex });
+    const selectedIndex = this.props.section.lineData.findIndex((e) => { return e.lineId === lineId });
+    this.props.dispatch(updateSelected(this.props.sectionId, selectedIndex, 0));
   }
 
-  handleEnter (oldText, movedText) {
+  handleEnter (remainingText, movedText) {
     ++this.lines;
-    const lineData = this.state.lineData;
-    const newLine = this.newTextLine(this.lines, movedText);
-    const selected = this.state.selectedLine;
-    let selectedIndex = this.state.selectedIndex;
-    let newSelected = null;
-    if(selectedIndex !== (lineData.length - 1)) {
-      lineData[selectedIndex].text = oldText;
-      lineData.splice(selectedIndex + 1, 0, newLine);
-      selectedIndex = selectedIndex + 1;
-      newSelected = lineData[selectedIndex];
-    } else {
-      lineData[lineData.length - 1].text = oldText;
-      lineData.push(newLine);
-      selectedIndex = lineData.length - 1;
-      newSelected = lineData[selectedIndex];
-    }
+    const lineData = this.props.section.lineData;
+    const selected = this.props.section.selectedLine;
+    const selectedIndex = this.props.section.selectedIndex;
 
-    this.linesToUpdate[selected.lineId] = true;
-    this.linesToUpdate[newSelected.lineId] = true;
-
-    this.setState({ lineData: lineData, selectedIndex: selectedIndex, selectedLine: newSelected, updateFunction: this.setText }, this.clearLinesToUpdate.bind(this));
+    const lineActions = [addLine(this.props.sectionId, ++this.lines, selectedIndex + 1, 'text', movedText)];
+    lineActions.push(updateText(this.props.sectionId, selected.lineId, remainingText, 0, this.setText));
+    this.props.dispatch(updateLines(this.props.sectionId, lineActions, selectedIndex + 1, 0));
   }
 
   handleDelete (text) {
     console.log('delete');
-    const selected = this.state.selectedLine;
-    const selectedIndex = this.state.selectedIndex;
-    const lineData = this.state.lineData;
+    const selected = this.props.section.selectedLine;
+    const selectedIndex = this.props.section.selectedIndex;
+    const lineData = this.props.section.lineData;
     const offset = this.refs.section.childNodes[selectedIndex].innerHTML.length;
     lineData[selectedIndex].text = text;
-    this.linesToUpdate[selected.lineId] = true;
-    this.setState({ lineData: lineData, updateFunction: this.appendTextAfterDelete.bind(this), offset: offset }, this.clearLinesToUpdate.bind(this));
+    this.props.dispatch(updateText(this.props.sectionId, selected.lineId, text, offset, this.appendTextAfterDelete.bind(this)));
+    //this.setState({ lineData: lineData, updateFunction: this.appendTextAfterDelete.bind(this), offset: offset }, this.clearLinesToUpdate.bind(this));
   }
 
   handleUpArrow (offset, lineId) {
-    if(this.state.lineData[0].lineId !== lineId){
-      const index = this.state.lineData.findIndex((e) => { return e.lineId === lineId });
-      this.setState({ selectedIndex: index - 1, selectedLine: this.state.lineData[index - 1], offset: offset });
+    if(this.props.section.lineData[0].lineId !== lineId){
+      const index = this.props.section.lineData.findIndex((e) => { return e.lineId === lineId });
+      this.props.dispatch(updateSelected(this.props.sectionId, index - 1, offset));
     }
   }
 
   handleDownArrow (offset, lineId) {
-    if(this.state.lineData[this.state.lineData.length - 1].lineId !== lineId){
-      const index = this.state.lineData.findIndex((e) => { return e.lineId === lineId });
-      this.setState({ selectedIndex: index + 1, selectedLine: this.state.lineData[index + 1], offset: offset });
+    if(this.props.section.lineData[this.props.section.lineData.length - 1].lineId !== lineId){
+      const index = this.props.section.lineData.findIndex((e) => { return e.lineId === lineId });
+      this.props.dispatch(updateSelected(this.props.sectionId, index + 1, offset));
     }
   }
 
@@ -192,27 +176,32 @@ module.exports = class Section extends React.Component {
 
   setText (element, text) {
     element.innerHTML = text;
+    return element.innerHtml;
   }
 
   appendTextAfterDelete (element, text) {
     element.innerHTML += text;
+    return element.innerHtml;
   }
 
   render () {
-    const lineElements = this.state.lineData.map((line) => {
+    const lineData = this.props.section.lineData;
+    const lineElements = lineData.map((line) => {
       if(line.type === 'text') {
-        const selected = line.lineId === this.state.lineData[this.state.selectedIndex].lineId;
-        const offset = selected ? this.state.offset : 0;
-        const shouldUpdateText = this.linesToUpdate[line.lineId]
-        const updateTextFunction = shouldUpdateText ? this.state.updateFunction : null;
-        return (<Line key={ line.lineId } lineId={ line.lineId } text={ line.text } selected={ selected } offset={ offset }
+        const selected = line.lineId === this.props.section.lineData[this.props.section.selectedIndex].lineId;
+        const offset = selected ? this.props.section.offset : 0;
+        const updateTextFunction = line.updateTextFunction;
+        return (<Line key={ line.lineId }
+          ref={`line${ line.lineId }`}
+          lineId={ line.lineId }
+          text={ line.text }
+          selected={ selected }
+          offset={ offset }
+          type={ line.type }
           updateTextFunction={ updateTextFunction }
-          shouldUpdateText={ shouldUpdateText }
           updateSelected={ this.updateSelected.bind(this) }
-          handleEnter={ this.handleEnter.bind(this) }
           handleDelete={ this.handleDelete.bind(this) }
-          handleUpArrow={ this.handleUpArrow.bind(this) }
-          handleDownArrow={ this.handleDownArrow.bind(this) }></Line>);
+          dispatch = { this.props.dispatch }></Line>);
       } else if (line.type === 'recording') {
         return (<RecordingLine key={ line.lineId } lineId={ line.lineId }></RecordingLine>);
       }
@@ -230,3 +219,10 @@ module.exports = class Section extends React.Component {
     );
   }
 }
+
+Section.propTypes = {
+  section: React.PropTypes.object.isRequired,
+  sectionId: React.PropTypes.number.isRequired,
+}
+
+module.exports = Section;

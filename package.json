@@ -20,9 +20,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sportnak/jamsesh.git"
+    "url": "git+https://github.com/note-able/notable.git"
   },
-  "author": "Michael Nakayama",
+  "author": "Michael Nakayama && Ian Mundy",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/sportnak/jamsesh/issues"
@@ -34,6 +34,7 @@
     "babel-eslint": "^5.0.0-beta8",
     "babel-loader": "^6.2.0",
     "babel-plugin-syntax-jsx": "^6.3.13",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.5.2",
     "babel-plugin-transform-es2015-block-scoping": "^6.4.0",
     "babel-plugin-transform-es2015-classes": "^6.4.0",
     "babel-plugin-transform-react-jsx": "^6.3.13",

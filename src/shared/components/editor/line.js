@@ -2,13 +2,16 @@
 
 const React = require('react');
 const ReactDOM = require('react-dom');
+import { addLine } from './actions/editor-actions';
+import { updateText } from './actions/editor-actions';
+import { updateLines } from './actions/editor-actions';
 
-module.exports = class Line extends React.Component {
+class Line extends React.Component {
   constructor (props, context) {
     super(props, context);
-
+    console.log('line ctor');
     const selected = this.props.selected ? 'selected' : '';
-    this.state = { text: this.props.text, selected: selected };
+    this.state = {};
     this.enterPressed = false;
     this.keyMap = [];
   }
@@ -32,7 +35,7 @@ module.exports = class Line extends React.Component {
       return;
     }
 
-    if(this.props.shouldUpdateText){
+    if(this.props.updateTextFunction){
       const element = ReactDOM.findDOMNode(this.refs.line);
       this.props.updateTextFunction(element, this.props.text);
     }
@@ -45,6 +48,17 @@ module.exports = class Line extends React.Component {
     if(this.props.handleDelete) {
       this.props.handleDelete(ReactDOM.findDOMNode(this.refs.line).innerHTML);
     }
+  }
+
+  getDataForPost () {
+    console.log('line data being collected');
+    console.log(this.getLineContent());
+    return this.getLineContent();
+  }
+
+  getLineContent () {
+    const element = ReactDOM.findDOMNode(this.refs.line);
+    return { type: this.props.type, content: element.innerText };
   }
 
   setCaretInEmptyDiv () {
@@ -93,3 +107,14 @@ module.exports = class Line extends React.Component {
     );
   }
 }
+
+Line.propTypes = {
+  lineId: React.PropTypes.number.isRequired,
+  updateSelected: React.PropTypes.func.isRequired,
+  handleDelete: React.PropTypes.func.isRequired,
+  type: React.PropTypes.string,
+  updateTextFunction: React.PropTypes.func,
+  offset: React.PropTypes.number,
+}
+
+module.exports = Line;

@@ -17,6 +17,10 @@ const SongsController = require('../shared/components/songs-controller');
 const EventController = require('../shared/components/event-controller');
 const BrowseEvents = require('../shared/components/events/browse-events');
 const CreateEvent = require('../shared/components/events/create-event');
+const Editor = require('../shared/components/editor/editor');
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+const store = createStore(require('../shared/stores/editor-store'));
 
 // -v x.13.x
 /**Router.run(routes, Router.HistoryLocation, function (Handler, state) {
@@ -28,18 +32,20 @@ const node = document.getElementById(`react-app`);
 // -v 1.0.0
 
 render(
-    <Router history={createBrowserHistory()}>
-      <Route path="/" component={ AppController }>
-        <Route path="/signin" component={ SigninController }/>
-    		<Route path="/success" component={ SuccessDisplayController }/>
-        <Route path="/editor" component= { EditorController }/>
-  			<Route path="/editor/:documentId" component= { EditorController }/>//send userid in via req later.
-        <Route path="/audio" component={ AudioComponent }/>
-        <Route path="/events" component={ EventController }>
+    <Provider store={store}>
+      <Router history={createBrowserHistory()}>
+        <Route path="/" component={ AppController }>
+          <Route path="/signin" component={ SigninController }/>
+          <Route path="/success" component={ SuccessDisplayController }/>
+          <Route path="/editor" component= { Editor }/>
+          <Route path="/editor/:documentId" component= { EditorController }/>//send userid in via req later.
+          <Route path="/audio" component={ AudioComponent }/>
+          <Route path="/events" component={ EventController }>
           <Route path="/events/browse" components={ BrowseEvents }/>
           <Route path="/events/create" components={ CreateEvent }/>
         </Route>
-      <Route path="/songs" component={ SongsController }/>
-    	</Route>
-    </Router>
+        <Route path="/songs" component={ SongsController }/>
+        </Route>
+      </Router>
+    </Provider>
    , node);
