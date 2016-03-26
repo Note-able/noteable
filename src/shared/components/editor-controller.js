@@ -43,7 +43,7 @@ module.exports = class EditorController extends React.Component {
   }
 
   handleMessagesUpdate() {
-    this.setState(Store.getState());
+    this.setState(store.getState());
   }
 
   handleNewMessage(message) {
