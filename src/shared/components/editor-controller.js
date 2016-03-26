@@ -33,8 +33,8 @@ module.exports = class EditorController extends React.Component {
     socket.on('incoming', (message) => { this.handleNewMessage(message) });
     this.unsubscribe = store.subscribe(() => { this.handleMessagesUpdate() })
 
-    const lastIndex = this.state.messages.length !== 0 ? this.state.messages[this.state.messages.length - 1].id : 0;
-    AJAX.Get(`/messages/${this.state.documentId}/${lastIndex}`, (response) => {
+    const lastIndex = this.state.messageApp.messages.length !== 0 ? this.state.messageApp.messages[this.state.messages.length - 1].id : 0;
+    AJAX.Get(`/messages/${this.state.messageApp.documentId}/${lastIndex}`, (response) => {
       store.dispatch({
         type: 'PAGE_MESSAGES',
         response: JSON.parse(response)
@@ -58,7 +58,7 @@ module.exports = class EditorController extends React.Component {
   }
 
   sendMessage(content) {
-    socket.emit('message', {documentId: this.state.documentId, message: content, userId: this.state.userId});
+    socket.emit('message', {documentId: this.state.messageApp.documentId, message: content, userId: this.state.messageApp.userId});
   }
 
   render () {
@@ -68,10 +68,10 @@ module.exports = class EditorController extends React.Component {
         <div className="record">
           <AudioRecord/>
         </div>
-          <Editor store={store}/>
+          <Editor routeParams={this.props.routeParams} store={store}/>
         <div className="messages-container">
           <div className="messages-wrapper">
-            <MessageFeed currenUserId={this.state.userId} messages={this.state.messages} />
+            <MessageFeed currenUserId={this.state.messageApp.userId} messages={this.state.messageApp.messages} />
             <MessageComponent isEditor sendMessage={(content) => {this.sendMessage(content)}}/>
           </div>
         </div>
