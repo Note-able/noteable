@@ -3,10 +3,10 @@ const AJAX = require('../ajax');
 const messages = (state = [], action) => {
   switch (action.type) {
   case 'RECEIVE_MESSAGE':
-    const messages = state.messages.filter(message => {
+    const allMessages = state.messages.filter(message => {
       return (message.id === action.id);
     });
-    const messageExists = state.messages ? messages : [];
+    const messageExists = state.messages ? allMessages : [];
 
     if (action.content && messageExists.length === 0) {
       return [
