@@ -39,9 +39,12 @@ class Section extends React.Component {
 
   getDataForPost () {
     console.log('section data being collected');
+    const lineContents = [];
     for (const line in this.refs) {
-      this.refs[line].getDataForPost();
+      const lineContent = this.refs[line].getDataForPost();
+      lineContents.push(lineContent);
     }
+    return { section: this.props.sectionId, lineContents: lineContents }
   }
 
   handleClick (e) {
@@ -205,7 +208,7 @@ class Section extends React.Component {
       }
     });
     return (
-    <div className="section" ref="section" name={ this.props.sectionId } contentEditable="true"
+    <div className="section" name={ this.props.sectionId } contentEditable="true"
       onPaste={ this.handlePaste.bind(this) }
       onKeyDown={ this.handleKeyDown.bind(this) }
       onKeyUp={ this.handleKeyUp.bind(this) }

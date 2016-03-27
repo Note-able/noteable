@@ -165,34 +165,45 @@ module.exports = function (app, options) {
     }
   });
 
-  app.post('document/{documentId}', options.auth, (req, data, res) => {
+  app.post('/document/:documentId', options.auth, (req, res) => {
+    console.log(`POSTing document  ${req.params.documentId}`);
     if(!req.user) {
       res.status(400).send();
     }
-    const song = [];
-    connection.client.query(`SELECT id, title, description, date, modified, profiles FROM public.documents
-      WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
-    .on(`row`, (row) => { song.push(row); })
-    .on(`end`, () => {
-      connection.fin();
+    options.connect(options.database, (connection) => {
+      const song = [];
+      console.log('POSTing... getting document');
+      console.log(`SELECT id, title, description, date, modified, profiles FROM public.documents
+        WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`);
+      connection.client.query(`SELECT id, title, description, date, modified, profiles FROM public.documents
+        WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
+      .on(`row`, (row) => { console.log(`pushing row ${row}`); song.push(row); })
+      .on(`error`, (error) => { console.log(`error encountered ${error}`) })
+      .on(`end`, () => {
+        if(song.length > 0){
+          console.log('POSTing... updating document');
+          console.log(req.body);
+          console.log(`UPDATE public.documents SET contents = '${JSON.stringify(req.body)}', modified = current_timestamp
+            WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`);
+          connection.client.query(`UPDATE public.documents SET contents = '${JSON.stringify(req.body)}', modified = current_timestamp
+            WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
+          .on(`row`, (row) => { song.push(row); })
+          .on(`end`, () => {
+            res.status(200).send();
+            connection.fin();
+          });
+        } else {
+        // create the song
+          console.log('updating document');
+          connection.client.query(`INSERT INTO documents (contents, date, modified, profiles) VALUES ('${JSON.stringify(req.body)}', current_timestamp, current_timestamp, '{${req.user.id}}');`)
+          .on(`row`, (row) => { song.push(row); })
+          .on(`end`, () => {
+            res.status(200).send();
+            connection.fin();
+          });
+        }
+      });
+      console.log(`query complete ${song}`);
     });
-    if(song.length > 0){
-      connection.client.query(`UPDATE public.documents SET content = ${data}, modified = ${new Date().getUTCDate()}
-        WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
-      .on(`row`, (row) => { songs.push(row); })
-      .on(`end`, () => {
-        res.status(200).send();
-        connection.fin();
-      });
-    } else {
-      // create the song
-      connection.client.query(`UPDATE public.documents SET content = ${data}, modified = ${new Date().getUTCDate()}
-        WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
-      .on(`row`, (row) => { songs.push(row); })
-      .on(`end`, () => {
-        res.status(200).send();
-        connection.fin();
-      });
-    }
   });
 }

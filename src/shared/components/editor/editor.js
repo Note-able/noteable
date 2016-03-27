@@ -19,7 +19,7 @@ class EditorComponent extends React.Component {
   }
 
   componentDidMount () {
-    setTimeout(this.submitRevision.bind(this), 1000);
+    //setTimeout(this.submitRevision.bind(this), 1000);
     const sectionData = [this.addSection(this.sections, 'text')];
     this.props.dispatch(initializeEditor(sectionData));
   }
@@ -39,10 +39,18 @@ class EditorComponent extends React.Component {
   submitRevision () {
     // const data = sections.map((section) => )
     console.log('submitting revision');
+    const sectionContents = [];
     for (const section in this.refs) {
-      this.refs[section].getDataForPost();
+      const sectionContent = this.refs[section].getDataForPost();
+      sectionContents.push(sectionContent);
     }
-    //AJAX.Post(`/document/${this.props.routeParams.documentId}`, data, (response) => updated(JSON.parse(response)));
+    console.log(sectionContents);
+    const postBody = { sectionContents: sectionContents };
+    AJAX.Post(`/document/${this.props.routeParams.documentId}`, JSON.stringify(postBody), (response) => this.updated(JSON.parse(response)));
+  }
+
+  updated (response) {
+    console.log(response);
   }
 
   render () {
@@ -61,6 +69,7 @@ class EditorComponent extends React.Component {
     });
     return (
       <div className="editor" contentEditable="false">
+      <button className="submitButton" onClick={this.submitRevision.bind(this)}> Submit Revision</button>
         { sectionElements }
       </div>);
   }
