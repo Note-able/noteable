@@ -20,8 +20,19 @@ class EditorComponent extends React.Component {
 
   componentDidMount () {
     //setTimeout(this.submitRevision.bind(this), 1000);
-    const sectionData = [this.addSection(this.sections, 'text')];
-    this.props.dispatch(initializeEditor(sectionData));
+
+    if(this.props.routeParams.documentId) {
+      AJAX.Get(`/document/${this.props.routeParams.documentId}`, (response) => {
+        const sectionData = JSON.parse(JSON.parse(response).contents).sectionData;
+        sectionData[0] = Object.assign({}, sectionData[0], { selectedIndex : 0, selectedLine : sectionData[0].lineData[0] });
+        this.props.dispatch(initializeEditor(sectionData));
+        //const sectionData = [this.addSection(this.sections, 'text')];
+        //this.props.dispatch(initializeEditor(sectionData));
+      });
+    } else {
+      const sectionData = [this.addSection(this.sections, 'text')];
+      this.props.dispatch(initializeEditor(sectionData));
+    }
   }
 
   addSection (sectionNumber, type) {
@@ -45,8 +56,8 @@ class EditorComponent extends React.Component {
       sectionContents.push(sectionContent);
     }
     console.log(sectionContents);
-    const postBody = { sectionContents: sectionContents };
-    AJAX.Post(`/document/${this.props.routeParams.documentId}`, JSON.stringify(postBody), (response) => this.updated(JSON.parse(response)));
+    const postBody = { sectionData: sectionContents };
+    AJAX.PostJSON(`/document/${this.props.routeParams.documentId}`, postBody, (response) => this.updated(JSON.parse(response)));
   }
 
   updated (response) {

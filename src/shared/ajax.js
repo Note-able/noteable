@@ -18,6 +18,16 @@ const AJAX = {
       callback(this.response);
     }
     xhr.send(data);
+  },
+
+  PostJSON: function (url, data, callback){
+    const xhr = new XMLHttpRequest();
+    xhr.open(`POST`, url, true);
+    xhr.setRequestHeader(`Content-type`, `application/json`);
+    xhr.onload = function (){
+      callback(this.response);
+    }
+    xhr.send(JSON.stringify(data));
   }
 }
 
