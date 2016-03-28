@@ -19,15 +19,11 @@ class EditorComponent extends React.Component {
   }
 
   componentDidMount () {
-    //setTimeout(this.submitRevision.bind(this), 1000);
-
     if(this.props.routeParams.documentId) {
       AJAX.Get(`/document/${this.props.routeParams.documentId}`, (response) => {
         const sectionData = JSON.parse(JSON.parse(response).contents).sectionData;
         sectionData[0] = Object.assign({}, sectionData[0], { selectedIndex : 0, selectedLine : sectionData[0].lineData[0] });
         this.props.dispatch(initializeEditor(sectionData));
-        //const sectionData = [this.addSection(this.sections, 'text')];
-        //this.props.dispatch(initializeEditor(sectionData));
       });
     } else {
       const sectionData = [this.addSection(this.sections, 'text')];
@@ -75,7 +71,8 @@ class EditorComponent extends React.Component {
         addSection = { this.addSection.bind(this) }
         newTextLine = { this.newTextLine }
         newRecordingLine = { this.newRecordingLine }
-        dispatch = { this.props.dispatch }>
+        dispatch = { this.props.dispatch }
+        submitRevision = { this.submitRevision.bind(this) }>
         </Section>);
     });
     return (

@@ -81,6 +81,7 @@ class Section extends React.Component {
 
   handleKeyDown (e) {
     this.keyMap[e.keyCode] = e.type === 'keydown';
+    this.metaKey = e.metaKey;
     /* Note: this is *probably* really bad. It should work by keeping a collection of functions for keycodes that need them,
       and then calling the function for that keycode if it exists instead of doing if else for all possible keys that have functions.
       Or I could use a switch statement at the very least. */
@@ -108,8 +109,14 @@ class Section extends React.Component {
         this.props.dispatch(deleteLine(this.props.sectionId, selectedIndex));
       }
     } else if (e.keyCode === 82) {
-      if(this.keyMap[16] && this.keyMap[17]) {
+      if(this.keyMap[18] && this.metaKey) {
         this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex + 1, 'recording', '', false));
+      } else if(this.keyMap[16] && this.keyMap[17]) {
+        this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex + 1, 'recording', '', false));
+      }
+    } else if (e.keyCode === 83) {
+      if(this.keyMap[18] && this.metaKey) {
+        this.props.submitRevision();
       }
     }
   }
@@ -224,6 +231,7 @@ class Section extends React.Component {
 Section.propTypes = {
   section: React.PropTypes.object.isRequired,
   sectionId: React.PropTypes.number.isRequired,
+  submitRevision: React.PropTypes.func.isRequired
 }
 
 module.exports = Section;
