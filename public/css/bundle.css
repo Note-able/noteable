@@ -102,7 +102,7 @@
 .register-container .signin-form__submit-button:hover,
 .login-container .register-form__submit-button:hover,
 .register-container .register-form__submit-button:hover {
-  background: #0088f3;
+  background: #1a70b8;
 }
 .login-container .button-container,
 .register-container .button-container {
@@ -113,7 +113,7 @@
 }
 .login-container .button-container__open-register,
 .register-container .button-container__open-register {
-  color: #0088f3;
+  color: #1a70b8;
   margin: 15px 0 0;
 }
 .login-container .button-container__submit-button,
@@ -281,34 +281,103 @@ body {
   width: 100%;
 }
 .event-controller-container .create-event-container {
+  display: flex;
+  height: 100%;
+  min-height: 500px;
   width: 100%;
 }
-.event-controller-container .create-event-container .event-name {
-  display: none;
-  width: 100px;
+.event-controller-container .create-event-container .event-form {
+  flex: 3;
+  text-align: center;
 }
-.event-controller-container .create-event-container .event-date {
-  display: none;
-  width: 100px;
+.event-controller-container .create-event-container .event-form .event-form-wrapper {
+  margin: 50px auto;
+  text-align: left;
+  width: 90%;
 }
-.event-controller-container .create-event-container .map-search {
-  background-color: #fff;
-  border: 1px solid transparent;
-  border-radius: 2px 0 0 2px;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  outline: none;
-  font-family: Roboto;
-  font-size: 15px;
-  font-weight: 300;
+.event-controller-container .create-event-container .event-form .event-form-wrapper input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 32px;
+  margin: 2px 0 10px;
+  padding: 0 5px;
+  width: 100%;
+}
+.event-controller-container .create-event-container .event-form .event-form-wrapper label {
+  font-size: 13px;
+  padding: 0 4px;
+}
+.event-controller-container .create-event-container .event-form .event-form-wrapper textarea {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  height: 150px;
+  resize: none;
+  width: 100%;
+}
+.event-controller-container .create-event-container .event-form .event-form-wrapper .submit-event {
+  background: #1a70b8;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  float: right;
+  font-size: 13px;
   height: 32px;
-  margin: 10px 12px;
-  padding: 0 11px 0 13px;
-  text-overflow: ellipsis;
-  width: 300px;
+  margin: 10px 0;
+  width: 75px;
+}
+.event-controller-container .create-event-container .event-form .event-form-wrapper .submit-event:hover {
+  background: #08599C;
+  cursor: pointer;
+}
+.event-controller-container .create-event-container .event-form .event-form-wrapper .submit-event:disabled {
+  background: grey;
+}
+.event-controller-container .create-event-container .event-form .event-form-wrapper .submit-event:disabled:hover {
+  background: grey;
 }
 .event-controller-container .create-event-container #map {
+  flex: 7;
+}
+.event-controller-container .create-event-container .loader {
   height: 100%;
   width: 100%;
+}
+.event-controller-container .create-event-container .loader .spinner {
+  background: red;
+  bottom: 0;
+  height: 50px;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50px;
+  z-index: 2;
+}
+.event-controller-container .events-container {
+  height: 100%;
+  width: 100%;
+}
+.event-controller-container .events-container .view-toggle-bar {
+  border-bottom: 1px solid #ccc;
+  height: 56px;
+}
+.event-controller-container .events-container .view-toggle-bar .toggle {
+  height: 100%;
+  margin: auto;
+  position: absolute;
+  width: 200px;
+}
+.event-controller-container .events-container .view-toggle-bar .toggle__option {
+  background: transparent;
+  height: 100%;
+  text-align: center;
+  width: 50%;
+}
+.event-controller-container .events-container .view-toggle-bar .toggle .highlight {
+  background-color: green;
+  position: absolute;
+  z-index: -1;
 }

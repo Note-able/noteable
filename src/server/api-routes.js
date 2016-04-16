@@ -1,5 +1,12 @@
 'use strict';
 
+const regex = new RegExp(/[\0\x08\x09\x1a\n\r"'\\\%]/g)
+function escaper(char){
+  const m = ['\\0', '\\x08', '\\x09', '\\x1a', '\\n', '\\r', "'", '"', '\\', '\\\\', '%'];
+  const r = ['\\\\0', '\\\\b', '\\\\t', '\\\\z', '\\\\n', '\\\\r', "''", '""', '\\\\', '\\\\\\\\', '\\%'];
+  return r[m.indexOf(char)];
+};
+
 module.exports = function (app, options) {
   app.get(`/database`, (req, res) => {
     options.connect(options.database, (connection) => {
@@ -81,6 +88,34 @@ module.exports = function (app, options) {
   /**
   Events API - consider moving the queries to elasticsearch to order by popularity of events and user ratings
   **/
+
+  app.post('/api/events/create', options.auth, (req, res) => {
+    const event = req.body;
+    options.connect(options.database, (connection) => {
+      let eventId = -1;
+      connection.client
+      .query(`INSERT INTO events (name, notes, latitude, longitude, start_date, end_date, user_id) VALUES
+        (
+          '${event.eventName.replace(regex, escaper)}',
+          '${event.notes.replace(regex, escaper)}',
+          '${event.eventLatitude}',
+          '${event.eventLongitude}',
+          '${event.startDate}',
+          '${event.endDate}',
+          ${req.user.id}
+        );
+        SELECT LASTVAL();
+      `).on('error', (error) => {
+        console.log(`${error}`);
+        res.status(500).send();
+      }).on('row', (id) => {
+        eventId = id;
+      }).on('end', () => {
+        console.log(eventId);
+        res.status(200).send(eventId);
+      });
+    });
+  });
 
   app.get(`/events/nearby/{location}`, options.auth, (req, res) => {
     res.status(204).send();
