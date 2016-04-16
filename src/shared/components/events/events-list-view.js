@@ -11,7 +11,7 @@ module.exports = class EventsListView extends React.Component {
     super(props);
 
     this.state = {
-      
+
     };
   }
 
@@ -21,6 +21,6 @@ module.exports = class EventsListView extends React.Component {
     });
   }
   render() {
-    return ();
+    return (<div/>);
   }
 };

@@ -367,14 +367,24 @@ body {
 .event-controller-container .events-container .view-toggle-bar .toggle {
   height: 100%;
   margin: auto;
-  position: absolute;
+  position: relative;
   width: 200px;
 }
 .event-controller-container .events-container .view-toggle-bar .toggle__option {
   background: transparent;
+  cursor: pointer;
   height: 100%;
   text-align: center;
   width: 50%;
+}
+.event-controller-container .events-container .view-toggle-bar .toggle .list-view {
+  border: 1px solid #ccc;
+  float: left;
+}
+.event-controller-container .events-container .view-toggle-bar .toggle .map-view {
+  border: 1px solid #ccc;
+  border-left: none;
+  float: right;
 }
 .event-controller-container .events-container .view-toggle-bar .toggle .highlight {
   background-color: green;
