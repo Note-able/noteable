@@ -19,9 +19,16 @@ class EditorComponent extends React.Component {
   }
 
   componentDidMount () {
-    setTimeout(this.submitRevision.bind(this), 1000);
-    const sectionData = [this.addSection(this.sections, 'text')];
-    this.props.dispatch(initializeEditor(sectionData));
+    if(this.props.routeParams.documentId) {
+      AJAX.Get(`/document/${this.props.routeParams.documentId}`, (response) => {
+        const sectionData = JSON.parse(JSON.parse(response).contents).sectionData;
+        sectionData[0] = Object.assign({}, sectionData[0], { selectedIndex : 0, selectedLine : sectionData[0].lineData[0] });
+        this.props.dispatch(initializeEditor(sectionData));
+      });
+    } else {
+      const sectionData = [this.addSection(this.sections, 'text')];
+      this.props.dispatch(initializeEditor(sectionData));
+    }
   }
 
   addSection (sectionNumber, type) {
@@ -39,10 +46,18 @@ class EditorComponent extends React.Component {
   submitRevision () {
     // const data = sections.map((section) => )
     console.log('submitting revision');
+    const sectionContents = [];
     for (const section in this.refs) {
-      this.refs[section].getDataForPost();
+      const sectionContent = this.refs[section].getDataForPost();
+      sectionContents.push(sectionContent);
     }
-    //AJAX.Post(`/document/${this.props.routeParams.documentId}`, data, (response) => updated(JSON.parse(response)));
+    console.log(sectionContents);
+    const postBody = { sectionData: sectionContents };
+    AJAX.PostJSON(`/document/${this.props.routeParams.documentId}`, postBody, (response) => this.updated(JSON.parse(response)));
+  }
+
+  updated (response) {
+    console.log(response);
   }
 
   render () {
@@ -56,11 +71,13 @@ class EditorComponent extends React.Component {
         addSection = { this.addSection.bind(this) }
         newTextLine = { this.newTextLine }
         newRecordingLine = { this.newRecordingLine }
-        dispatch = { this.props.dispatch }>
+        dispatch = { this.props.dispatch }
+        submitRevision = { this.submitRevision.bind(this) }>
         </Section>);
     });
     return (
       <div className="editor" contentEditable="false">
+      <button className="submitButton" onClick={this.submitRevision.bind(this)}> Submit Revision</button>
         { sectionElements }
       </div>);
   }

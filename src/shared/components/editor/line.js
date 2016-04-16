@@ -58,7 +58,7 @@ class Line extends React.Component {
 
   getLineContent () {
     const element = ReactDOM.findDOMNode(this.refs.line);
-    return { type: this.props.type, content: element.innerText };
+    return { lineId: this.props.lineId, type: this.props.type, text: element.innerHTML };
   }
 
   setCaretInEmptyDiv () {
