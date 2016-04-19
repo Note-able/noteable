@@ -15,7 +15,7 @@ module.exports = function (app, options) {
     res.redirect(`/user/${req.user.id}/profile`);
   });
 
-  app.get(`/user/:id/profile`, options.auth, (req, res) => {
+  /*app.get(`/user/:id/profile`, options.auth, (req, res) => {
     if (req.user.id !== parseInt(req.params.id)) {
       res.status(404).send();
     } else {
@@ -24,7 +24,6 @@ module.exports = function (app, options) {
         connection.client
         .query(`SELECT profile.id, email, profile.location, average_event_rating, instrument_name, documents.title, documents.id as documents_id
                 FROM public.profile AS profile
-                  JOIN public.instruments AS instruments ON instruments.profile_id = profile.id
                   JOIN public.documents AS documents ON profile.id = ANY(documents.profiles)
                   WHERE profile.id = ${req.params.id};`)
         .on(`row`, (row) => {
@@ -35,7 +34,7 @@ module.exports = function (app, options) {
         });
       });
     }
-  });
+  });*/
 
   app.get(`/user/search/{text}`, options.auth, (req, res) => {
     if (req.params.text.length === 0) {
@@ -45,7 +44,7 @@ module.exports = function (app, options) {
     }
   });
 
-  /**POST USER**/
+  /**USER API**/
 
   app.post(`/user/edit`, options.auth, (req, res) => {
     console.log(req.body) // <- standard for getting things out post.
@@ -54,6 +53,23 @@ module.exports = function (app, options) {
       console.log(connection);
     });
     res.send(`lol`);
+  });
+
+  app.get('/user/:id', options.auth, (req, res) => {
+    if(!req.user) {
+      res.status(400).send();
+    }
+    options.connect(options.database, (connection) => {
+      const user = [];
+      console.log(`SELECT * FROM public.profile WHERE ${req.params.id} = id;`);
+      connection.client.query(`SELECT * FROM public.profile WHERE ${req.params.id} = id;`)
+      .on(`row`, (row) => { user.push(row); })
+      .on(`error`, (error) => { console.log(`error encountered ${error}`) })
+      .on(`end`, () => {
+        res.send(user[0]);
+        connection.fin();
+      });
+    });
   });
 
   /**MESSAGES API***/
