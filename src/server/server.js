@@ -136,10 +136,6 @@ app.post( '/add-image',(req, res) => {
   });
 });
 
-app.get('/images/:gcsName', (req, res) =>{
-  
-});
-
 app.get('/*', (req, res) => {
   res.render(`index`);
 });

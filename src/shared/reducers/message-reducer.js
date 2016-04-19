@@ -1,5 +1,3 @@
-const AJAX = require('../ajax');
-
 const messages = (state = [], action) => {
   switch (action.type) {
   case 'RECEIVE_MESSAGE':
