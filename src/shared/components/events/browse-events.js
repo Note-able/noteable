@@ -6,6 +6,7 @@ const Router = require('react-router');
 const GoogleMaps = require('google-maps');
 const EventsListView = require('./events-list-view');
 const EventsMapView = require('./events-map-view');
+const ajax = require('../../ajax');
 let Google;
 
 const left = {left: 0};
@@ -19,8 +20,25 @@ module.exports = class BrowseEvents extends React.Component {
     this.selectMapView = this._selectMapView.bind(this);
 
     this.state = {
-      mode: 'list'
+      mode: 'list',
+      events: [],
+      position: null
     };
+  }
+
+  componentDidMount() {
+    if (this.state.events.length !== 0) {
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(position => {
+      ajax.Get(`/api/events/nearby?lat=${position.coords.latitude}&lng=${position.coords.longitude}&radius=50`, response => {
+        this.setState({
+          events: JSON.parse(response),
+          position: position
+        });
+      })
+    });
   }
 
   _selectListView() {
@@ -37,10 +55,18 @@ module.exports = class BrowseEvents extends React.Component {
 
   renderView() {
     if (this.state.mode === 'list') {
-      return (<EventsListView/>);
+      return (
+        <div className="events-list-container">
+          <EventsListView events={this.state.events}/>
+         </div>
+      );
     }
 
-    return (<EventsMapView/>);
+    return (
+      <div className="events-map-container">
+        <EventsMapView events={this.state.events}/>
+       </div>
+    );
   }
 
   render () {

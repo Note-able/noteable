@@ -93,8 +93,8 @@ module.exports = class CreateEvent extends React.Component {
             // Create a marker for each place.
             markers.push(marker);
             this.setState({
-              eventLatitude: marker.map.center.lat(),
-              eventLongitude: marker.map.center.lng(),
+              eventLatitude: place.geometry.location.lat(),
+              eventLongitude: place.geometry.location.lng(),
               positionSet: true
             });
 
@@ -118,7 +118,7 @@ module.exports = class CreateEvent extends React.Component {
 
   _createEvent() {
     ajax.Post('/api/events/create', JSON.stringify(this.state), (eventId) => {
-      window.location.pathname = `/api/events/${eventId.lastval}`;
+      window.location.pathname = `/api/events?eventId=${eventId.lastval}`;
     });
   }
 

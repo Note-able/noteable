@@ -114,13 +114,10 @@
         }
         
         .list-view {
-          border: 1px solid #ccc;
           float: left;
         }
         
         .map-view {
-          border: 1px solid #ccc;
-          border-left: none;
           float: right;
         }
         
@@ -129,6 +126,26 @@
           position: absolute;
           z-index: -1;
         }
+      }
+    }
+    
+    .events-map-container {
+      display: flex;
+      width: 100%;
+      
+      #map {
+        flex: 7;
+        height: 100%;
+      }
+      
+      .maps-list-view {
+        flex: 3;
+      }
+      
+      .map-search {
+        left: 20px;
+        position: absolute;
+        top: 20px;
       }
     }
   }

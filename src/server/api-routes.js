@@ -112,10 +112,11 @@ module.exports = function (app, options) {
     }
 
     const maxLat = parseFloat(req.query.lat) + req.query.radius/69.172;
-    const minLat = req.query.lat;
+    const minLat = req.query.lat - req.query.radius/69.172;
     // compensate for degrees longitude getting smaller with increasing latitude
-    const maxLon = parseFloat(req.query.lng) + req.query.radius/(Math.cos(req.query.lat)*69.172);
-    const minLon = parseFloat(req.query.lng) - req.query.radius/(Math.cos(req.query.lat)*69.172);
+    const diff = req.query.radius/(Math.cos(req.query.lat)*69.172);
+    const maxLon = parseFloat(req.query.lng) + Math.abs(diff);
+    const minLon = parseFloat(req.query.lng) - Math.abs(diff);
 
     options.connect(options.database, (connection) => {
       const events = [];

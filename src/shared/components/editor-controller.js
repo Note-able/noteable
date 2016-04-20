@@ -47,7 +47,6 @@ module.exports = class EditorController extends React.Component {
   }
 
   handleNewMessage(message) {
-    console.log(message);
     store.dispatch({
       type: 'RECEIVE_MESSAGE',
       userId: message.userId,

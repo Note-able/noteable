@@ -18,7 +18,6 @@ module.exports = class AppController extends React.Component {
     );
   }
   render() {
-    console.log(this.props);
     return(
       <div>
         <link href="/css/bundle.css" rel="stylesheet" type="text/css"/>

@@ -378,16 +378,29 @@ body {
   width: 50%;
 }
 .event-controller-container .events-container .view-toggle-bar .toggle .list-view {
-  border: 1px solid #ccc;
   float: left;
 }
 .event-controller-container .events-container .view-toggle-bar .toggle .map-view {
-  border: 1px solid #ccc;
-  border-left: none;
   float: right;
 }
 .event-controller-container .events-container .view-toggle-bar .toggle .highlight {
   background-color: green;
   position: absolute;
   z-index: -1;
+}
+.event-controller-container .events-container .events-map-container {
+  display: flex;
+  width: 100%;
+}
+.event-controller-container .events-container .events-map-container #map {
+  flex: 7;
+  height: 100%;
+}
+.event-controller-container .events-container .events-map-container .maps-list-view {
+  flex: 3;
+}
+.event-controller-container .events-container .events-map-container .map-search {
+  left: 20px;
+  position: absolute;
+  top: 20px;
 }

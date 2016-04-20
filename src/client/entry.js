@@ -38,7 +38,7 @@ render(
           <Route path="/signin" component={ SigninController }/>
           <Route path="/success" component={ SuccessDisplayController }/>
           <Route path="/editor" component= { Editor }/>
-          <Route path="/editor/:documentId" component= { EditorController }/>//send userid in via req later.
+          <Route path="/editor/:documentId" component= { EditorController }/>
           <Route path="/audio" component={ AudioComponent }/>
           <Route path="/events" component={ EventController }>
           <Route path="/events/browse" components={ BrowseEvents }/>
