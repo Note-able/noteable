@@ -23,6 +23,7 @@ module.exports = {
     childRoutes: [
       require('./routes/signin'),
       require('./routes/editor'),
+      require('./routes/profile')
     ]
   } ]
 }

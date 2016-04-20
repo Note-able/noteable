@@ -18,6 +18,7 @@ const EventController = require('../shared/components/event-controller');
 const BrowseEvents = require('../shared/components/events/browse-events');
 const CreateEvent = require('../shared/components/events/create-event');
 const Editor = require('../shared/components/editor/editor');
+const Profile = require('../shared/components/profile/profile');
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 const store = createStore(require('../shared/stores/store'));
@@ -43,6 +44,7 @@ render(
           <Route path="/events" component={ EventController }>
           <Route path="/events/browse" components={ BrowseEvents }/>
           <Route path="/events/create" components={ CreateEvent }/>
+          <Route path="/profile/:id" components={ Profile }/>
         </Route>
         <Route path="/songs" component={ SongsController }/>
         </Route>

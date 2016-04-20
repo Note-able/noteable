@@ -11,8 +11,9 @@ const fs = require('fs');
 
 const app = express();
 app.use(express.static(`${__dirname}/../../public`));
-const connectionString = process.env.DATABASE_URL || `postgres://bxujcozubyosgb:m1rgVoS1lEpdCZVRos6uWZVouU@ec2-54-235-146-58.compute-1.amazonaws.com:5432/d42dnjskegivlt?ssl=true`;
-const port = process.env.PORT || 8080;
+const config = require('../config');
+const audio = require('../util/gcloud-util')(config.gcloud, config.cloudAudioStorageBucket);
+const image = require('../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
 
 // set up Jade
 app.use(BodyParser.urlencoded({ extended: false }));
@@ -44,7 +45,7 @@ passport.use(new FacebookStrategy({
   enableProof: false
 },
   (accessToken, refreshToken, profile, done) => {
-    ConnectToDb(connectionString, (connection) => {
+    ConnectToDb(config.connectionString, (connection) => {
       if(connection.status === `SUCCESS`){
         let user;
         console.log(profile.id);
@@ -78,7 +79,7 @@ app.get(`/test`, ensureAuthenticated, (req, res) => {
   res.render(`index`);
 });
 
-require(`./api-routes`)(app, {auth: ensureAuthenticated, connect: ConnectToDb, database: connectionString});
+require(`./api-routes`)(app, {auth: ensureAuthenticated, connect: ConnectToDb, database: config.connectionString});
 
 app.get(`/logout`, (req, res) => {
   req.logout();
@@ -101,9 +102,38 @@ app.post('/post-blob', (req, res) => {
   form.parse(req, (err, fields) => {
     const buffer = new Buffer(fields.file, 'base64');
     fs.writeFileSync(fields.name, buffer);
+    audio.sendUploadToGCS(`${ fields.name }.wav`, buffer, response => {
+      if (response.error) {
+        console.log(response.error);
+        return;
+      }
+    });
   });
 
   res.status(200).send();
+});
+
+app.post( '/add-image',(req, res) => {
+  const form = new Formidable.IncomingForm();
+  form.uploadDir = '/uploads';
+
+  form.onPart = function (part) {
+    form.handlePart(part);
+  }
+
+  form.parse(req, (err, fields) => {
+    const buffer = new Buffer(fields.file, 'base64');
+
+    image.sendUploadToGCS(`${fields.name}`, buffer, (response) => {
+      if (response && response.error) {
+        console.log(response.error);
+        return null;
+      }
+
+      console.log(response.cloudStoragePublicUrl);
+      res.status(200).send(response);
+    });
+  });
 });
 
 app.get('/*', (req, res) => {
@@ -114,14 +144,14 @@ app.get('/editor', ensureAuthenticated, (req, res) => {
   res.render('index');
 });
 
-const server = app.listen(port, () => {
+const server = app.listen(config.port, () => {
   const host = server.address().address;
   const port = server.address().port;
 
   console.log(`JamSesh is listening at http://%s:%s`, host, port);
 });
 
-require('./sockets')(server, {auth: ensureAuthenticated, connect: ConnectToDb, database: connectionString});
+require('./sockets')(server, {auth: ensureAuthenticated, connect: ConnectToDb, database: config.connectionString});
 
 function ConnectToDb (connectionString, callback){
   pg.connect(connectionString, (err, client, done) => {
