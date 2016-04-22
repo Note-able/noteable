@@ -34,6 +34,18 @@
   font-family: 'Cyntho';
   src: url('/fonts/CynthoPro-Regular-webfont.ttf');
 }
+@font-face {
+  font-family: 'Bariol';
+  src: url('/fonts/Bariol_Regular.otf');
+}
+@font-face {
+  font-family: 'Fenix';
+  src: url('/fonts/Fenix-Regular.ttf');
+}
+@font-face {
+  font-family: 'Garamond';
+  src: url('/fonts/EBGaramond-Regular.ttf');
+}
 .auth-container {
   border: 1px solid #b1b1b1;
   border-radius: 4px;
@@ -142,8 +154,130 @@ body {
   font-family: sans-serif;
   margin: 0;
 }
+@keyframes blink {
+  0% {
+    border-right: 2px solid black;
+  }
+  49% {
+    border-right: 2px solid black;
+  }
+  50% {
+    border-right: 2px solid transparent;
+  }
+  99% {
+    border-right: 2px solid transparent;
+  }
+  100% {
+    border-right: 2px solid black;
+  }
+}
+.home-container .navbar {
+  border-bottom: 1px solid #ccc;
+  height: 56px;
+  width: 100%;
+}
+.home-container .navbar .signin-button {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  cursor: pointer;
+  height: 56px;
+  float: right;
+  line-height: 56px;
+  margin: 0 56px;
+  text-align: center;
+  width: 100px;
+}
+.home-container .navbar .signin-button:hover {
+  background: #4b6cb7;
+  border: none;
+  color: white;
+  font-family: 'Bariol';
+  font-size: 16px;
+}
+.home-container .main-content {
+  font-family: 'Garamond';
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+.home-container .main-content .header {
+  border-bottom: 1px solid #ccc;
+  left: 0;
+  margin: auto;
+  padding: 0 0 100px;
+  right: 0;
+  text-align: center;
+  top: 0;
+}
+.home-container .main-content .header__title {
+  font-size: 5em;
+  margin: 20px 0 0;
+}
+.home-container .main-content .header__title .cursor {
+  animation: blink 1.25s infinite;
+  -webkit-animation: blink 1.25s infinite;
+}
+.home-container .main-content .header__sub-title {
+  font-size: 2em;
+  margin: 0 0 32px;
+}
+.home-container .main-content .header .account-registration {
+  display: flex;
+  margin: auto;
+  width: 600px;
+}
+.home-container .main-content .header .account-registration__component,
+.home-container .main-content .header .account-registration__submit {
+  flex: 3;
+}
+.home-container .main-content .header .account-registration__component .email,
+.home-container .main-content .header .account-registration__submit .email,
+.home-container .main-content .header .account-registration__component .password,
+.home-container .main-content .header .account-registration__submit .password,
+.home-container .main-content .header .account-registration__component .submit-button,
+.home-container .main-content .header .account-registration__submit .submit-button {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  height: 32px;
+  margin: auto;
+  padding: 4px;
+}
+.home-container .main-content .header .account-registration__component .submit-button,
+.home-container .main-content .header .account-registration__submit .submit-button {
+  cursor: pointer;
+  font-family: 'Garamond';
+  width: 120px;
+}
+.home-container .main-content .header .account-registration__component .email,
+.home-container .main-content .header .account-registration__submit .email,
+.home-container .main-content .header .account-registration__component .password,
+.home-container .main-content .header .account-registration__submit .password {
+  font-family: 'Garamond';
+  width: 200px;
+}
+.home-container .main-content .header .account-registration__submit {
+  flex: 1;
+}
+.home-container .main-content .connect,
+.home-container .main-content .create {
+  display: flex;
+  height: 500px;
+  padding: 20px;
+}
+.home-container .main-content .connect .graphic,
+.home-container .main-content .create .graphic {
+  flex: 1;
+}
+.home-container .main-content .connect .content,
+.home-container .main-content .create .content {
+  flex: 1;
+  font-size: 20px;
+  line-height: 32px;
+}
 .editor-container {
   display: flex;
+  font: 500 14px 'Bariol';
 }
 .editor-container .editor {
   background: white;

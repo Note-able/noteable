@@ -2,6 +2,7 @@
 
 const React = require(`react`);
 const Router = require('react-router');
+const Home = require('./home');
 
 module.exports = class AppController extends React.Component {
   componentDidMount() {
@@ -9,6 +10,13 @@ module.exports = class AppController extends React.Component {
       window.location.href = '/';
     }
   }
+
+  renderHome() {
+    return (
+      <Home />
+    );
+  }
+
   renderGrid() {
     return (
       <div>
@@ -17,13 +25,12 @@ module.exports = class AppController extends React.Component {
       </div>
     );
   }
+
   render() {
     return(
       <div>
         <link href="/css/bundle.css" rel="stylesheet" type="text/css"/>
-        <div>
-          { this.props.children }
-        </div>
+        { this.props.location.pathname === '/' ? this.renderHome() : this.props.children }
       </div>
     );
   }

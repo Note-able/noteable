@@ -3,12 +3,20 @@ var cleanWebpack = require('clean-webpack-plugin');
 
 module.exports = {
   devtool: 'inline-source-map',
-  entry: './lib/client/entry',
+  entry: [
+    'webpack-dev-server/client?http://localhost:8081',
+    'webpack/hot/only-dev-server',
+    './src/client/entry',
+  ],
   output: {
-    path: __dirname + '/public/js',
+    path: __dirname + '/public/js/',
     filename: 'app.js',
     publicPath: 'http://localhost:8081/js/',
   },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin(),
+  ],
   resolve: {
     extensions: ['', '.js'],
     moduleDirectories: ['./node_modules']
@@ -17,7 +25,7 @@ module.exports = {
     loaders: [
       {
         test: /\.js?$/,
-        loaders: ['babel-loader?presets[]=react,presets[]=es2015,plugins[]=transform-es2015-block-scoping,plugins[]=transform-es2015-classes,plugins[]=transform-react-jsx'],
+        loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,plugins[]=transform-es2015-block-scoping,plugins[]=transform-es2015-classes,plugins[]=transform-react-jsx'],
         exclude: /(node_modules)/,
       }
     ]
