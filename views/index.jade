@@ -3,6 +3,12 @@ html
     title="JamSesh"
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    script.
+      var props = '#{props}';
+      while(props.indexOf('&quot;') !== -1) {
+        props = props.replace('&quot;', '"');
+      }
+      window.__INITIAL_STATE__ = props;
 
 
     meta(name='description', content='')

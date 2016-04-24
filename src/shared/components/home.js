@@ -4,15 +4,74 @@ const React = require(`react`);
 const Router = require('react-router');
 
 module.exports = class HomeController extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const initialState = JSON.parse(window.__INITIAL_STATE__);
+
+    this.state = {
+      isAuthenticated: initialState.isAuthenticated,
+      showUserOptions: false
+    };
+
+    this.showOptions = this._showOptions.bind(this);
+    this.bodyClickListener = this._bodyClickListener.bind(this);
+  }
+
   componentDidMount() {
-    setTimeout
+    document.body.onclick = this.bodyClickListener;
+  }
+
+  _bodyClickListener(event) {
+    let parentNode = event.target.parentNode;
+
+    if (event.target.className.indexOf('user-options') === -1) {
+      while (parentNode != null) {
+        if (parentNode.className && parentNode.className.indexOf('user-options') !== -1) {
+          return;
+        }
+        parentNode = parentNode.parentNode;
+      }
+
+      this.setState({
+        showUserOptions: false
+      });
+    }
+  }
+
+  _showOptions() {
+    this.setState({
+      showUserOptions: !this.state.showUserOptions
+    });
+  }
+
+  renderUserOptions () {
+    return (
+      <div className="user-options">
+        <a href={`profile/${this.state.userId}`}><div className="dropdown-button">My Profile</div></a>
+        <a href="/logout"><div className="dropdown-button">Sign out</div></a>
+      </div>
+    );
+  }
+
+  renderAuthenticationOptions() {
+    if (this.state.isAuthenticated) {
+      return (
+        <a onClick={this.showOptions}><div className="home"></div></a>
+      );
+    }
+
+    return (
+      <a href="/signin"><div className="signin-button">Sign in</div></a>
+    );
   }
 
   render() {
     return(
       <div className="home-container">
         <div className="navbar">
-          <div className="signin-button">Sign in</div>
+          {this.renderAuthenticationOptions()}
+          {this.state.showUserOptions ? this.renderUserOptions() : null}
         </div>
         <div className="main-content">
           <div className="header">
@@ -26,7 +85,7 @@ module.exports = class HomeController extends React.Component {
                 <input className="password" type="password" placeholder="Password"/>
               </div>
               <div className="account-registration__submit">
-                <button className="submit-button" type="submit">Submit</button>
+                <button className="submit-button" type="submit">Register</button>
               </div>
             </div>
           </div>
