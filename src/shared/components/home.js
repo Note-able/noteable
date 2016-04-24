@@ -2,6 +2,7 @@
 
 const React = require(`react`);
 const Router = require('react-router');
+const Login = require(`./auth/login`);
 
 module.exports = class HomeController extends React.Component {
   constructor(props) {
@@ -11,11 +12,13 @@ module.exports = class HomeController extends React.Component {
 
     this.state = {
       isAuthenticated: initialState.isAuthenticated,
-      showUserOptions: false
+      showUserOptions: false,
+      userId: initialState.userId
     };
 
     this.showOptions = this._showOptions.bind(this);
     this.bodyClickListener = this._bodyClickListener.bind(this);
+    this.showSignIn = this._showSignIn.bind(this);
   }
 
   componentDidMount() {
@@ -39,6 +42,12 @@ module.exports = class HomeController extends React.Component {
     }
   }
 
+  _showSignIn() {
+    this.setState({
+      showSignInDialog: !this.state.showSignInDialog
+    });
+  }
+
   _showOptions() {
     this.setState({
       showUserOptions: !this.state.showUserOptions
@@ -48,7 +57,8 @@ module.exports = class HomeController extends React.Component {
   renderUserOptions () {
     return (
       <div className="user-options">
-        <a href={`profile/${this.state.userId}`}><div className="dropdown-button">My Profile</div></a>
+        <a href={`profile/${this.state.userId}`}><div className="dropdown-button">Profile</div></a>
+        <a href="/editor"><div className="dropdown-button">Editor</div></a>
         <a href="/logout"><div className="dropdown-button">Sign out</div></a>
       </div>
     );
@@ -62,8 +72,17 @@ module.exports = class HomeController extends React.Component {
     }
 
     return (
-      <a href="/signin"><div className="signin-button">Sign in</div></a>
+      <a href="#" onClick={this.showSignIn}><div className="signin-button">Sign in</div></a>
     );
+  }
+
+  renderSignInDialog() {
+    return [
+      <div className="signin-background" onClick={this.showSignIn}/>,
+      <div className="signin-dialog">
+        <Login switchToRegister={null}/>
+      </div>
+    ];
   }
 
   render() {
@@ -72,6 +91,7 @@ module.exports = class HomeController extends React.Component {
         <div className="navbar">
           {this.renderAuthenticationOptions()}
           {this.state.showUserOptions ? this.renderUserOptions() : null}
+          {this.state.showSignInDialog ? this.renderSignInDialog() : null}
         </div>
         <div className="main-content">
           <div className="header">

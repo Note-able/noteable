@@ -18,13 +18,12 @@ module.exports = class EditorController extends React.Component {
     super(props, context);
 
     this.state = store.getState();
-    AJAX.Get('/me', (response) => {
-      const resp = JSON.parse(response);
-      store.dispatch({
-        type: 'INITIAL_STATE',
-        userId: resp.userId,
-        documentId: this.props.routeParams.documentId
-      });
+    const initialState = window.__INITIAL_STATE__;
+
+    store.dispatch({
+      type: 'INITIAL_STATE',
+      userId: initialState.userId,
+      documentId: this.props.routeParams.documentId
     });
   }
 

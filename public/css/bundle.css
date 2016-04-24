@@ -176,6 +176,25 @@ body {
   height: 48px;
   width: 100%;
 }
+.home-container .navbar .signin-dialog {
+  background: white;
+  bottom: 0;
+  height: 300px;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 300px;
+  z-index: 2;
+}
+.home-container .navbar .signin-background {
+  background: rgba(204, 204, 204, 0.5);
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+}
 .home-container .navbar a {
   color: inherit;
   text-decoration: none;
@@ -204,11 +223,13 @@ body {
   font-size: 16px;
 }
 .home-container .navbar .signin-button {
+  float: right;
   font-family: 'Bariol';
-  height: 36px;
-  line-height: 36px;
+  height: 48px;
+  line-height: 48px;
+  margin-right: 24px;
   text-align: center;
-  width: 100%;
+  width: 100px;
   z-index: 2;
 }
 .home-container .navbar .signin-button:hover {
