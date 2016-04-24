@@ -115,7 +115,7 @@ module.exports = function (app, options) {
 
   /***PICTURES API***/
 
-  const uploadPicture = function (req, res, next) {
+  const uploadPicture = (req, res, next) => {
     const form = new Formidable.IncomingForm();
     form.uploadDir = '/uploads';
 

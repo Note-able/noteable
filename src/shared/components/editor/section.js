@@ -24,7 +24,11 @@ class Section extends React.Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(addLine(this.props.sectionId, this.lines++, 0, 'text', ''));
+    if(!this.props.section.lineData) {
+      this.props.dispatch(addLine(this.props.sectionId, this.lines++, 0, 'text', ''));
+    } else {
+      this.lines = this.props.section.lineData.length;
+    }
   }
 
   shouldComponentUpdate () {
@@ -108,13 +112,13 @@ class Section extends React.Component {
         const selectedIndex = this.props.section.selectedIndex;
         this.props.dispatch(deleteLine(this.props.sectionId, selectedIndex));
       }
-    } else if (e.keyCode === 82) {
+    } else if (e.keyCode === 82) { //r + command + alt -> new recording line
       if(this.keyMap[18] && this.metaKey) {
         this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex + 1, 'recording', '', false));
       } else if(this.keyMap[16] && this.keyMap[17]) {
         this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex + 1, 'recording', '', false));
       }
-    } else if (e.keyCode === 83) {
+    } else if (e.keyCode === 83) { //s + command + alt -> save
       if(this.keyMap[18] && this.metaKey) {
         this.props.submitRevision();
       }
@@ -215,7 +219,7 @@ class Section extends React.Component {
       }
     });
     return (
-    <div className="section" name={ this.props.sectionId } contentEditable="true"
+    <div className="section" ref="section" name={ this.props.sectionId } contentEditable="true"
       onPaste={ this.handlePaste.bind(this) }
       onKeyDown={ this.handleKeyDown.bind(this) }
       onKeyUp={ this.handleKeyUp.bind(this) }
