@@ -72,7 +72,7 @@ app.get(`/auth/facebook`,
 app.get(`/auth/facebook/callback`,
   passport.authenticate(`facebook`, { failureRedirect: `/login` }),
   (req, res) => {
-    res.redirect(`/`);
+    res.redirect(`/user/me`);
   });
 
 app.get(`/test`, ensureAuthenticated, (req, res) => {
@@ -83,7 +83,7 @@ require(`./api-routes`)(app, {auth: ensureAuthenticated, connect: ConnectToDb, d
 
 app.get(`/logout`, (req, res) => {
   req.logout();
-  res.redirect(`/`);
+  res.redirect(`/test`);
 });
 
 app.get('/me', ensureAuthenticated, (req, res) => {
@@ -113,7 +113,7 @@ app.post('/post-blob', (req, res) => {
   res.status(200).send();
 });
 
-app.post( '/add-image', (req, res) => {
+app.post( '/add-image', ensureAuthenticated, (req, res) => {
   const form = new Formidable.IncomingForm();
   form.uploadDir = '/uploads';
 
@@ -136,13 +136,8 @@ app.post( '/add-image', (req, res) => {
   });
 });
 
-app.get('/*', ensureAuthenticated, (req, res) => {
-  res.render(`index`, {props: JSON.stringify(
-    {
-      isAuthenticated: req.user ? true : false,
-      userId: req.user ? req.user.id : -1
-    }
-  )});
+app.get('/*', (req, res) => {
+  res.render(`index`);
 });
 
 app.get('/editor', ensureAuthenticated, (req, res) => {
@@ -175,5 +170,9 @@ function ConnectToDb (connectionString, callback){
 }
 
 function ensureAuthenticated (req, res, next) {
-  next();
+  if (req.isAuthenticated()) {
+    next()
+    return;
+  }
+  res.redirect(`/`)
 }

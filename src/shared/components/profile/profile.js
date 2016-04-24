@@ -16,7 +16,7 @@ class Profile extends React.Component {
 
   loadUser (user) {
     console.log(user);
-    this.setState({ name: user.name, email: user.email, bio: user.bio, location: user.location, averageEventRating: user.average_event_rating });
+    this.setState({ name: user.name, email: user.email, bio: user.bio, location: user.location, averageEventRating: user.average_event_rating, image: user.profileImage });
   }
 
   sendImageToServer (e) {
@@ -30,10 +30,7 @@ class Profile extends React.Component {
       formData.append('name', file.name);
       formData.append('file', base64);
 
-      AJAX.PostBlob(`/add-image`, formData, (response) => this.updated(response));
-      const request = new XMLHttpRequest();
-      request.open('POST', '/add-image');
-      //request.send(formData);
+      AJAX.PostBlob(`/user/edit/picture/new`, formData, (response) => this.updated(response));
     };
 
     reader.readAsDataURL(this.refs.file.files[0]);
