@@ -113,7 +113,7 @@ app.post('/post-blob', (req, res) => {
   res.status(200).send();
 });
 
-app.post( '/add-image',(req, res) => {
+app.post( '/add-image', ensureAuthenticated, (req, res) => {
   const form = new Formidable.IncomingForm();
   form.uploadDir = '/uploads';
 
