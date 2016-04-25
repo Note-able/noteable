@@ -17,6 +17,26 @@
   	.editor-line, .editor-recording {
       min-height: 20px;
       pointer-events: all;
+      margin-bottom: 8px;
+      margin-top: 2px;
+    }
+    
+    .editor-chord-line {
+      min-height: 20px;
+      pointer-events: all;
+      font: bold 14px arial;
+      margin: 6px auto 0;
+    }
+
+    .editor-chord-line {
+      animation-name: blink;
+      animation-duration: .5s;
+      animation-timing-function: step-end;
+      animation-iteration-count: 1;
+    }
+
+    @keyframes blink { 
+      50% { border-color: #000; } 
     }
   }
 

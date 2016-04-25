@@ -4,6 +4,7 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const Line = require('./line');
 const RecordingLine = require('./recordingLine');
+const ChordLine = require('./chordLine');
 import { addLine } from './actions/editor-actions';
 import { deleteLine } from './actions/editor-actions';
 import { updateText } from './actions/editor-actions';
@@ -122,6 +123,13 @@ class Section extends React.Component {
       if(this.keyMap[18] && this.metaKey) {
         this.props.submitRevision();
       }
+    } else if (e.keyCode > 67) { //c + cmd + ctrl -> chord line
+      if(this.keyMap[18] && this.metaKey) {
+        if(this.props.section.lineData[this.props.section.selectedIndex].type !== 'chord' && this.props.section.lineData[this.props.section.selectedIndex-1].type !== 'chord'))
+          this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex, 'chord', String.fromCharCode(e.keyCode), true));
+        else
+          this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex - 1, window.getSelection().baseOffset));
+      }
     }
   }
 
@@ -216,6 +224,10 @@ class Section extends React.Component {
           dispatch = { this.props.dispatch }></Line>);
       } else if (line.type === 'recording') {
         return (<RecordingLine key={ line.lineId } lineId={ line.lineId }></RecordingLine>);
+      } else if (line.type === 'chord') {
+        const selected = line.lineId === this.props.section.lineData[this.props.section.selectedIndex].lineId;
+        const offset = selected ? this.props.section.offset : 0;
+        return (<ChordLine key={ line.lineId } lineId={ line.lineId } text={ line.text } offset={ offset }></ChordLine>);
       }
     });
     return (
