@@ -352,6 +352,22 @@ body {
   min-height: 20px;
   pointer-events: all;
 }
+.editor-container .editor .editor-chord-line {
+  min-height: 20px;
+  pointer-events: all;
+  font: bold 14px arial;
+}
+.editor-container .editor .editor-chord-line {
+  animation-name: blink;
+  animation-duration: .5s;
+  animation-timing-function: step-end;
+  animation-iteration-count: 1;
+}
+@keyframes blink {
+  50% {
+    border-color: #000;
+  }
+}
 .editor-container .record {
   left: 0;
   position: absolute;
