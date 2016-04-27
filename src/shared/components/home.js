@@ -3,22 +3,25 @@
 const React = require(`react`);
 const Router = require('react-router');
 const Login = require(`./auth/login`);
+const Register = require('./auth/register');
 
 module.exports = class HomeController extends React.Component {
   constructor(props) {
     super(props);
 
-    const initialState = JSON.parse(window.__INITIAL_STATE__);
+    const initialState = window.__INITIAL_STATE__ ? JSON.parse(window.__INITIAL_STATE__) : null;
 
     this.state = {
-      isAuthenticated: initialState.isAuthenticated,
+      isAuthenticated: initialState ? initialState.isAuthenticated : false,
       showUserOptions: false,
-      userId: initialState.userId
+      userId: initialState ? initialState.userId : -1
     };
 
     this.showOptions = this._showOptions.bind(this);
     this.bodyClickListener = this._bodyClickListener.bind(this);
     this.showSignIn = this._showSignIn.bind(this);
+    this.showRegister = this._showRegister.bind(this);
+    this.registerUser = this._registerUser.bind(this);
   }
 
   componentDidMount() {
@@ -42,9 +45,17 @@ module.exports = class HomeController extends React.Component {
     }
   }
 
+  _showRegister() {
+    this.setState({
+      showAccountDialog: true,
+      showSignInDialog: false
+    });
+  }
+
   _showSignIn() {
     this.setState({
-      showSignInDialog: !this.state.showSignInDialog
+      showAccountDialog: true,
+      showSignInDialog: true
     });
   }
 
@@ -52,6 +63,10 @@ module.exports = class HomeController extends React.Component {
     this.setState({
       showUserOptions: !this.state.showUserOptions
     });
+  }
+
+  _registerUser() {
+    return null;
   }
 
   renderUserOptions () {
@@ -80,7 +95,7 @@ module.exports = class HomeController extends React.Component {
     return [
       <div className="signin-background" onClick={this.showSignIn}/>,
       <div className="signin-dialog">
-        <Login switchToRegister={null}/>
+        {this.state.showSignInDialog ? <Login switchToRegister={this.showRegister}/> : <Register registerUser={this.registerUser} switchToLogin={this.showSignIn}/>}
       </div>
     ];
   }
@@ -91,7 +106,7 @@ module.exports = class HomeController extends React.Component {
         <div className="navbar">
           {this.renderAuthenticationOptions()}
           {this.state.showUserOptions ? this.renderUserOptions() : null}
-          {this.state.showSignInDialog ? this.renderSignInDialog() : null}
+          {this.state.showAccountDialog ? this.renderSignInDialog() : null}
         </div>
         <div className="main-content">
           <div className="header">

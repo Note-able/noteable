@@ -3,6 +3,7 @@
 const Formidable = require(`formidable`);
 const config = require('../config');
 const image = require('../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
+const bcrypt = require('bcrypt-nodejs');
 
 const regex = new RegExp(/[\0\x08\x09\x1a\n\r"'\\\%]/g)
 function escaper(char){
@@ -64,6 +65,30 @@ module.exports = function (app, options) {
       console.log(connection);
     });
     res.send(`lol`);
+  });
+
+  app.post('/register', (req, res) => {
+    if (req.body.email == null || req.body.password == null) {
+      res.status(400).send();
+    }
+
+    bcrypt.hash(req.body.password, null, null, (err, password) => {
+      if (error) {
+        res.status(500).send();
+        return;
+      }
+
+      options.connect(options.database, (connection) => {
+        connection.client
+        .query(`INSERT INTO public.user (username, password) VALUES ('${req.body.email}', '${password}');`)
+        .on('error', (error) => {
+          res.send(error);
+        }).on('end', () => {
+          res.status(204).send();
+          connection.fin();
+        });
+      });
+    });
   });
 
   app.get('/user/:id', options.auth, (req, res) => {

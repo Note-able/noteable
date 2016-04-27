@@ -5,11 +5,13 @@ const pg = require(`pg`);
 const BodyParser = require(`body-parser`);
 const passport = require(`passport`);
 const FacebookStrategy = require(`passport-facebook`);
+const LocalStrategy = require('passport-local');
 const session = require(`express-session`);
 const Formidable = require(`formidable`);
+const bcrypt = require('bcrypt-nodejs');
 const fs = require('fs');
 
-const app = express();
+const app = express()
 app.use(express.static(`${__dirname}/../../public`));
 const config = require('../config');
 const audio = require('../util/gcloud-util')(config.gcloud, config.cloudAudioStorageBucket);
@@ -36,6 +38,35 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((obj, done) => {
   done(null, obj);
 });
+
+passport.use(new LocalStrategy(
+  { callbackURL: '/auth/local/callback'
+}, (username, password, done) => {
+  ConnectToDb(config.connectionString, (connection) => {
+    if(connection.status === `SUCCESS`){
+      let user = null;
+      connection.client
+      .query(`SELECT * FROM public.user WHERE email = '${username}';`)
+      .on(`row`, (row) => {
+        user = row;
+        connection.fin();
+        if (!user){
+          return done(null, false);
+        }
+
+        if(validatePassword(password, user.password)){
+          return done(null, user);
+        }
+
+        return done(null, false);
+      }).on('end', () => {
+        if (user === null) {
+          return done(null, false);
+        }
+      });
+    }
+  });
+}));
 
 //set up passport
 passport.use(new FacebookStrategy({
@@ -68,6 +99,12 @@ passport.use(new FacebookStrategy({
 
 app.get(`/auth/facebook`,
   passport.authenticate(`facebook`));
+
+app.get('/auth/local',
+  passport.authenticate('local', { failureRedirect: '/login' }),
+  (req, res) => {
+    res.redirect('/');
+  });
 
 app.get(`/auth/facebook/callback`,
   passport.authenticate(`facebook`, { failureRedirect: `/login` }),
@@ -137,7 +174,12 @@ app.post( '/add-image', ensureAuthenticated, (req, res) => {
 });
 
 app.get('/*', (req, res) => {
-  res.render(`index`);
+  res.render(`index`, {props: JSON.stringify(
+    {
+      isAuthenticated: req.isAuthenticated(),
+      userId: req.user ? req.user.id : -1
+    }
+  )});
 });
 
 app.get('/editor', ensureAuthenticated, (req, res) => {
@@ -175,4 +217,8 @@ function ensureAuthenticated (req, res, next) {
     return;
   }
   res.redirect(`/`)
+}
+
+function validatePassword(password, userPassword) {
+  return bcrypt.compareSync(password, userPassword);
 }
