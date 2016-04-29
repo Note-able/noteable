@@ -71,10 +71,6 @@ class Line extends React.Component {
     sel.addRange(range);
   }
 
-  componentWillReceiveProps (nextProps) {
-    console.log(nextProps);
-  }
-
   setCaretPosition (position) {
     const element = ReactDOM.findDOMNode(this.refs.line);
     if(element.childNodes.length !== 0) {

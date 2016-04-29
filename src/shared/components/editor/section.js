@@ -5,6 +5,7 @@ const ReactDOM = require('react-dom');
 const Line = require('./line');
 const RecordingLine = require('./recordingLine');
 const ChordLine = require('./chordLine');
+import { KeyCodes } from '../helpers/keyCodes';
 import { addLine } from './actions/editor-actions';
 import { deleteLine } from './actions/editor-actions';
 import { updateText } from './actions/editor-actions';
@@ -86,47 +87,47 @@ class Section extends React.Component {
 
   handleKeyDown (e) {
     this.keyMap[e.keyCode] = e.type === 'keydown';
-    this.metaKey = e.metaKey;
     /* Note: this is *probably* really bad. It should work by keeping a collection of functions for keycodes that need them,
       and then calling the function for that keycode if it exists instead of doing if else for all possible keys that have functions.
-      Or I could use a switch statement at the very least. */
-    if(e.keyCode === 13) { //enter
-      e.preventDefault();
-      this.enterPressed = true;
-      const selection = window.getSelection();
-      const selectionOffset = selection.baseOffset;
-      const text = selection.anchorNode.data;
-      const movedText = text.substring(selectionOffset, text.length);
-      const remainingText = text.substring(0, selectionOffset);
-      this.handleEnter.bind(this)(remainingText, movedText);
-    } else if(e.keyCode === 38) { //upArrow
+      But for relatively small numbers of hotkeys/overrides it doesn't matter */
+    if(e.keyCode === KeyCodes.enter) {
+      if(this.props.section.lineData[this.props.section.selectedIndex].type !== 'chord'){
+        e.preventDefault;
+        this.enterPressed = true;
+        const selection = window.getSelection();
+        const selectionOffset = selection.baseOffset;
+        const text = selection.anchorNode.data;
+        const movedText = text.substring(selectionOffset, text.length);
+        const remainingText = text.substring(0, selectionOffset);
+        this.handleEnter.bind(this)(remainingText, movedText);
+      }
+    } else if(e.keyCode === KeyCodes.upArrow) {
       e.preventDefault();
       const selectionOffset = window.getSelection().baseOffset;
       this.handleUpArrow(selectionOffset, this.props.section.selectedLine.lineId);
-    } else if(e.keyCode === 40) { //downArrow
+    } else if(e.keyCode === KeyCodes.downArrow) {
       e.preventDefault();
       const selectionOffset = window.getSelection().baseOffset;
       this.handleDownArrow(selectionOffset, this.props.section.selectedLine.lineId);
-    } else if (e.keyCode === 8) { //delete
+    } else if (e.keyCode === KeyCodes.backspace) {
       if(window.getSelection().baseOffset === 0 && this.props.section.selectedIndex !== 0) {
         e.preventDefault();
         const selectedIndex = this.props.section.selectedIndex;
         this.props.dispatch(deleteLine(this.props.sectionId, selectedIndex));
       }
-    } else if (e.keyCode === 82) { //r + command + alt -> new recording line
-      if(this.keyMap[18] && this.metaKey) {
-        this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex + 1, 'recording', '', false));
-      } else if(this.keyMap[16] && this.keyMap[17]) {
+    } else if (e.keyCode === KeyCodes.r) { // new recording line
+      if(this.keyMap[KeyCodes.alt] && (e.metaKey || e.ctrlKey)) {
         this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex + 1, 'recording', '', false));
       }
-    } else if (e.keyCode === 83) { //s + command + alt -> save
-      if(this.keyMap[18] && this.metaKey) {
+    } else if (e.keyCode === KeyCodes.s) { // save
+      if(this.keyMap[KeyCodes.alt] && e.metaKey) {
         this.props.submitRevision();
       }
-    } else if (e.keyCode > 67) { //c + cmd + ctrl -> chord line
-      if(this.keyMap[18] && this.metaKey) {
+    } else if (e.keyCode  === KeyCodes.c) { // new chord Line
+      if(this.keyMap[KeyCodes.alt] && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
         if(this.props.section.lineData[this.props.section.selectedIndex].type !== 'chord' && this.props.section.lineData[this.props.section.selectedIndex-1].type !== 'chord')
-          this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex, 'chord', String.fromCharCode(e.keyCode), true));
+          this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex, 'chord', String.fromCharCode(e.keyCode), true, window.getSelection().baseOffset));
         else
           this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex - 1, window.getSelection().baseOffset));
       }
@@ -227,7 +228,7 @@ class Section extends React.Component {
       } else if (line.type === 'chord') {
         const selected = line.lineId === this.props.section.lineData[this.props.section.selectedIndex].lineId;
         const offset = selected ? this.props.section.offset : 0;
-        return (<ChordLine key={ line.lineId } lineId={ line.lineId } text={ line.text } offset={ offset }></ChordLine>);
+        return (<ChordLine key={ line.lineId } lineId={ line.lineId } text={ line.text } offset={ offset } updateSelected={ () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex + 1, 0))} }></ChordLine>);
       }
     });
     return (

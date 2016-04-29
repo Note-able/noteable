@@ -365,6 +365,7 @@ body {
   animation-duration: .5s;
   animation-timing-function: step-end;
   animation-iteration-count: 1;
+  outline: none;
 }
 @keyframes blink {
   50% {
