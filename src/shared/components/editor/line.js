@@ -20,6 +20,10 @@ class Line extends React.Component {
     }
   }
 
+  componentWillUpdate (nextProps) {
+    this.updateTextFunction = nextProps.updateTextFunction;
+  }
+
   componentDidUpdate (prevProps) {
     if (this.props.lineId === prevProps.lineId
       && this.props.text === prevProps.text
@@ -29,10 +33,11 @@ class Line extends React.Component {
       return;
     }
 
-    if(this.props.updateTextFunction){
+    if(this.updateTextFunction){
       const element = ReactDOM.findDOMNode(this.refs.line);
       this.props.updateTextFunction(element, this.props.text);
     }
+    this.updateTextFunction = null; //prevent double componentDidUpdate calls from updating DOM twice
     if(this.props.selected){
       this.setCaretPosition.bind(this)(this.props.offset);
     }

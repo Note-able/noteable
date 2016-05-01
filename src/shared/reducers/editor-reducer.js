@@ -68,7 +68,8 @@ const editorSection = ( state = {}, action) => {
     return Object.assign({},
     state,
     {
-      lineData: state.lineData.map(line => editorLine(line, action))
+      lineData: state.lineData.map(line => editorLine(line, action)),
+      offset: action.offset
     });
   case 'ADD_LINE':
     if(state.sectionId != action.sectionId)

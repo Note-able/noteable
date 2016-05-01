@@ -84,7 +84,7 @@ class Section extends React.Component {
       But for relatively small numbers of hotkeys/overrides it doesn't matter */
     if(e.keyCode === KeyCodes.enter) {
       if(this.props.section.lineData[this.props.section.selectedIndex].type !== 'chord'){
-        e.preventDefault;
+        e.preventDefault();
         this.enterPressed = true;
         const selection = window.getSelection();
         const selectionOffset = selection.baseOffset;
@@ -161,11 +161,9 @@ class Section extends React.Component {
   handleDelete (text) {
     const selected = this.props.section.selectedLine;
     const selectedIndex = this.props.section.selectedIndex;
-    const lineData = this.props.section.lineData;
-    const offset = this.refs.section.childNodes[selectedIndex].innerHTML.length;
-    lineData[selectedIndex].text = text;
+    const offset = text.length;
+    // TODO: Figure out how to get the correct offset
     this.props.dispatch(updateText(this.props.sectionId, selected.lineId, text, offset, this.appendTextAfterDelete.bind(this)));
-    //this.setState({ lineData: lineData, updateFunction: this.appendTextAfterDelete.bind(this), offset: offset }, this.clearLinesToUpdate.bind(this));
   }
 
   handleUpArrow (offset, lineId) {
