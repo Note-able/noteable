@@ -46,8 +46,8 @@ class Section extends React.Component {
   getDataForPost () {
     console.log('section data being collected');
     const lineContents = [];
-    for (const line in this.refs) {
-      const lineContent = this.refs[line].getDataForPost();
+    for (const line of this.props.section.lineData) {
+      const lineContent = this.refs[`line${line.lineId}`].getDataForPost();
       lineContents.push(lineContent);
     }
     return { sectionId: this.props.sectionId, lineData: lineContents }
@@ -127,7 +127,7 @@ class Section extends React.Component {
       if(this.keyMap[KeyCodes.alt] && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         if(this.props.section.lineData[this.props.section.selectedIndex].type !== 'chord' && this.props.section.lineData[this.props.section.selectedIndex-1].type !== 'chord')
-          this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex, 'chord', String.fromCharCode(e.keyCode), true, window.getSelection().baseOffset));
+          this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex, 'chord', null, true, window.getSelection().baseOffset));
         else
           this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex - 1, window.getSelection().baseOffset));
       }
@@ -228,7 +228,16 @@ class Section extends React.Component {
       } else if (line.type === 'chord') {
         const selected = line.lineId === this.props.section.lineData[this.props.section.selectedIndex].lineId;
         const offset = selected ? this.props.section.offset : 0;
-        return (<ChordLine key={ line.lineId } lineId={ line.lineId } text={ line.text } offset={ offset } updateSelected={ () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex + 1, 0))} }></ChordLine>);
+        return (<ChordLine key={ line.lineId }
+          ref={`line${ line.lineId }`}
+          lineId={ line.lineId }
+          text={ line.text }
+          offset={ offset }
+          type={ line.type }
+          updateSelectedToTextLine={ () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex + 1, 0))}}
+          updateSelected={ this.updateSelected.bind(this) }>
+          </ChordLine>
+        );
       }
     });
     return (

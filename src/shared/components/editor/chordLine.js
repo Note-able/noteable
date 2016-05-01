@@ -9,7 +9,8 @@ module.exports = class ChordLine extends React.Component {
   constructor (props, context) {
     super(props, context);
 
-    this.state = { contentEditable: true, text: new Array(props.offset + 1).join(' ') };
+    this.state = { contentEditable: true, text: props.text == null ? new Array(props.offset + 1).join(' ') : props.text };
+    this.updateOffset = true;
   }
 
   componentDidMount () {
@@ -17,7 +18,9 @@ module.exports = class ChordLine extends React.Component {
   }
 
   componentDidUpdate () {
-    this.setCaretPosition.bind(this)(this.props.offset);
+    if(this.updateOffset)
+      this.setCaretPosition.bind(this)(this.props.offset);
+    this.updateOffset = true;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -30,12 +33,27 @@ module.exports = class ChordLine extends React.Component {
   handleKeyDown(e) {
     if(e.keyCode === KeyCodes.enter) { //enter
       e.preventDefault();
-      this.props.updateSelected();
+      this.props.updateSelectedToTextLine();
       this.setState({ contentEditable: false });
-    } else if(e.keyCode != KeyCodes.space && e.keyCode != KeyCodes.backspace (e.keyCode < 48 || e.keyCode > 90)){
+    } else if(e.keyCode !== KeyCodes.space && e.keyCode !== KeyCodes.backspace (e.keyCode < 48 || e.keyCode > 90)){
       e.preventDefault();
     }
     e.stopPropagation();
+  }
+
+  handleClick () {
+    this.props.updateSelected(this.props.lineId);
+    this.setState({ contentEditable: true });
+    this.updateOffset = false;
+  }
+  
+  getDataForPost () {
+    return this.getLineContent();
+  }
+
+  getLineContent () {
+    const element = ReactDOM.findDOMNode(this.refs.chordLine);
+    return { lineId: this.props.lineId, type: this.props.type, text: element.innerHTML };
   }
 
   setCaretInEmptyDiv () {
@@ -73,6 +91,7 @@ module.exports = class ChordLine extends React.Component {
         name={ this.props.lineId }
         ref="chordLine"
         onKeyDown={ this.handleKeyDown.bind(this) }
+        onClick= { this.handleClick.bind(this) }
         contentEditable={ this.state.contentEditable }>
           {this.state.text}
         </p>

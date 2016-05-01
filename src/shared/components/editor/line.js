@@ -51,7 +51,6 @@ class Line extends React.Component {
   }
 
   getDataForPost () {
-    console.log('line data being collected');
     console.log(this.getLineContent());
     return this.getLineContent();
   }
