@@ -27,27 +27,6 @@ module.exports = function (app, options) {
     res.redirect(`/user/${req.user.id}/profile`);
   });
 
-  /*app.get(`/user/:id/profile`, options.auth, (req, res) => {
-    if (req.user.id !== parseInt(req.params.id)) {
-      res.status(404).send();
-    } else {
-      options.connect(options.database, (connection) => {
-        const user = [];
-        connection.client
-        .query(`SELECT profile.id, email, profile.location, average_event_rating, instrument_name, documents.title, documents.id as documents_id
-                FROM public.profile AS profile
-                  JOIN public.documents AS documents ON profile.id = ANY(documents.profiles)
-                  WHERE profile.id = ${req.params.id};`)
-        .on(`row`, (row) => {
-          user.push(row);
-        }).on(`end`, () => {
-          res.send(user);
-          connection.fin();
-        });
-      });
-    }
-  });*/
-
   app.get(`/user/search/{text}`, options.auth, (req, res) => {
     if (req.params.text.length === 0) {
       res.status(400).send();
@@ -97,12 +76,6 @@ module.exports = function (app, options) {
     }
     options.connect(options.database, (connection) => {
       const user = [];
-      console.log(`
-        SELECT * FROM public.profile pr
-          JOIN public.pictures pic
-          ON pic.user_id = pr.id
-        WHERE ${req.params.id} = pr.id AND pic.picture_type = 1;`);
-      //SELECT * FROM public.profile pr JOIN public.pictures pic ON pic.user_id = pr.id WHERE 2 = pr.id AND pic.picture_type = 1;
       connection.client.query(`
         SELECT * FROM public.profile pr
           JOIN public.pictures pic
@@ -126,7 +99,6 @@ module.exports = function (app, options) {
     uploadPicture(req, res, (gcloudResponse) => {
       options.connect(options.database, (connection) => {
         const user = [];
-        console.log(`INSERT INTO pictures (user_id, filename, picture_type) VALUES (${req.user.id}, '${gcloudResponse.cloudStorageObject}', 1);`);
         connection.client.query(`INSERT INTO pictures (user_id, filename, picture_type) VALUES (${req.user.id}, '${gcloudResponse.cloudStorageObject}', 1);`)
         .on(`row`, (row) => { user.push(row); })
         .on(`error`, (error) => { console.log(`error encountered ${error}`) })
@@ -153,11 +125,9 @@ module.exports = function (app, options) {
 
       image.sendUploadToGCS(`${fields.name}`, buffer, (response) => {
         if (response && response.error) {
-          console.log(`error ${response.error}`);
           return null;
         }
 
-        console.log(`response ${response}`);
         next(response);
       });
     });
@@ -342,13 +312,11 @@ module.exports = function (app, options) {
 
   //Retrieve all song documents owned by user
   app.get('/songs/user', options.auth, (req, res) => {
-    console.log(req.user);
     if(!req.user) {
       res.status(400).send();
     } else {
       options.connect(options.database, (connection) => {
         const songs = [];
-        console.log(`SELECT * FROM public.documents WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents);`);
         connection.client.query(`SELECT id, title, description, date, modified, profiles FROM public.documents WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents);`)
         .on(`row`, (row) => { songs.push(row); })
         .on(`end`, () => {
@@ -365,12 +333,10 @@ module.exports = function (app, options) {
     }
     options.connect(options.database, (connection) => {
       const song = [];
-      console.log('looking for document');
       connection.client.query(`SELECT * FROM public.documents
         WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
       .on(`row`, (row) => { song.push(row); })
       .on(`end`, () => {
-        console.log(JSON.stringify(song));
         if(song.length > 0 ) {
           res.send(song[0]);
           connection.fin();
@@ -381,7 +347,6 @@ module.exports = function (app, options) {
   });
 
   app.post('/document/:documentId', options.auth, (req, res) => {
-    console.log(`POSTing document  ${req.params.documentId}`);
     if(!req.user) {
       res.status(400).send();
     }
@@ -393,7 +358,6 @@ module.exports = function (app, options) {
       .on(`error`, (error) => { console.log(`error encountered ${error}`) })
       .on(`end`, () => {
         if(song.length > 0){
-          console.log(req.body)
           connection.client.query(`UPDATE public.documents SET contents = '${JSON.stringify(req.body)}', modified = current_timestamp
             WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
           .on(`row`, (row) => { song.push(row); })
@@ -411,7 +375,6 @@ module.exports = function (app, options) {
           });
         }
       });
-      console.log(`query complete ${song}`);
     });
   });
 }

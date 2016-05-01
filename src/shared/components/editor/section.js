@@ -44,23 +44,15 @@ class Section extends React.Component {
   }
 
   getDataForPost () {
-    console.log('section data being collected');
     const lineContents = [];
-    for (const line of this.props.section.lineData) { // eslint-disable-line
+    for (const line of this.props.section.lineData) {
       const lineContent = this.refs[`line${line.lineId}`].getDataForPost();
       lineContents.push(lineContent);
     }
     return { sectionId: this.props.sectionId, lineData: lineContents }
   }
 
-  handleClick (e) {
-    console.log('clicked section');
-    console.log(e);
-  }
-
   handlePaste (e) {
-    console.log('paste');
-    console.log(e);
     e.preventDefault();
     const plainText = e.clipboardData.getData('text/plain');
     if(plainText){
@@ -123,7 +115,7 @@ class Section extends React.Component {
       if(this.keyMap[KeyCodes.alt] && e.metaKey) {
         this.props.submitRevision();
       }
-    } else if (e.keyCode  === KeyCodes.c) { // new chord Line
+    } else if (e.keyCode === KeyCodes.c) { // new chord Line
       if(this.keyMap[KeyCodes.alt] && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         if(this.props.section.lineData[this.props.section.selectedIndex].type !== 'chord' && this.props.section.lineData[this.props.section.selectedIndex-1].type !== 'chord')
@@ -167,7 +159,6 @@ class Section extends React.Component {
   }
 
   handleDelete (text) {
-    console.log('delete');
     const selected = this.props.section.selectedLine;
     const selectedIndex = this.props.section.selectedIndex;
     const lineData = this.props.section.lineData;
@@ -245,7 +236,6 @@ class Section extends React.Component {
       onPaste={ this.handlePaste.bind(this) }
       onKeyDown={ this.handleKeyDown.bind(this) }
       onKeyUp={ this.handleKeyUp.bind(this) }
-      onClick={ this.handleClick.bind(this) }
       onFocus={ this.handleOnFocus.bind(this) }
       onBlur={ this.handleOnBlur.bind(this) }>
       { lineElements }

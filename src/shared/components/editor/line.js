@@ -6,7 +6,6 @@ const ReactDOM = require('react-dom');
 class Line extends React.Component {
   constructor (props, context) {
     super(props, context);
-    console.log('line ctor');
     const selected = this.props.selected ? 'selected' : '';
     this.state = {};
     this.enterPressed = false;
@@ -22,8 +21,6 @@ class Line extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    console.log(`${this.props.lineId} did update`);
-
     if (this.props.lineId === prevProps.lineId
       && this.props.text === prevProps.text
       && this.props.selected === prevProps.selected
@@ -48,7 +45,6 @@ class Line extends React.Component {
   }
 
   getDataForPost () {
-    console.log(this.getLineContent());
     return this.getLineContent();
   }
 

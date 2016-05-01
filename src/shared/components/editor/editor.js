@@ -12,7 +12,6 @@ class EditorComponent extends React.Component {
   constructor (props, context) {
     super(props, context);
 
-    console.log('editor created');
     this.sections = 0;
     this.lines = 0;
     this.state = { };
@@ -44,20 +43,18 @@ class EditorComponent extends React.Component {
   }
 
   submitRevision () {
-    // const data = sections.map((section) => )
-    console.log('submitting revision');
     const sectionContents = [];
     for (const section in this.refs) {
       const sectionContent = this.refs[section].getDataForPost();
       sectionContents.push(sectionContent);
     }
-    console.log(sectionContents);
+
     const postBody = { sectionData: sectionContents };
     AJAX.PostJSON(`/document/${this.props.routeParams.documentId}`, postBody, (response) => this.updated(JSON.parse(response)));
   }
 
   updated (response) {
-    console.log(response);
+    //TODO: do something with the successful response
   }
 
   render () {
