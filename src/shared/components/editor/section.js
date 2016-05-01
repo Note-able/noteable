@@ -46,7 +46,7 @@ class Section extends React.Component {
   getDataForPost () {
     console.log('section data being collected');
     const lineContents = [];
-    for (const line of this.props.section.lineData) {
+    for (const line of this.props.section.lineData) { // eslint-disable-line
       const lineContent = this.refs[`line${line.lineId}`].getDataForPost();
       lineContents.push(lineContent);
     }

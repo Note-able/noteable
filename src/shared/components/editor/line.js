@@ -2,9 +2,6 @@
 
 const React = require('react');
 const ReactDOM = require('react-dom');
-import { addLine } from './actions/editor-actions';
-import { updateText } from './actions/editor-actions';
-import { updateLines } from './actions/editor-actions';
 
 class Line extends React.Component {
   constructor (props, context) {

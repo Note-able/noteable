@@ -18,15 +18,17 @@ module.exports = class ChordLine extends React.Component {
   }
 
   componentDidUpdate () {
-    if(this.updateOffset)
+    if(this.updateOffset) {
       this.setCaretPosition.bind(this)(this.props.offset);
+    }
     this.updateOffset = true;
   }
 
   componentWillReceiveProps(nextProps) {
     let text = this.state.text;
-    if(text.length < nextProps.offset)
+    if(text.length < nextProps.offset) {
       text += new Array(nextProps.offset - text.length + 1).join(' ');
+    }
     this.setState({ contentEditable: true, text: text });
   }
 
@@ -46,7 +48,7 @@ module.exports = class ChordLine extends React.Component {
     this.setState({ contentEditable: true });
     this.updateOffset = false;
   }
-  
+
   getDataForPost () {
     return this.getLineContent();
   }
