@@ -18,7 +18,6 @@ module.exports = class SongsController extends React.Component {
   }
 
   loadSongs (songJson) {
-    console.log(songJson);
     const newSongData = songJson.map((song) => {
       return { title: song.title, dateCreated: song.date };
     });

@@ -15,7 +15,6 @@ class Profile extends React.Component {
   }
 
   loadUser (user) {
-    console.log(user);
     this.setState({ name: user.name, email: user.email, bio: user.bio, location: user.location, averageEventRating: user.average_event_rating, image: user.profileImage });
   }
 
@@ -39,7 +38,6 @@ class Profile extends React.Component {
   }
 
   updated (response) {
-    console.log(response);
     const parsedResponse = JSON.parse(response);
     this.setState({ image: parsedResponse.cloudStoragePublicUrl });
   }

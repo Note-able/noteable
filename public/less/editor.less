@@ -3,18 +3,18 @@
   font: @editor-font;
 
   .editor {
-  	background: white;
+    background: white;
     border: 10px solid black;
     flex: 3;
-  	height: 80%;
+    height: 80%;
     margin: 20px;
     padding: 10px;
 
-  	editor-line.selected {
-  		outline: none;
-  	}
+    editor-line.selected {
+      outline: none;
+    }
 
-  	.editor-line, .editor-recording {
+    .editor-line, .editor-recording {
       min-height: 20px;
       pointer-events: all;
       margin-bottom: 8px;
@@ -36,9 +36,38 @@
       outline: none;
     }
 
-    @keyframes blink { 
-      50% { border-color: #000; } 
+    .editor-tooltip {
+      background-image: radial-gradient(ellipse 100px 30px, #666 40%, #111);
+      border-radius: 5px;
+      display: inline-flex;
+      height: 25px;
+      width: 120px;
+
+      &:after {
+        border-top: solid 8px #444;
+        border-left: solid 10px transparent;
+        border-right: solid 10px transparent;
+        content: '';
+        position: absolute;
+        top: 90%;
+        left: 2px;
+      }
+
+      .tooltip-option {
+        margin: auto 0;
+        padding: 0 4px;
+        color: #F5F5F5;
+        border-left: 1px solid white;
+
+        &:first-child {
+          border-left: none;
+        }
+      }
     }
+  }
+
+  @keyframes blink {
+    50% { border-color: #000; } 
   }
 
   .record {

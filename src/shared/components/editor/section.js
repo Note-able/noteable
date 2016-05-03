@@ -5,6 +5,7 @@ const ReactDOM = require('react-dom');
 const Line = require('./line');
 const RecordingLine = require('./recordingLine');
 const ChordLine = require('./chordLine');
+const Tooltip = require('./toolTip');
 import { KeyCodes } from '../helpers/keyCodes';
 import { addLine } from './actions/editor-actions';
 import { deleteLine } from './actions/editor-actions';
@@ -143,6 +144,32 @@ class Section extends React.Component {
     this.isFocused = false;
   }
 
+  handleOnSelect (e) {
+    console.log(e);
+    console.log('selection event fired');
+    if(this.tooltip) {
+      ReactDOM.unmountComponentAtNode(this.refs.tooltip)
+    }
+
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    if(range.startOffset !== range.endOffset) {
+      this.tooltip = this.showTooltip(selection);
+    }
+  }
+
+  showTooltip (selection) {
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+
+    const tooltip = ReactDOM.render(
+      <Tooltip element={ selection.anchorNode.parentElement } rect={ rect }/>,
+      this.refs.tooltip
+    );
+
+    return tooltip;
+  }
+
   updateSelected (lineId) {
     this.shouldUpdate = false;
     const selectedIndex = this.props.section.lineData.findIndex((e) => { return e.lineId === lineId });
@@ -235,8 +262,10 @@ class Section extends React.Component {
       onKeyDown={ this.handleKeyDown.bind(this) }
       onKeyUp={ this.handleKeyUp.bind(this) }
       onFocus={ this.handleOnFocus.bind(this) }
-      onBlur={ this.handleOnBlur.bind(this) }>
+      onBlur={ this.handleOnBlur.bind(this) }
+      onSelect={ this.handleOnSelect.bind(this) }>
       { lineElements }
+      <div ref="tooltip" className="tooltip-container"></div>
     </div>
     );
   }

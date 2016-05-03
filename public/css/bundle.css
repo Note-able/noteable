@@ -367,6 +367,31 @@ body {
   animation-iteration-count: 1;
   outline: none;
 }
+.editor-container .editor .editor-tooltip {
+  background-image: radial-gradient(ellipse 100px 30px, #666666 40%, #111111);
+  border-radius: 5px;
+  display: inline-flex;
+  height: 25px;
+  width: 120px;
+}
+.editor-container .editor .editor-tooltip:after {
+  border-top: solid 8px #444;
+  border-left: solid 10px transparent;
+  border-right: solid 10px transparent;
+  content: '';
+  position: absolute;
+  top: 90%;
+  left: 2px;
+}
+.editor-container .editor .editor-tooltip .tooltip-option {
+  margin: auto 0;
+  padding: 0 4px;
+  color: #F5F5F5;
+  border-left: 1px solid white;
+}
+.editor-container .editor .editor-tooltip .tooltip-option:first-child {
+  border-left: none;
+}
 @keyframes blink {
   50% {
     border-color: #000;
