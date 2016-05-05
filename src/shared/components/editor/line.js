@@ -86,6 +86,7 @@ class Line extends React.Component {
   }
 
   handleClick () {
+    console.log('click');
     this.props.updateSelected(this.props.lineId);
   }
 

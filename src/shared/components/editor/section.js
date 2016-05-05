@@ -4,7 +4,7 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const Line = require('./line');
 const RecordingLine = require('./recordingLine');
-const ChordLine = require('./chordLine');
+const Chord = require('./chord');
 const Tooltip = require('./toolTip');
 import { KeyCodes } from '../helpers/keyCodes';
 import { addLine } from './actions/editor-actions';
@@ -84,7 +84,7 @@ class Section extends React.Component {
       and then calling the function for that keycode if it exists instead of doing if else for all possible keys that have functions.
       But for relatively small numbers of hotkeys/overrides it doesn't matter */
     if(e.keyCode === KeyCodes.enter) {
-      if(this.props.section.lineData[this.props.section.selectedIndex].type !== 'chord'){
+      if(!e.target.classList.contains('editor-chord')){
         e.preventDefault();
         this.enterPressed = true;
         const selection = window.getSelection();
@@ -119,11 +119,20 @@ class Section extends React.Component {
     } else if (e.keyCode === KeyCodes.c) { // new chord Line
       if(this.keyMap[KeyCodes.alt] && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        if(this.props.section.lineData[this.props.section.selectedIndex].type !== 'chord' && this.props.section.lineData[this.props.section.selectedIndex-1].type !== 'chord')
-          this.props.dispatch(addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex, 'chord', null, true, window.getSelection().baseOffset));
-        else
-          this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex - 1, window.getSelection().baseOffset));
+        // TODO: Add keyboard shortcut for chord
       }
+    }
+  }
+
+  handleOnClick() {
+    if(this.tooltip) {
+      ReactDOM.unmountComponentAtNode(this.refs.tooltip)
+    }
+
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    if(range.startOffset !== range.endOffset) {
+      this.tooltip = this.showTooltip(selection);
     }
   }
 
@@ -144,30 +153,41 @@ class Section extends React.Component {
     this.isFocused = false;
   }
 
-  handleOnSelect (e) {
-    console.log(e);
-    console.log('selection event fired');
-    if(this.tooltip) {
-      ReactDOM.unmountComponentAtNode(this.refs.tooltip)
-    }
-
-    const selection = window.getSelection();
-    const range = selection.getRangeAt(0);
-    if(range.startOffset !== range.endOffset) {
-      this.tooltip = this.showTooltip(selection);
-    }
-  }
-
   showTooltip (selection) {
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
 
     const tooltip = ReactDOM.render(
-      <Tooltip element={ selection.anchorNode.parentElement } rect={ rect }/>,
+      <Tooltip element={ selection.anchorNode.parentElement } rect={ rect } addChord={ this.addChord.bind(this) } range={range}/>,
       this.refs.tooltip
     );
 
     return tooltip;
+  }
+
+  handleOnSelect(e) {
+    console.log(e);
+    const selection = window.getSelection();
+  }
+
+  addChord () {
+    console.log('add chord');
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const firstCharRange = range.cloneRange();
+    firstCharRange.setEnd(range.startContainer, range.startOffset + 1);
+
+    const container = document.createElement('span');
+    firstCharRange.surroundContents(container);
+    const character = container.innerText;
+    const chord = ReactDOM.render(
+      <Chord character={ character } updateSelectedToTextLine={ () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex, range.endOffset))}}/>,
+      container
+    );
+
+    if(this.tooltip) {
+      ReactDOM.unmountComponentAtNode(this.refs.tooltip)
+    }
   }
 
   updateSelected (lineId) {
@@ -241,19 +261,6 @@ class Section extends React.Component {
           dispatch = { this.props.dispatch }></Line>);
       } else if (line.type === 'recording') {
         return (<RecordingLine key={ line.lineId } lineId={ line.lineId }></RecordingLine>);
-      } else if (line.type === 'chord') {
-        const selected = line.lineId === this.props.section.lineData[this.props.section.selectedIndex].lineId;
-        const offset = selected ? this.props.section.offset : 0;
-        return (<ChordLine key={ line.lineId }
-          ref={`line${ line.lineId }`}
-          lineId={ line.lineId }
-          text={ line.text }
-          offset={ offset }
-          type={ line.type }
-          updateSelectedToTextLine={ () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex + 1, 0))}}
-          updateSelected={ this.updateSelected.bind(this) }>
-          </ChordLine>
-        );
       }
     });
     return (
@@ -263,6 +270,7 @@ class Section extends React.Component {
       onKeyUp={ this.handleKeyUp.bind(this) }
       onFocus={ this.handleOnFocus.bind(this) }
       onBlur={ this.handleOnBlur.bind(this) }
+      onClick={ this.handleOnClick.bind(this) }
       onSelect={ this.handleOnSelect.bind(this) }>
       { lineElements }
       <div ref="tooltip" className="tooltip-container"></div>

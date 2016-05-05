@@ -7,6 +7,12 @@ module.exports = class Tooltip extends React.Component {
     super(props, context);
   }
 
+  handleMouseDown(handler, e) {
+    console.log('mousedown');
+    handler();
+    e.preventDefault();
+  }
+
   render() {
     const tooltipStyle = {
       position: 'absolute',
@@ -16,8 +22,8 @@ module.exports = class Tooltip extends React.Component {
 
     return (
       <div ref="tooltip" className = "editor-tooltip" style={tooltipStyle}>
-        <div className="tooltip-option" onClick={ this.props.recordingLine }>Record</div>
-        <div className="tooltip-option" onClick={ this.props.ChordLine }>Chord</div>
+        <div className="tooltip-option">Record</div>
+        <div className="tooltip-option" onMouseDown={ this.handleMouseDown.bind(this, this.props.addChord) }>Chord</div>
       </div>
     );
   }
