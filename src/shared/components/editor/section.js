@@ -158,7 +158,7 @@ class Section extends React.Component {
     const rect = range.getBoundingClientRect();
 
     const tooltip = ReactDOM.render(
-      <Tooltip element={ selection.anchorNode.parentElement } rect={ rect } addChord={ this.addChord.bind(this) } range={range}/>,
+      <Tooltip element={ selection.anchorNode.parentElement } rect={ rect } addChord={ this.addChord.bind(this) } addRecordingLine={ this.props.dispatch.bind(this, addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex + 1, 'recording', '', false)) }/>,
       this.refs.tooltip
     );
 
@@ -181,7 +181,7 @@ class Section extends React.Component {
     firstCharRange.surroundContents(container);
     const character = container.innerText;
     const chord = ReactDOM.render(
-      <Chord character={ character } updateSelectedToTextLine={ () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex, range.endOffset))}}/>,
+      <Chord character={ character } updateSelectedToTextLine={ () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex, range.endOffset + 1))}}/>,
       container
     );
 

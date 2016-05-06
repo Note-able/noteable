@@ -22,7 +22,7 @@ module.exports = class Tooltip extends React.Component {
 
     return (
       <div ref="tooltip" className = "editor-tooltip" style={tooltipStyle}>
-        <div className="tooltip-option">Record</div>
+        <div className="tooltip-option" onMouseDown={ this.handleMouseDown.bind(this, this.props.addRecordingLine) }>Record</div>
         <div className="tooltip-option" onMouseDown={ this.handleMouseDown.bind(this, this.props.addChord) }>Chord</div>
       </div>
     );
