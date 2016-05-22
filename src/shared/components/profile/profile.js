@@ -9,7 +9,7 @@ class Profile extends React.Component {
   }
 
   componentDidMount () {
-    AJAX.Get(`/user/${ this.props.params.id }`, (response) => {
+    AJAX.Get(`/me`, (response) => {
       this.loadUser(JSON.parse(response));
     });
   }

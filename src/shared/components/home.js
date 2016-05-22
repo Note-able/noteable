@@ -22,6 +22,7 @@ module.exports = class HomeController extends React.Component {
     this.showSignIn = this._showSignIn.bind(this);
     this.showRegister = this._showRegister.bind(this);
     this.registerUser = this._registerUser.bind(this);
+    this.hideOverlay = this._hideOverlay.bind(this);
   }
 
   componentDidMount() {
@@ -45,11 +46,19 @@ module.exports = class HomeController extends React.Component {
     }
   }
 
+  _hideOverlay() {
+    this.setState({
+      showAccountDialog: false
+    });
+    document.body.style.overflow = 'scroll';
+  }
+
   _showRegister() {
     this.setState({
       showAccountDialog: true,
       showSignInDialog: false
     });
+    document.body.style.overflow = 'hidden';
   }
 
   _showSignIn() {
@@ -57,6 +66,7 @@ module.exports = class HomeController extends React.Component {
       showAccountDialog: true,
       showSignInDialog: true
     });
+    document.body.style.overflow = 'hidden';
   }
 
   _showOptions() {
@@ -72,7 +82,7 @@ module.exports = class HomeController extends React.Component {
   renderUserOptions () {
     return (
       <div className="user-options">
-        <a href={`profile/${this.state.userId}`}><div className="dropdown-button">Profile</div></a>
+        <a href={`/profile`}><div className="dropdown-button">Profile</div></a>
         <a href="/editor"><div className="dropdown-button">Editor</div></a>
         <a href="/logout"><div className="dropdown-button">Sign out</div></a>
       </div>
@@ -93,7 +103,7 @@ module.exports = class HomeController extends React.Component {
 
   renderSignInDialog() {
     return [
-      <div className="signin-background" onClick={this.showSignIn}/>,
+      <div className="signin-background" onClick={this.hideOverlay}/>,
       <div className="signin-dialog">
         {this.state.showSignInDialog ? <Login switchToRegister={this.showRegister}/> : <Register registerUser={this.registerUser} switchToLogin={this.showSignIn}/>}
       </div>
@@ -110,6 +120,7 @@ module.exports = class HomeController extends React.Component {
         </div>
         <div className="main-content">
           <div className="header">
+            <div className="darken" />
             <h1 className="header__title"><span className="cursor">Be Inspired.</span></h1>
             <h5 className="header__sub-title">Connect, Create, and Collaborate with artists near you</h5>
             <div className="account-registration">
