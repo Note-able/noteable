@@ -5,27 +5,21 @@ body {
   margin: 0;
 }
 
+@-webkit-keyframes blink {
+  0% { border-right: 2px solid #ffffff; };
+  49% { border-right: 2px solid #ffffff; };
+  50% { border-right: 2px solid transparent; };
+  99% { border-right: 2px solid transparent; };
+  100% { border-right: 2px solid #ffffff; };
+};
+
 @keyframes blink {
-  0% {
-    border-right: 2px solid black;
-  }
-  
-  49% {
-    border-right: 2px solid black;
-  }
-  
-  50% {
-    border-right: 2px solid transparent;
-  }
-  
-  99% {
-    border-right: 2px solid transparent;
-  }
-  
-  100% {
-    border-right: 2px solid black;
-  }
-}
+  0% { border-right: 2px solid #ffffff; }
+  49% { border-right: 2px solid #ffffff; }
+  50% { border-right: 2px solid transparent; }
+  99% { border-right: 2px solid transparent; }
+  100% { border-right: 2px solid #ffffff; } 
+};
 
 .home-container {
   .navbar {
@@ -36,7 +30,7 @@ body {
     .signin-dialog {
       background: white;
       bottom: 0;
-      height: 300px;
+      height: 400px;
       left: 0;
       margin: auto;
       position: absolute;
@@ -124,22 +118,31 @@ body {
     position: relative;
     width: 100%;
     
+    .darken {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      background: url('/images/people-coffee-notes-tea.jpg');
+      background-size: cover;
+      z-index: -1;
+    }
+    
     .header {
+      background: rgba(0, 0, 0, 0.35);
       border-bottom: 1px solid #ccc;
-      left: 0;
+      color: #ffffff;
       margin: auto;
       padding: 0 0 100px;
-      right: 0;
+      position: relative;
       text-align: center;
-      top: 0;
       
       &__title {
         font-size: 5em;
-        margin: 20px 0 0;
+        margin: 0;
         
         .cursor {
-          animation: blink 1.25s infinite;
-          -webkit-animation: blink 1.25s infinite;
+          animation: blink 1s infinite;
+          -webkit-animation: blink 1s infinite;
         }
       }
       

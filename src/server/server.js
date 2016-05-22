@@ -101,7 +101,7 @@ app.get(`/auth/facebook`,
   passport.authenticate(`facebook`));
 
 app.get('/auth/local',
-  passport.authenticate('local', { failureRedirect: '/login' }),
+  passport.authenticate('local'),
   (req, res) => {
     res.redirect('/');
   });
@@ -109,7 +109,7 @@ app.get('/auth/local',
 app.get(`/auth/facebook/callback`,
   passport.authenticate(`facebook`, { failureRedirect: `/login` }),
   (req, res) => {
-    res.redirect(`/user/me`);
+    res.redirect(`/`);
   });
 
 app.get(`/test`, ensureAuthenticated, (req, res) => {
@@ -124,7 +124,7 @@ app.get(`/logout`, (req, res) => {
 });
 
 app.get('/me', ensureAuthenticated, (req, res) => {
-  res.status(200).send({userId: req.user.id});
+  res.redirect(`/user/${req.user.id}`);
   //track here
 });
 
