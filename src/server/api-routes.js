@@ -113,6 +113,31 @@ module.exports = function (app, options) {
     });
   });
 
+  app.post('/user/follow/:userId', options.auth, (req, res) => {
+    if (!req.user) {
+      res.status(400).send();
+    }
+
+    if (req.user.id === parseInt(req.params.userId)) {
+      res.status(204).send();
+    }
+
+    options.connect(options.database, (connection) => {
+      connection.client.query(`
+        INSERT INTO followers (origin, destination)
+        SELECT 1, 2
+        WHERE
+          NOT EXISTS (
+            SELECT * FROM followers WHERE origin = ${req.user.id} AND destination = ${req.params.userId}
+          );
+      `).on('error', error => { console.log(`error following user: ${error}`); })
+      .on('end', () => {
+        connection.fin();
+        res.status(200).send();
+      });
+    });
+  });
+
   /***PICTURES API***/
 
   const uploadPicture = (req, res, next) => {

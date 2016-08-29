@@ -47,7 +47,7 @@ module.exports = class Register extends React.Component {
   render () {
     return(
       <div className="register-container">
-        <div className="register-container__header">Sign In</div>
+        <div className="register-container__header">Register</div>
         <form className="register-form">
           <input className="register-form__username" name="username" type="text" placeholder="Username" ref="username"/>
           <input className="register-form__password__verify" name="email" placeholder="Email" ref="email"/>

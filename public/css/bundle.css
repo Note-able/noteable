@@ -54,6 +54,30 @@
   font-family: 'Source Sans Pro Light';
   src: url('/fonts/SourceSansPro-Light.otf');
 }
+@font-face {
+  font-family: 'Libre Franklin Regular';
+  src: url('/fonts/LibreFranklin-Regular.otf');
+}
+@font-face {
+  font-family: 'Libre Franklin Light';
+  src: url('/fonts/LibreFranklin-Thin.otf');
+}
+@font-face {
+  font-family: 'San Francisco Display Regular';
+  src: url('/fonts/SanFranciscoDisplay-Regular.otf');
+}
+@font-face {
+  font-family: 'San Francisco Display Light';
+  src: url('/fonts/SanFranciscoDisplay-Light.otf');
+}
+@font-face {
+  font-family: 'San Francisco Display Medium';
+  src: url('/fonts/SanFranciscoDisplay-Medium.otf');
+}
+@font-face {
+  font-family: 'San Francisco Display Thin';
+  src: url('/fonts/SanFranciscoDisplay-Thin.otf');
+}
 .auth-container {
   border: 1px solid #b1b1b1;
   border-radius: 4px;
@@ -66,12 +90,22 @@
   transition: all 0.2s cubic-bezier(0, 1.1, 1, 1);
   width: 275px;
 }
+.login-container,
+.register-container {
+  font-family: 'Ubuntu';
+  border-radius: 2px;
+}
 .login-container__header,
 .register-container__header {
+  background: #f46b45;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #f46b45, #eea849);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #f46b45, #eea849);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   color: white;
-  font: 14px BlinkMacSystemFont;
-  line-height: 30px;
-  background: #569a00;
+  font: 16px BlinkMacSystemFont;
+  line-height: 48px;
   text-align: center;
 }
 .login-container .signin-form,
@@ -99,7 +133,7 @@
 .register-container .register-form__password__verify {
   border: 1px solid #b1b1b1;
   border-radius: 2px;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 20px;
   margin: 10px 0;
   outline: none;
@@ -122,7 +156,7 @@
 .register-container .signin-form__submit-button:hover,
 .login-container .register-form__submit-button:hover,
 .register-container .register-form__submit-button:hover {
-  background: #1a70b8;
+  background: #5C8CA7;
 }
 .login-container .button-container,
 .register-container .button-container {
@@ -133,17 +167,19 @@
 }
 .login-container .button-container__open-register,
 .register-container .button-container__open-register {
-  color: #1a70b8;
+  color: #5C8CA7;
   margin: 15px 0 0;
+  text-align: center;
 }
 .login-container .button-container__submit-button,
 .register-container .button-container__submit-button {
-  background: #3b5998;
+  background: #3B5998;
   color: white;
 }
 .login-container .button-container__submit-button:hover,
 .register-container .button-container__submit-button:hover {
-  background: #5772ac;
+  background: #5772AC;
+  color: #ffffff;
 }
 .login-container .button-container__submit-button,
 .register-container .button-container__submit-button,
@@ -152,7 +188,7 @@
   border: none;
   border-radius: 100px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   height: 30px;
   width: 100%;
 }
@@ -161,6 +197,29 @@ body {
   background-size: cover;
   font-family: sans-serif;
   margin: 0;
+}
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.testing-horizontal {
+  width: 100%;
+  height: 3px;
+  background: black;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+.testing-vertical {
+  width: 3px;
+  height: 100%;
+  background: black;
+  position: fixed;
+  left: 0;
+  right: 0;
+  margin: auto;
 }
 @-webkit-keyframes blink {
   0% {
@@ -196,136 +255,209 @@ body {
     border-right: 2px solid #ffffff;
   }
 }
-.home-container .navbar {
-  border-bottom: 1px solid #ccc;
-  height: 48px;
+.navbar {
+  background: #f46b45;
+  /* fallback for old browsers */
+  height: 44px;
+  position: fixed;
+  top: 0;
   width: 100%;
+  z-index: 2;
+  -webkit-box-shadow: 0px -3px 8px 2px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px -3px 8px 2px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px -3px 8px 2px rgba(0, 0, 0, 0.75);
 }
-.home-container .navbar .signin-dialog {
+.navbar .signin-dialog {
   background: white;
-  bottom: 0;
-  height: 400px;
   left: 0;
-  margin: auto;
+  margin: 100px auto;
   position: absolute;
   right: 0;
-  top: 0;
   width: 300px;
   z-index: 2;
 }
-.home-container .navbar .signin-background {
+.navbar .home-button {
+  color: #ffffff;
+  float: left;
+  font: 200 24px 'Lobster';
+  height: 44px;
+  line-height: 44px;
+  padding: 0 60px 0 28px;
+  width: 100px;
+}
+.navbar .signin-background {
   background: rgba(204, 204, 204, 0.5);
   height: 100%;
-  position: absolute;
+  position: fixed;
   width: 100%;
   z-index: 1;
 }
-.home-container .navbar a {
+.navbar a {
   color: inherit;
   text-decoration: none;
 }
-.home-container .navbar .user-options {
-  border: 1px solid #ccc;
+.navbar .user-options {
+  background: rgba(0, 0, 0, 0.59);
+  color: white;
   position: absolute;
-  right: 24px;
-  top: 48px;
-  width: 120px;
+  right: 0;
+  top: 44px;
+  width: 200px;
   z-index: 2;
 }
-.home-container .navbar .user-options .dropdown-button {
-  font-family: 'Bariol';
-  height: 36px;
-  line-height: 36px;
+.navbar .user-options .dropdown-button {
+  font: 400 16px 'San Francisco Display Light';
+  height: 48px;
+  line-height: 48px;
   text-align: center;
   width: 100%;
   z-index: 2;
 }
-.home-container .navbar .user-options .dropdown-button:hover {
-  background: #4b6cb7;
+.navbar .user-options .dropdown-button:hover {
+  background: #5C8CA7;
   border: none;
   color: white;
-  font-family: 'Bariol';
-  font-size: 16px;
-}
-.home-container .navbar .signin-button {
-  float: right;
-  font-family: 'Bariol';
-  height: 48px;
+  font: 400 16px 'San Francisco Display Light';
   line-height: 48px;
-  margin-right: 24px;
+}
+.navbar .signin-button {
+  border: 1px solid #ffffff;
+  border-radius: 2px;
+  color: #ffffff;
+  float: right;
+  font: 400 16px 'San Francisco Display Light';
+  height: 28px;
+  letter-spacing: .5px;
+  line-height: 28px;
+  margin: 8px 24px 8px 0;
   text-align: center;
   width: 100px;
   z-index: 2;
 }
-.home-container .navbar .signin-button:hover {
-  background: #4b6cb7;
-  border: none;
+.navbar .signin-button:hover {
+  background: #5C8CA7;
+  border-color: transparent;
   color: white;
-  font-family: 'Bariol';
-  font-size: 16px;
+  font: 400 16px 'San Francisco Display Light';
+  line-height: 28px;
 }
-.home-container .navbar .home {
+.navbar .home {
   background: url('/images/harmburger.svg') no-repeat center;
-  background-size: 48px;
+  background-size: 44px;
   border-right: 1px solid #ccc;
   cursor: pointer;
   font-family: 'Bariol';
-  height: 48px;
+  height: 44px;
   float: right;
-  line-height: 56px;
+  line-height: 44px;
   text-align: center;
   width: 76px;
 }
 .home-container .main-content {
   font-family: 'Garamond';
-  height: 100%;
+  margin: 44px 0 0;
   position: relative;
   width: 100%;
 }
-.home-container .main-content .darken {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  background: url('/images/people-coffee-notes-tea.jpg');
-  background-size: cover;
-  z-index: -1;
+@media (min-width: 1350px) {
+  .home-container .main-content .header {
+    background-position-y: -200px !important;
+  }
 }
 .home-container .main-content .header {
-  background: rgba(0, 0, 0, 0.35);
+  background: url('/images/musician_fog_3.jpg');
+  background-size: cover;
   border-bottom: 1px solid #ccc;
   color: #ffffff;
   margin: auto;
-  padding: 0 0 100px;
   position: relative;
-  text-align: center;
+  text-align: left;
 }
-.home-container .main-content .header__title {
+.home-container .main-content .header .header-container {
+  background: rgba(0, 0, 0, 0.15);
+  min-height: 400px;
+}
+.home-container .main-content .header .header-container__title {
+  font: 200 100px 'Lobster';
   font-size: 5em;
+  letter-spacing: 4px;
   margin: 0;
+  padding: 100px 100px 0;
 }
-.home-container .main-content .header__title .cursor {
+.home-container .main-content .header .header-container__title .cursor {
   animation: blink 1s infinite;
   -webkit-animation: blink 1s infinite;
 }
-.home-container .main-content .header__sub-title {
+.home-container .main-content .header .header-container__sub-title {
   font-size: 2em;
-  margin: 0 0 32px;
+  letter-spacing: .5px;
+  margin: 0 0 16px;
+  padding: 0 100px;
 }
-.home-container .main-content .header .account-registration {
-  display: flex;
+.home-container .main-content .header .header-container .demo-container {
+  bottom: 10px;
+  left: 0;
   margin: auto;
+  position: absolute;
+  right: 0;
+  text-align: center;
+}
+.home-container .main-content .header .header-container .demo-container__button {
+  background: white;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font: 400 16px 'San Francisco Display Light';
+  height: 40px;
+  width: 150px;
+}
+.home-container .main-content .header .header-container .account-registration {
+  display: flex;
+  padding: 0 100px 150px;
   width: 600px;
 }
-.home-container .main-content .header .account-registration__component,
-.home-container .main-content .header .account-registration__submit {
+.home-container .main-content .header .header-container .account-registration .register-button {
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  color: #ffffff;
+  font: 400 16px 'San Francisco Display Light';
+  height: 40px;
+  letter-spacing: .5px;
+  padding: 4px;
+  width: 120px;
+  background-color: #5C8CA7;
+}
+.home-container .main-content .header .header-container .account-registration .register-button:hover {
+  background-color: #ffffff;
+  color: #eea849;
+}
+.home-container .main-content .header .header-container .account-registration .signin-button {
+  background: transparent;
+  border: 1px solid #ffffff;
+  border-radius: 2px;
+  color: white;
+  cursor: pointer;
+  font: 400 16px 'San Francisco Display Light';
+  height: 40px;
+  margin: 0 10px;
+  padding: 4px;
+  width: 120px;
+}
+.home-container .main-content .header .header-container .account-registration .signin-button:hover {
+  background-color: #ffffff;
+  color: #eea849;
+}
+.home-container .main-content .header .header-container .account-registration__component,
+.home-container .main-content .header .header-container .account-registration__submit {
   flex: 3;
 }
-.home-container .main-content .header .account-registration__component .email,
-.home-container .main-content .header .account-registration__submit .email,
-.home-container .main-content .header .account-registration__component .password,
-.home-container .main-content .header .account-registration__submit .password,
-.home-container .main-content .header .account-registration__component .submit-button,
-.home-container .main-content .header .account-registration__submit .submit-button {
+.home-container .main-content .header .header-container .account-registration__component .email,
+.home-container .main-content .header .header-container .account-registration__submit .email,
+.home-container .main-content .header .header-container .account-registration__component .password,
+.home-container .main-content .header .header-container .account-registration__submit .password,
+.home-container .main-content .header .header-container .account-registration__component .submit-button,
+.home-container .main-content .header .header-container .account-registration__submit .submit-button {
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
@@ -333,41 +465,54 @@ body {
   margin: auto;
   padding: 4px;
 }
-.home-container .main-content .header .account-registration__component .submit-button,
-.home-container .main-content .header .account-registration__submit .submit-button {
+.home-container .main-content .header .header-container .account-registration__component .submit-button,
+.home-container .main-content .header .header-container .account-registration__submit .submit-button {
   cursor: pointer;
   font-family: 'Garamond';
   width: 120px;
 }
-.home-container .main-content .header .account-registration__component .email,
-.home-container .main-content .header .account-registration__submit .email,
-.home-container .main-content .header .account-registration__component .password,
-.home-container .main-content .header .account-registration__submit .password {
+.home-container .main-content .header .header-container .account-registration__component .email,
+.home-container .main-content .header .header-container .account-registration__submit .email,
+.home-container .main-content .header .header-container .account-registration__component .password,
+.home-container .main-content .header .header-container .account-registration__submit .password {
   font-family: 'Garamond';
   width: 200px;
 }
-.home-container .main-content .header .account-registration__submit {
+.home-container .main-content .header .header-container .account-registration__submit {
   flex: 1;
 }
 .home-container .main-content .connect,
-.home-container .main-content .create {
+.home-container .main-content .create,
+.home-container .main-content .collaborate {
   display: flex;
   height: 500px;
   padding: 20px;
 }
 .home-container .main-content .connect .graphic,
-.home-container .main-content .create .graphic {
+.home-container .main-content .create .graphic,
+.home-container .main-content .collaborate .graphic {
   flex: 1;
 }
 .home-container .main-content .connect .content,
-.home-container .main-content .create .content {
+.home-container .main-content .create .content,
+.home-container .main-content .collaborate .content {
   flex: 1;
   font-size: 20px;
   line-height: 32px;
 }
+.home-container .main-content .collaborate {
+  background: url('/images/people-woman-coffee-meeting.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.home-container .main-content .collaborate .content {
+  background: rgba(0, 0, 0, 0.69);
+  color: white;
+  padding: 20px;
+}
 .editor-container {
   display: flex;
-  font: 500 14px 'Bariol';
+  font: 500 16px 'Bariol';
 }
 .editor-container .editor {
   background: white;
@@ -434,7 +579,7 @@ body {
   padding: 4px;
 }
 .editor-container .messages-container .messages-wrapper .message-feed__message--me {
-  background: #eeeeee;
+  background: #eee;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 0;
   margin: 15px 45px 0 55px;
@@ -560,7 +705,7 @@ body {
   width: 100%;
 }
 .event-controller-container .create-event-container .event-form .event-form-wrapper .submit-event {
-  background: #1a70b8;
+  background: #5C8CA7;
   border: none;
   border-radius: 4px;
   color: white;
@@ -959,4 +1104,193 @@ body {
 .profile-three .profile-container .user-display-container {
   flex: 10 600px;
   -webkit-flex: 10 600px;
+}
+.profile-four .navbar {
+  background: #f46b45;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #f46b45, #eea849);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #f46b45, #eea849);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  height: 56px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+  -webkit-box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.75);
+}
+.profile-four .profile-container {
+  margin: 44px 0 0;
+}
+.app-container .navbar button {
+  background: none;
+  border: none;
+  border-left: 1px solid #eee;
+  color: #ffffff;
+  float: right;
+  font-size: 14px;
+  height: 100%;
+  outline: none;
+  width: 150px;
+}
+.app-container .profile-container {
+  margin: 44px 350px 0 0;
+  position: relative;
+}
+.app-container .profile-container .profile-header {
+  position: relative;
+}
+.app-container .profile-container .profile-header .filter {
+  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('/images/mountains_fog.jpg');
+  background-size: cover;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: -1;
+}
+.app-container .profile-container .profile-header .isLooking {
+  background: #5C8CA7;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  color: white;
+  font: 200 16px 'San Francisco Display Light';
+  height: 48px;
+  left: 20px;
+  line-height: 48px;
+  position: fixed;
+  text-align: center;
+  top: 44px;
+  width: 200px;
+}
+.app-container .profile-container .profile-header .uploader {
+  display: none;
+}
+.app-container .profile-container .profile-header .profile {
+  box-sizing: border-box;
+  color: white;
+  font: 200 16px 'San Francisco Display Light';
+  margin: 44px 0 0;
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+}
+.app-container .profile-container .profile-header .profile__image {
+  background-image: url('/images/railroad.jpeg');
+  background-position: center;
+  background-size: cover;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  height: 100px;
+  margin: auto;
+  width: 100px;
+}
+.app-container .profile-container .profile-header .profile__name {
+  font: 200 48px 'Garamond';
+  padding: 8px;
+}
+.app-container .profile-container .profile-header .profile__title {
+  padding: 4px;
+}
+.app-container .profile-container .profile-header .profile__follow,
+.app-container .profile-container .profile-header .profile__message {
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font: 400 16px 'San Francisco Display Light';
+  height: 32px;
+  margin: 12px;
+  width: 100px;
+}
+.app-container .profile-container .profile-header .profile__follow {
+  background: #E79D10;
+}
+.app-container .profile-container .profile-header .profile__follow:hover {
+  background: #D7920F;
+}
+.app-container .profile-container .profile-header .profile__message {
+  background: #F55923;
+}
+.app-container .profile-container .profile-header .profile__message:hover {
+  background: #F3470B;
+}
+.app-container .profile-container .profile-about {
+  padding: 24px;
+}
+.app-container .profile-container .profile-about__title {
+  font: 200 36px 'San Francisco Display Light';
+}
+.app-container .profile-container .profile-about__content {
+  font: 200 16px 'San Francisco Display Light';
+}
+.app-container .profile-container .profile-about__nav-bar {
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 -3px 8px 0 rgba(0, 0, 0, 0.2);
+  height: 44px;
+  width: 100%;
+}
+.app-container .profile-container .profile-about__nav-bar button {
+  background: none;
+  border: none;
+  border-right: 1px solid #eee;
+  font: 400 16px 'San Francisco Display Light';
+  height: 44px;
+  line-height: 44px;
+  width: 100px;
+}
+.app-container .navigation-drawer__pullout {
+  background: rgba(0, 0, 0, 0.4);
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  height: 48px;
+  position: fixed;
+  right: 0;
+  top: 100px;
+  width: 38px;
+}
+.app-container .navigation-drawer__pullout--is-open {
+  right: 350px;
+}
+.app-container .navigation-drawer__content {
+  background: #ffffff;
+  box-shadow: -3px 6px 3px -1px rgba(0, 0, 0, 0.4);
+  bottom: 0;
+  position: fixed;
+  right: 0;
+  top: 44px;
+  width: 350px;
+}
+.app-container .navigation-drawer__content__filter-bar {
+  border: 1px solid #eee;
+  border-radius: 2px;
+  flex: 1;
+  font: 400 16px 'San Francisco Display Light';
+  height: 32px;
+  line-height: 32px;
+  margin: 8px;
+  outline: none;
+  padding: 4px;
+  text-align: center;
+}
+.app-container .navigation-drawer__content__filter-bar-container {
+  display: flex;
+}
+.app-container .navigation-drawer__content__options {
+  border-bottom: 1px solid #eee;
+  border-top: 1px solid #eee;
+  display: flex;
+  width: 100%;
+}
+.app-container .navigation-drawer__content__options div {
+  cursor: pointer;
+  flex: 1;
+  font: 400 16px 'San Francisco Display Light';
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+}
+.app-container .navigation-drawer__content__options div:not(:last-child) {
+  border-right: 1px solid #eee;
 }

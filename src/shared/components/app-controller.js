@@ -30,6 +30,7 @@ module.exports = class AppController extends React.Component {
     return(
       <div>
         <link href="/css/bundle.css" rel="stylesheet" type="text/css"/>
+        <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" />
         { this.props.location.pathname === '/' ? this.renderHome() : this.props.children }
       </div>
     );

@@ -1,5 +1,6 @@
 var webpack = require('webpack');
 var cleanWebpack = require('clean-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   devtool: 'inline-source-map',
@@ -16,6 +17,9 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
+    new ExtractTextPlugin('style.css', {
+      allChunks: true,
+    }),
   ],
   resolve: {
     extensions: ['', '.js'],
@@ -27,7 +31,7 @@ module.exports = {
         test: /\.js?$/,
         loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,plugins[]=transform-es2015-block-scoping,plugins[]=transform-es2015-classes,plugins[]=transform-react-jsx'],
         exclude: /(node_modules)/,
-      }
+      },
     ]
-  }
+  },
 }
