@@ -29,7 +29,7 @@ module.exports = {
     loaders: [
       {
         test: /\.js?$/,
-        loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,plugins[]=transform-es2015-block-scoping,plugins[]=transform-es2015-classes,plugins[]=transform-react-jsx'],
+        loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,plugins[]=transform-es2015-block-scoping,plugins[]=transform-es2015-classes,plugins[]=transform-react-jsx,plugins[]=transform-class-properties'],
         exclude: /(node_modules)/,
       },
     ]

@@ -113,7 +113,7 @@ const editorSection = ( state = {}, action) => {
   }
 }
 
-const editor = (state = {}, action) => {
+const editorReducer = (state = {}, action) => {
   switch (action.type) {
     case 'DEFAULT_EDITOR':
       return {
@@ -153,4 +153,4 @@ const editor = (state = {}, action) => {
   }
 };
 
-module.exports = editor;
+module.exports = editorReducer;
