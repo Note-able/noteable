@@ -20,15 +20,16 @@
 @open: 'Open Sans';
 @bariol: 'Bariol';
 @franklin: 'Libre Franklin Regular';
-@normal: 'San Francisco Display Light';
+@normal: 'Roboto';
 @lobster: 'Lobster';
 @garamond: 'Garamond';
-@disp_thin: 'San Francisco Display Thin';
+@disp_thin: 'Roboto Thin';
 
 @gigantic-font-size: 100px;
 @massive-font-size: 48px;
-@title-font-size: 36px;
+@title-font-size: 40px;
 @large-font-size: 24px;
+@medium-font-size: 18px;
 @normal-font-size: 16px;
 @message-font-size: 13px;
 
@@ -37,18 +38,24 @@
 
 @normal-line-height: 20px;
 
-@normal-weight: 400;
-@light-weight: 200;
+@bold-weight: 700;
+@heavy-weight: 400;
+@normal-weight: 200;
+@thin-weight: 100;
 
-@gigantic-lobster-font: @light-weight @gigantic-font-size @lobster;
+@gigantic-lobster-font: @normal-weight @gigantic-font-size @lobster;
 
-@massive-garamond-font: @light-weight @massive-font-size @garamond;
-@massive-font: @light-weight @massive-font-size @disp_thin;
+@massive-garamond-font: @normal-weight @massive-font-size @garamond;
+@massive-font: @normal-weight @massive-font-size @disp_thin;
 
-@large-lobster-font: @light-weight @large-font-size @lobster;
+@large-lobster-font: @normal-weight @large-font-size @lobster;
+@large-font: @normal-weight @large-font-size @normal;
 
-@normal-font: @normal-weight @normal-font-size @normal;
-@normal-lobster-font: @light-weight @normal-font-size @lobster;
+@medium-font: @normal-weight @medium-font-size @normal;
 
-@light-large-font: @light-weight @title-font-size @normal;
-@light-normal-font: @light-weight @normal-font-size @normal;
+@normal-font: @normal-weight @normal-font-size @normal; /** same as light-normal **/
+@normal-lobster-font: @normal-weight @normal-font-size @lobster;
+
+@light-large-font: @normal-weight @title-font-size @normal;
+
+@thin-large-font: @thin-weight @title-font-size @normal;

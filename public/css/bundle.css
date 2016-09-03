@@ -63,21 +63,30 @@
   src: url('/fonts/LibreFranklin-Thin.otf');
 }
 @font-face {
-  font-family: 'San Francisco Display Regular';
-  src: url('/fonts/SanFranciscoDisplay-Regular.otf');
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto-Regular.ttf');
 }
 @font-face {
-  font-family: 'San Francisco Display Light';
-  src: url('/fonts/SanFranciscoDisplay-Light.otf');
+  font-family: 'Roboto';
+  font-weight: 100;
+  src: url('/fonts/Roboto-Thin.ttf');
 }
 @font-face {
-  font-family: 'San Francisco Display Medium';
-  src: url('/fonts/SanFranciscoDisplay-Medium.otf');
+  font-family: 'Roboto';
+  font-weight: 200;
+  src: url('/fonts/Roboto-Light.ttf');
 }
 @font-face {
-  font-family: 'San Francisco Display Thin';
-  src: url('/fonts/SanFranciscoDisplay-Thin.otf');
+  font-family: 'Roboto Bold';
+  font-weight: 700;
+  src: url('/fonts/Roboto-Bold.ttf');
 }
+@font-face {
+  font-family: 'Roboto';
+  font-style: italic;
+  src: url('/fonts/Roboto-Italic.ttf');
+}
+/** same as light-normal **/
 .auth-container {
   border: 1px solid #b1b1b1;
   border-radius: 4px;
@@ -258,6 +267,7 @@ button {
 .navbar {
   background: #f46b45;
   /* fallback for old browsers */
+  font: 200 16px 'Roboto';
   height: 44px;
   position: fixed;
   top: 0;
@@ -266,6 +276,10 @@ button {
   -webkit-box-shadow: 0px -3px 8px 2px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 0px -3px 8px 2px rgba(0, 0, 0, 0.75);
   box-shadow: 0px -3px 8px 2px rgba(0, 0, 0, 0.75);
+}
+.navbar button {
+  float: right;
+  font: inherit;
 }
 .navbar .signin-dialog {
   background: white;
@@ -306,7 +320,7 @@ button {
   z-index: 2;
 }
 .navbar .user-options .dropdown-button {
-  font: 400 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   height: 48px;
   line-height: 48px;
   text-align: center;
@@ -317,7 +331,7 @@ button {
   background: #5C8CA7;
   border: none;
   color: white;
-  font: 400 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   line-height: 48px;
 }
 .navbar .signin-button {
@@ -325,7 +339,7 @@ button {
   border-radius: 2px;
   color: #ffffff;
   float: right;
-  font: 400 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   height: 28px;
   letter-spacing: .5px;
   line-height: 28px;
@@ -338,7 +352,7 @@ button {
   background: #5C8CA7;
   border-color: transparent;
   color: white;
-  font: 400 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   line-height: 28px;
 }
 .navbar .home {
@@ -407,7 +421,7 @@ button {
   border: none;
   border-radius: 2px;
   cursor: pointer;
-  font: 400 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   height: 40px;
   width: 150px;
 }
@@ -421,7 +435,7 @@ button {
   border-radius: 2px;
   cursor: pointer;
   color: #ffffff;
-  font: 400 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   height: 40px;
   letter-spacing: .5px;
   padding: 4px;
@@ -438,7 +452,7 @@ button {
   border-radius: 2px;
   color: white;
   cursor: pointer;
-  font: 400 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   height: 40px;
   margin: 0 10px;
   padding: 4px;
@@ -1124,19 +1138,18 @@ button {
 .profile-four .profile-container {
   margin: 44px 0 0;
 }
-.app-container .navbar button {
+.app-container button {
   background: none;
   border: none;
   border-left: 1px solid #eee;
   color: #ffffff;
-  float: right;
   font-size: 14px;
   height: 100%;
   outline: none;
   width: 150px;
 }
 .app-container .profile-container {
-  margin: 44px 350px 0 0;
+  margin: 44px 320px 0 0;
   position: relative;
 }
 .app-container .profile-container .profile-header {
@@ -1156,7 +1169,7 @@ button {
   border-bottom-left-radius: 2px;
   border-bottom-right-radius: 2px;
   color: white;
-  font: 200 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   height: 48px;
   left: 20px;
   line-height: 48px;
@@ -1171,7 +1184,7 @@ button {
 .app-container .profile-container .profile-header .profile {
   box-sizing: border-box;
   color: white;
-  font: 200 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   margin: 44px 0 0;
   padding: 20px;
   text-align: center;
@@ -1199,7 +1212,7 @@ button {
   border: none;
   color: #ffffff;
   cursor: pointer;
-  font: 400 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   height: 32px;
   margin: 12px;
   width: 100px;
@@ -1220,10 +1233,10 @@ button {
   padding: 24px;
 }
 .app-container .profile-container .profile-about__title {
-  font: 200 36px 'San Francisco Display Light';
+  font: 100 40px 'Roboto';
 }
 .app-container .profile-container .profile-about__content {
-  font: 200 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
 }
 .app-container .profile-container .profile-about__nav-bar {
   border-bottom: 1px solid #eee;
@@ -1235,12 +1248,13 @@ button {
   background: none;
   border: none;
   border-right: 1px solid #eee;
-  font: 400 16px 'San Francisco Display Light';
+  color: black;
+  font: 200 16px 'Roboto';
   height: 44px;
   line-height: 44px;
   width: 100px;
 }
-.app-container .navigation-drawer__pullout {
+.app-container .navigation-sidebar__pullout {
   background: rgba(0, 0, 0, 0.4);
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
@@ -1250,23 +1264,23 @@ button {
   top: 100px;
   width: 38px;
 }
-.app-container .navigation-drawer__pullout--is-open {
-  right: 350px;
+.app-container .navigation-sidebar__pullout--is-open {
+  right: 320px;
 }
-.app-container .navigation-drawer__content {
+.app-container .navigation-sidebar__content {
   background: #ffffff;
   box-shadow: -3px 6px 3px -1px rgba(0, 0, 0, 0.4);
   bottom: 0;
   position: fixed;
   right: 0;
   top: 44px;
-  width: 350px;
+  width: 320px;
 }
-.app-container .navigation-drawer__content__filter-bar {
+.app-container .navigation-sidebar__content__filter-bar {
   border: 1px solid #eee;
   border-radius: 2px;
   flex: 1;
-  font: 400 16px 'San Francisco Display Light';
+  font: 200 16px 'Roboto';
   height: 32px;
   line-height: 32px;
   margin: 8px;
@@ -1274,23 +1288,27 @@ button {
   padding: 4px;
   text-align: center;
 }
-.app-container .navigation-drawer__content__filter-bar-container {
+.app-container .navigation-sidebar__content__filter-bar-container {
   display: flex;
 }
-.app-container .navigation-drawer__content__options {
+.app-container .navigation-sidebar__content__options {
   border-bottom: 1px solid #eee;
   border-top: 1px solid #eee;
-  display: flex;
   width: 100%;
 }
-.app-container .navigation-drawer__content__options div {
+.app-container .navigation-sidebar__content__options--option {
   cursor: pointer;
   flex: 1;
-  font: 400 16px 'San Francisco Display Light';
+  font: 200 18px 'Roboto';
+  font-variant-ligatures: no-common-ligatures;
   height: 32px;
   line-height: 32px;
-  text-align: center;
+  padding: 4px 24px;
+  text-align: left;
 }
-.app-container .navigation-drawer__content__options div:not(:last-child) {
-  border-right: 1px solid #eee;
+.app-container .navigation-sidebar__content__options--option:hover {
+  color: #5C8CA7;
+}
+.app-container .navigation-sidebar__content__options--option--active {
+  color: #5C8CA7;
 }

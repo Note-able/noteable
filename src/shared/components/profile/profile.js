@@ -1,6 +1,6 @@
 import React from 'react';
 import AJAX from '../../ajax';
-const NewsfeedSideBar = require('./newsfeed-sidebar.js');
+const NavigationSidebar = require('./navigation-sidebar.js');
 
 class Profile extends React.Component {
   constructor (props, context) {
@@ -53,6 +53,10 @@ class Profile extends React.Component {
     this.setState({ image: parsedResponse.cloudStoragePublicUrl });
   }
 
+  navigate (hashLocation) {
+    this.props.history.pushState(`${this.props.location.pathname}${hashLocation}`);
+  }
+
   render () {
     return (
       <div className="app-container">
@@ -87,7 +91,7 @@ class Profile extends React.Component {
             </div>
           </div>
         </div>
-        <NewsfeedSideBar />
+        <NavigationSidebar activeTab={this.props.location.hash} navigate={this.navigate}/>
       </div>
     );
   }

@@ -5,7 +5,7 @@ class Profile extends React.Component {
   render () {
     return (
       <div>
-        <div className="profile-four">
+        <div className="profile-three">
           <div className="navbar">
           </div>
           <div className="profile-container">

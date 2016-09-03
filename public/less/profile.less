@@ -384,7 +384,6 @@
     border: none;
     border-left: 1px solid @grey-light;
     color: @white;
-    float: right;
     font-size: 14px;
     height: 100%;
     outline: none;
@@ -392,7 +391,7 @@
   }
   
   .profile-container {
-    margin: @navbar-height 350px 0 0;
+    margin: @navbar-height 320px 0 0;
     position: relative;
     
     .profile-header {
@@ -419,7 +418,7 @@
         border-bottom-left-radius: 2px;      
         border-bottom-right-radius: 2px;
         color: white;
-        font: @light-normal-font;
+        font: @normal-font;
         height: 48px;
         left: 20px;
         line-height: 48px;      
@@ -436,7 +435,7 @@
       .profile {
         box-sizing: border-box;
         color: white;
-        font: @light-normal-font;
+        font: @normal-font;
         margin: @navbar-height 0 0;
         padding: 20px;
         text-align: center;
@@ -494,11 +493,11 @@
       padding: 24px;
       
       &__title {
-        font: @light-large-font;
+        font: @thin-large-font;
       }
       
       &__content {
-        font: @light-normal-font;
+        font: @normal-font;
       }
       
       &__nav-bar {
@@ -511,6 +510,7 @@
           background: none;
           border: none;
           border-right: 1px solid @grey-light;
+          color: black;
           font: @normal-font;
           height: 44px;
           line-height: 44px;
@@ -520,7 +520,7 @@
     }
   }
   
-  .navigation-drawer {
+  .navigation-sidebar {
     &__pullout {
       background: rgba(0, 0, 0, 0.4);
       border-top-left-radius: 2px;
@@ -532,7 +532,7 @@
       width: 38px;
       
       &--is-open {
-        right: 350px;
+        right: 320px;
       }
     }
     
@@ -543,7 +543,7 @@
       position: fixed;
       right: 0;
       top: 44px;
-      width: 350px;
+      width: 320px;
       
       &__filter-bar {
         border: 1px solid @grey-light;
@@ -565,19 +565,24 @@
       &__options {
         border-bottom: 1px solid @grey-light;
         border-top: 1px solid @grey-light;
-        display: flex;
         width: 100%;
         
-        div {
+        &--option {
           cursor: pointer;
           flex: 1;
-          font: @normal-font;
+          font: @medium-font;
+          font-variant-ligatures: no-common-ligatures;
           height: 32px;
           line-height: 32px;
-          text-align: center;
-          
-          &:not(:last-child) {
-            border-right: 1px solid @grey-light;
+          padding: 4px 24px;
+          text-align: left;
+
+          &:hover {
+            color: @blue;
+          }
+
+          &--active {
+            color: @blue;
           }
         }
       }
