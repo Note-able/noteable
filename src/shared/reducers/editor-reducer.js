@@ -20,6 +20,18 @@ const editorLine = (state = {}, action) => {
       text: action.text,
       type: action.lineType
     });
+  case 'ADD_CHORD':
+    if(state.lineId != action.lineId)
+      return state;
+    else {
+      const chords = state.chords || [];
+      chords.push({ index: action.index, text: action.text, updateSelectedFunction: action.updateSelectedFunction });
+      return Object.assign({},
+      state,
+      {
+        chords: chords,
+      });
+    }
   }
 }
 
@@ -70,6 +82,15 @@ const editorSection = ( state = {}, action) => {
     {
       lineData: state.lineData.map(line => editorLine(line, action)),
       offset: action.offset
+    });
+  case 'ADD_CHORD':
+    if(state.sectionId != action.sectionId)
+      return state;
+    /*eslint-disable*/
+    return Object.assign({},
+    state,
+    {
+      lineData: state.lineData.map(line => editorLine(line, action)),
     });
   case 'ADD_LINE':
     if(state.sectionId != action.sectionId)
@@ -135,14 +156,10 @@ const editor = (state = {}, action) => {
       });
     /* Line Reducer */
     case 'UPDATE_TEXT':
-    return Object.assign({},
-    state,
-    {
-      sectionData: state.sectionData.map(section => editorSection(section, action))
-    });
     case 'ADD_LINE':
     case 'DELETE_LINE':
     case 'UPDATE_SELECTED':
+    case 'ADD_CHORD':
     return Object.assign({},
     state,
     {

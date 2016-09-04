@@ -4,7 +4,6 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const Line = require('./line');
 const RecordingLine = require('./recordingLine');
-const Chord = require('./chord');
 const Tooltip = require('./toolTip');
 import { KeyCodes } from '../helpers/keyCodes';
 import { addLine } from './actions/editor-actions';
@@ -12,6 +11,7 @@ import { deleteLine } from './actions/editor-actions';
 import { updateText } from './actions/editor-actions';
 import { updateLines } from './actions/editor-actions';
 import { updateSelected } from './actions/editor-actions';
+import { addChord as addChordToLine } from './actions/editor-actions';
 
 class Section extends React.Component {
   constructor ( props, context) {
@@ -72,7 +72,8 @@ class Section extends React.Component {
         this.lines++;
         lineActions.push(addLine(this.props.sectionId, this.lines, selectedIndex + lines.length - 1, 'text', lines[lines.length - 1]));
       }
-      lineActions.push(updateText(this.props.sectionId, selected.lineId, lines[0], 0, this.appendTextAfterDelete));
+      const currentText = ReactDOM.findDOMNode(this.refs[selected.ref]);
+      lineActions.push(updateText(this.props.sectionId, selected.lineId, currentText + lines[0], 0));
       selectedIndex = selectedIndex + lines.length - 1;
       this.props.dispatch(updateLines(this.props.sectionId, lineActions, selectedIndex, lines[lines.length - 1].length));
     }
@@ -170,20 +171,21 @@ class Section extends React.Component {
     const selection = window.getSelection();
   }
 
+  // Need a way of adding the update selected function back in after retreiving saved chords\
+  // could be moved to line where we set update selected to currentTetIndex + length of chord text
+  // Also chords aren't being mounted to the dom properly. possibly because of html comments?
   addChord () {
     console.log('add chord');
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
-    const firstCharRange = range.cloneRange();
-    firstCharRange.setEnd(range.startContainer, range.startOffset + 1);
 
-    const container = document.createElement('span');
-    firstCharRange.surroundContents(container);
-    const character = container.innerText;
-    const chord = ReactDOM.render(
-      <Chord character={ character } updateSelectedToTextLine={ () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex, range.endOffset + 1))}}/>,
-      container
-    );
+    this.props.dispatch(addChordToLine(
+      this.props.sectionId,
+      this.props.section.selectedLine.lineId,
+      '',
+      range.startOffset,
+      () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex, range.endOffset + 1))}
+    ));
 
     if(this.tooltip) {
       ReactDOM.unmountComponentAtNode(this.refs.tooltip)
@@ -201,7 +203,7 @@ class Section extends React.Component {
     const selectedIndex = this.props.section.selectedIndex;
 
     const lineActions = [addLine(this.props.sectionId, ++this.lines, selectedIndex + 1, 'text', movedText)];
-    lineActions.push(updateText(this.props.sectionId, selected.lineId, remainingText, 0, this.setText));
+    lineActions.push(updateText(this.props.sectionId, selected.lineId, remainingText, 0));
     this.props.dispatch(updateLines(this.props.sectionId, lineActions, selectedIndex + 1, 0));
   }
 
@@ -209,8 +211,9 @@ class Section extends React.Component {
     const selected = this.props.section.selectedLine;
     const selectedIndex = this.props.section.selectedIndex;
     const offset = text.length;
+    const currentText = ReactDOM.findDOMNode(this.refs[selected.ref]);
     // TODO: Figure out how to get the correct offset
-    this.props.dispatch(updateText(this.props.sectionId, selected.lineId, text, offset, this.appendTextAfterDelete.bind(this)));
+    this.props.dispatch(updateText(this.props.sectionId, selected.lineId, currentText + text, offset));
   }
 
   handleUpArrow (offset, lineId) {
@@ -231,31 +234,26 @@ class Section extends React.Component {
     this.linesToUpdate =[];
   }
 
-  setText (element, text) {
-    element.innerHTML = text;
-    return element.innerHtml;
-  }
-
-  appendTextAfterDelete (element, text) {
-    element.innerHTML += text;
-    return element.innerHtml;
+  handleInput (event) {
+    for(const elem of this.lineElements){
+      this.refs[elem.ref].handleInput();
+    }
   }
 
   render () {
     const lineData = this.props.section.lineData;
-    const lineElements = lineData.map((line) => {
+    const lineElements = this.lineElements = lineData.map((line) => {
       if(line.type === 'text') {
         const selected = line.lineId === this.props.section.lineData[this.props.section.selectedIndex].lineId;
         const offset = selected ? this.props.section.offset : 0;
-        const updateTextFunction = line.updateTextFunction;
         return (<Line key={ line.lineId }
           ref={`line${ line.lineId }`}
           lineId={ line.lineId }
           text={ line.text }
+          chords={ line.chords }
           selected={ selected }
           offset={ offset }
           type={ line.type }
-          updateTextFunction={ updateTextFunction }
           updateSelected={ this.updateSelected.bind(this) }
           handleDelete={ this.handleDelete.bind(this) }
           dispatch = { this.props.dispatch }></Line>);
@@ -271,7 +269,9 @@ class Section extends React.Component {
       onFocus={ this.handleOnFocus.bind(this) }
       onBlur={ this.handleOnBlur.bind(this) }
       onClick={ this.handleOnClick.bind(this) }
-      onSelect={ this.handleOnSelect.bind(this) }>
+      onSelect={ this.handleOnSelect.bind(this) }
+      onInput={ this.handleInput.bind(this) }
+      suppressContentEditableWarning>
       { lineElements }
       <div ref="tooltip" className="tooltip-container"></div>
     </div>

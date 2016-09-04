@@ -1,10 +1,7 @@
-const React = require(`react`);
+import React from 'react';
 import { render } from 'react-dom';
-const ReactRouter = require(`react-router`);
-const Router = ReactRouter.Router;
-const Route = ReactRouter.Route;
-const IndexRoute = ReactRouter.IndexRoute;
-//var routes = require('../routes');
+import { Router, Route, IndexRoute } from 'react-router';
+
 const createBrowserHistory = require(`history/lib/createBrowserHistory`);
 
 const AppController = require(`../shared/components/app-controller`);

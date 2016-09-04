@@ -9,13 +9,13 @@ module.exports = class Chord extends React.Component {
     super(props, context);
 
     this.state = { contentEditable: true }
-  }
+  };
 
   componentDidMount () {
-    this.setCaretInEmptyDiv.bind(this)();
-  }
+    this.setCaretInEmptyDiv();
+  };
 
-  handleKeyDown(e) {
+  handleKeyDown = (e) => {
     if(e.keyCode === KeyCodes.enter) { //enter
       e.preventDefault();
       this.props.updateSelectedToTextLine();
@@ -23,9 +23,14 @@ module.exports = class Chord extends React.Component {
       e.preventDefault();
     }
     e.stopPropagation();
-  }
+  };
 
-  setCaretInEmptyDiv () {
+  getDataForPost = () => {
+    const element = ReactDOM.findDOMNode(this.refs.chord);
+    return { index: this.props.index, text: element.innerHTML };
+  };
+
+  setCaretInEmptyDiv = () => {
     const element = ReactDOM.findDOMNode(this.refs.chord);
     const range = document.createRange();
     range.selectNodeContents(element);
@@ -33,21 +38,22 @@ module.exports = class Chord extends React.Component {
     const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
-  }
+  };
 
   render() {
     return (
       <span className="editor-chord-container">
-        {this.props.character}
+        {this.props.text}
         <span contentEditable="false">
           <span
           className="editor-chord"
           ref="chord"
-          onKeyDown={ this.handleKeyDown.bind(this) }
-          contentEditable={ this.state.contentEditable }>
+          onKeyDown={ this.handleKeyDown }
+          contentEditable={ this.state.contentEditable }
+          suppressContentEditableWarning>
           </span>
         </span>
       </span>
     );
-  }
+  };
 }

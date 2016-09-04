@@ -69,7 +69,8 @@ class EditorComponent extends React.Component {
         newTextLine = { this.newTextLine }
         newRecordingLine = { this.newRecordingLine }
         dispatch = { this.props.dispatch }
-        submitRevision = { this.submitRevision.bind(this) }>
+        submitRevision = { this.submitRevision.bind(this) }
+        suppressContentEditableWarning>
         </Section>);
     });
     return (

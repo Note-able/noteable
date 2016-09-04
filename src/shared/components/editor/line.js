@@ -2,6 +2,8 @@
 
 const React = require('react');
 const ReactDOM = require('react-dom');
+const Chord = require('./chord');
+import { moveChords} from './actions/editor-actions';
 
 class Line extends React.Component {
   constructor (props, context) {
@@ -10,7 +12,7 @@ class Line extends React.Component {
     this.state = {};
     this.enterPressed = false;
     this.keyMap = [];
-  }
+  };
 
   componentDidMount () {
     const element = ReactDOM.findDOMNode(this.refs.line);
@@ -18,47 +20,57 @@ class Line extends React.Component {
     if(this.props.selected){
       this.setCaretPosition.bind(this)(this.props.offset);
     }
-  }
+  };
 
   componentWillUpdate (nextProps) {
     this.updateTextFunction = nextProps.updateTextFunction;
-  }
+  };
 
   componentDidUpdate (prevProps) {
     if (this.props.lineId === prevProps.lineId
       && this.props.text === prevProps.text
       && this.props.selected === prevProps.selected
-      && this.props.offset === prevProps.offset
-      && this.props.shouldUpdateText === prevProps.shouldUpdateText) {
+      && this.props.offset === prevProps.offset) {
       return;
     }
 
-    if(this.updateTextFunction){
-      const element = ReactDOM.findDOMNode(this.refs.line);
-      this.props.updateTextFunction(element, this.props.text);
-    }
-    this.updateTextFunction = null; //prevent double componentDidUpdate calls from updating DOM twice
     if(this.props.selected){
       this.setCaretPosition.bind(this)(this.props.offset);
     }
-  }
+  };
 
-  componentWillUnmount () {
+  shouldComponentUpdate(nextProps) {
+    return nextProps.html !== ReactDOM.findDOMNode(this.refs.line).innerHTML;
+  };
+
+  componentWillUnmount() {
     if(this.props.handleDelete) {
       this.props.handleDelete(ReactDOM.findDOMNode(this.refs.line).innerHTML);
     }
-  }
+  };
 
-  getDataForPost () {
-    return this.getLineContent();
-  }
+  getDataForPost = () => {
+    const chords = [];
+    if (this.props.chords) {
+      for (const chord of this.props.chords) {
+        const chordContent = this.refs[`chord${chord.index}`].getDataForPost();
+        chords.push(chordContent);
+      }
+    }
 
-  getLineContent () {
-    const element = ReactDOM.findDOMNode(this.refs.line);
-    return { lineId: this.props.lineId, type: this.props.type, text: element.innerHTML };
-  }
+    const lineContent = this.getLineContent();
+    return { lineId: this.props.lineId, type: this.props.type, text: lineContent, chords: chords };
+  };
 
-  setCaretInEmptyDiv () {
+  getLineContent = () => {
+    const element = ReactDOM.findDOMNode(this.refs.line).cloneNode(true);
+    while (element.lastElementChild) {
+      element.removeChild(element.lastElementChild);
+    }
+    return element.innerHTML;
+  };
+
+  setCaretInEmptyDiv = () => {
     const element = ReactDOM.findDOMNode(this.refs.line);
     const range = document.createRange();
     range.selectNodeContents(element);
@@ -66,9 +78,9 @@ class Line extends React.Component {
     const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
-  }
+  };
 
-  setCaretPosition (position) {
+  setCaretPosition = (position) => {
     const element = ReactDOM.findDOMNode(this.refs.line);
     if(element.childNodes.length !== 0) {
       const caretPos = position > element.firstChild.length ? element.firstChild.length : position;
@@ -81,25 +93,59 @@ class Line extends React.Component {
       selection.removeAllRanges();
       selection.addRange(range);
     } else {
-      this.setCaretInEmptyDiv.bind(this)();
+      this.setCaretInEmptyDiv();
     }
-  }
+  };
 
-  handleClick () {
+  handleClick = () => {
     console.log('click');
     this.props.updateSelected(this.props.lineId);
-  }
+  };
+
+  handleInput = (e) => {
+    //TODO: Dispatch move chord action
+    //TODO: Dispatch Update Text event b/c of GetLineContent for saving
+    console.log(e);
+    this.state.text = ReactDOM.findDOMNode(this.refs.line).innerHTML;
+  };
+
+  compareChords = (a, b) => {
+    return a.index - b.index;
+  };
 
   render () {
+    let lastTextIndex = 0;
+    let content = [];
+    if(this.props.chords){
+      const sortedChords = this.props.chords;
+      sortedChords.sort(this.compareChords);
+      const chords = sortedChords.map((chord) => {
+        const text = this.props.text.substring(lastTextIndex, chord.index);
+        lastTextIndex = chord.index;
+        content.push(text);
+        return (<Chord key={`chord${chord.index}`} ref={`chord${chord.index}`} index={chord.index} text={ chord.text || '' } updateSelectedToTextLine={ () => { chord.updateSelectedFunction() }}/>);
+      });
+      content.push(this.props.text.substring(lastTextIndex, this.props.text.length));
+      for(let i = 0; i < chords.length; i++) {
+        content.splice(i*2+1,0,chords[i]);
+      }
+    } else {
+      content = this.props.text;
+    }
+
     return (
       <p
       className={ 'editor-line' }
       name={ this.props.lineId }
       ref="line"
-      onClick={ this.handleClick.bind(this) }>
+      onClick={ this.handleClick }
+      onInput={ this.handleInput }
+      onChange={ this.handleInput }
+      suppressContentEditableWarning>
+        {content}
       </p>
     );
-  }
+  };
 }
 
 Line.propTypes = {
@@ -109,6 +155,6 @@ Line.propTypes = {
   type: React.PropTypes.string,
   updateTextFunction: React.PropTypes.func,
   offset: React.PropTypes.number,
-}
+};
 
 module.exports = Line;
