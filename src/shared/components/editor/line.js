@@ -15,8 +15,6 @@ class Line extends React.Component {
   };
 
   componentDidMount () {
-    const element = ReactDOM.findDOMNode(this.refs.line);
-    element.innerHTML = this.props.text;
     if(this.props.selected){
       this.setCaretPosition.bind(this)(this.props.offset);
     }
@@ -67,7 +65,7 @@ class Line extends React.Component {
     while (element.lastElementChild) {
       element.removeChild(element.lastElementChild);
     }
-    return element.innerHTML;
+    return element.innerText;
   };
 
   setCaretInEmptyDiv = () => {

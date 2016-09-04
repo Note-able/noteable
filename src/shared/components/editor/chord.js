@@ -43,7 +43,6 @@ module.exports = class Chord extends React.Component {
   render() {
     return (
       <span className="editor-chord-container">
-        {this.props.text}
         <span contentEditable="false">
           <span
           className="editor-chord"
@@ -51,6 +50,7 @@ module.exports = class Chord extends React.Component {
           onKeyDown={ this.handleKeyDown }
           contentEditable={ this.state.contentEditable }
           suppressContentEditableWarning>
+            {this.props.text}
           </span>
         </span>
       </span>
