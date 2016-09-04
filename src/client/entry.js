@@ -16,9 +16,11 @@ const BrowseEvents = require('../shared/components/events/browse-events');
 const CreateEvent = require('../shared/components/events/create-event');
 const Editor = require('../shared/components/editor/editor');
 const Profile = require('../shared/components/profile/profile');
+const DemoProfile = require('../shared/components/profile/demo');
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-const store = createStore(require('../shared/stores/store'));
+import { editorStore } from '../shared/stores/store';
+const store = createStore(editorStore);
 
 // -v x.13.x
 /**Router.run(routes, Router.HistoryLocation, function (Handler, state) {
@@ -41,7 +43,8 @@ render(
           <Route path="/events" component={ EventController }>
           <Route path="/events/browse" components={ BrowseEvents }/>
           <Route path="/events/create" components={ CreateEvent }/>
-          <Route path="/profile/:id" components={ Profile }/>
+          <Route path="/profile" components={ Profile }/>
+          <Route path="/profile/demo" components={ DemoProfile }/>
         </Route>
         <Route path="/songs" component={ SongsController }/>
         </Route>

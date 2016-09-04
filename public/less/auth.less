@@ -12,11 +12,16 @@
 }
 
 .login-container, .register-container {
+  font-family: 'Ubuntu';
+  border-radius: 2px;
+  
   &__header {
+    background: #f46b45; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #f46b45 , @orange); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #f46b45 , @orange); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     color: white;
-    font: 14px BlinkMacSystemFont;
-    line-height: 30px;
-    background: @green;
+    font: 16px BlinkMacSystemFont;
+    line-height: 48px;
     text-align: center;
   }
 
@@ -63,6 +68,7 @@
     &__open-register {
       color: @blue;
       margin: 15px 0 0;
+      text-align: center;
     }
 
     &__submit-button {
@@ -71,6 +77,7 @@
 
       &:hover {
         background: @facebook-hover;
+        color: @white;
       }
     }
 

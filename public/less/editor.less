@@ -3,18 +3,18 @@
   font: @editor-font;
 
   .editor {
-    background: white;
+  	background: white;
     border: 10px solid black;
     flex: 3;
-    height: 80%;
+  	height: 80%;
     margin: 20px;
     padding: 10px;
 
-    editor-line.selected {
-      outline: none;
-    }
+  	editor-line.selected {
+  		outline: none;
+  	}
 
-    .editor-line, .editor-recording {
+  	.editor-line, .editor-recording {
       min-height: 20px;
       pointer-events: all;
       margin-bottom: 8px;
@@ -29,72 +29,15 @@
     }
 
     .editor-chord-line {
-      animation-name: blink;
-      animation-duration: 4s;
+      animation-name: blinkCursor;
+      animation-duration: .5s;
       animation-timing-function: step-end;
       animation-iteration-count: 1;
-      outline: none;
     }
 
-    .editor-chord-container {
-      position: relative;
-      .editor-chord {
-        animation-name: blink;
-        animation-duration: .5s;
-        animation-timing-function: step-end;
-        animation-iteration-count: 1;
-        font: bold 14px arial;
-        position: absolute;
-        top: -15px;
-        left: 0;
-
-        &:focus {
-          outline: none;
-        }
-
-        &:empty::before {
-          content: 'chord';
-          color: #CCC;
-          font-size: 12;
-          font-weight: normal;
-        }
-      }
+    @keyframes blinkCursor { 
+      50% { border-color: #000; } 
     }
-
-    .editor-tooltip {
-      background-image: radial-gradient(ellipse 100px 30px, #666 40%, #111);
-      border-radius: 5px;
-      display: inline-flex;
-      height: 25px;
-      width: 120px;
-
-      &:after {
-        border-top: solid 8px #444;
-        border-left: solid 10px transparent;
-        border-right: solid 10px transparent;
-        content: '';
-        position: absolute;
-        top: 90%;
-        left: 2px;
-      }
-
-      .tooltip-option {
-        margin: auto 0;
-        padding: 0 4px;
-        color: #F5F5F5;
-        cursor: pointer;
-        border-left: 1px solid white;
-        pointer-events: all;
-
-        &:first-child {
-          border-left: none;
-        }
-      }
-    }
-  }
-
-  @keyframes blink {
-    50% { border-color: #000; } 
   }
 
   .record {

@@ -52,17 +52,18 @@ module.exports = function (app, options) {
     }
 
     bcrypt.hash(req.body.password, null, null, (err, password) => {
-      if (error) {
+      if (err) {
         res.status(500).send();
         return;
       }
-
       options.connect(options.database, (connection) => {
         connection.client
-        .query(`INSERT INTO public.user (username, password) VALUES ('${req.body.email}', '${password}');`)
+        .query(`INSERT INTO public.user (username, email, password) VALUES ('${req.body.username}','${req.body.email}', '${password}');`)
         .on('error', (error) => {
+          console.log(error);
           res.send(error);
-        }).on('end', () => {
+        }).on('end', (result) => {
+          console.log(result);
           res.status(204).send();
           connection.fin();
         });
@@ -78,12 +79,14 @@ module.exports = function (app, options) {
       const user = [];
       connection.client.query(`
         SELECT * FROM public.profile pr
-          JOIN public.pictures pic
-          ON pic.user_id = pr.id
-        WHERE ${req.params.id} = pr.id AND pic.picture_type = 1;`)
+        WHERE ${req.params.id} = pr.id;`)
       .on(`row`, (row) => { user.push(row); })
       .on(`error`, (error) => { console.log(`error encountered ${error}`) })
       .on(`end`, () => {
+        if (user.length === 0) {
+          res.status(404).send();
+          return;
+        }
         user[0].profileImage = image.getPublicUrl(user[0].filename)
         res.send(user[0]);
         connection.fin();
@@ -106,6 +109,31 @@ module.exports = function (app, options) {
           connection.fin();
           res.status(200).send(gcloudResponse);
         });
+      });
+    });
+  });
+
+  app.post('/user/follow/:userId', options.auth, (req, res) => {
+    if (!req.user) {
+      res.status(400).send();
+    }
+
+    if (req.user.id === parseInt(req.params.userId)) {
+      res.status(204).send();
+    }
+
+    options.connect(options.database, (connection) => {
+      connection.client.query(`
+        INSERT INTO followers (origin, destination)
+        SELECT 1, 2
+        WHERE
+          NOT EXISTS (
+            SELECT * FROM followers WHERE origin = ${req.user.id} AND destination = ${req.params.userId}
+          );
+      `).on('error', error => { console.log(`error following user: ${error}`); })
+      .on('end', () => {
+        connection.fin();
+        res.status(200).send();
       });
     });
   });
