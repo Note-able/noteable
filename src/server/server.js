@@ -222,3 +222,4 @@ function ensureAuthenticated (req, res, next) {
 function validatePassword(password, userPassword) {
   return bcrypt.compareSync(password, userPassword);
 }
+

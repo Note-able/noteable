@@ -5,10 +5,14 @@ const Router = require('react-router');
 const Home = require('./home');
 
 import { appReducer } from '../reducers';
-import { compose, applyMiddleware, Provider } from 'redux';
+import { compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 
 module.exports = class AppController extends React.Component {
+
+  store = {
+
+  }
 
   componentDidMount() {
     if (this.props.route.isLoggedIn === `true` && this.props.location.pathname !== '/') {
@@ -17,7 +21,11 @@ module.exports = class AppController extends React.Component {
   }
 
   renderApp() {
-    return (this.props.children);
+    return (
+      <div>
+        {this.props.children}
+      </div>
+    );
   }
 
   renderHome() {

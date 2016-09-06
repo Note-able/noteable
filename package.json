@@ -7,18 +7,17 @@
     "test": "test"
   },
   "scripts": {
-    "test": "test",
     "clean": "rm -rf lib",
-    "watch-js": "./node_modules/.bin/babel src  --presets react,stage-1 -d lib",
-    "dev-server": "./node_modules/.bin/webpack lib/client/entry.js",
-    "test-dev": "node lib/server/webpack",
+    "babel-watch": "./node_modules/.bin/babel src -d lib -w",
+    "webpack-bundle": "./node_modules/.bin/webpack lib/client/entry.js",
+    "webpack-server": "node lib/server/webpack",
     "lint": "./node_modules/.bin/eslint ./src",
     "dev": "nodemon lib/server/server",
     "server": "nodemon lib/server/server",
-    "start-dev": "npm run build && npm run dev-server && npm run test-dev & npm run server & npm run watch-js",
-    "start": "npm run build && npm run dev-server",
-    "styles": "./node_modules/.bin/lessc ./public/less/bundle.less ./public/css/bundle.css",
-    "build": "npm run clean && ./node_modules/.bin/babel src --presets react,stage-1 -d lib && npm run styles"
+    "start-dev": "node start-dev.js",
+    "start": "npm run build && npm run webpack-bundle",
+    "styles": "lessc ./public/less/bundle.less ./public/css/bundle.css",
+    "build": "npm run clean && ./node_modules/.bin/babel src -d lib && npm run styles"
   },
   "repository": {
     "type": "git",
@@ -48,6 +47,7 @@
     "express": "^4.13.3",
     "express-session": "^1.14.1",
     "extract-text-webpack-plugin": "^1.0.1",
+    "forever-monitor": "^1.7.0",
     "formidable": "1.0.17",
     "gcloud": "^0.30.3",
     "google-maps": "^3.2.1",
@@ -84,5 +84,18 @@
   "dependencies": {
     "redux-devtools": "^3.1.1",
     "redux-thunk": "^2.1.0"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0",
+      "react"
+    ],
+    "plugins": [
+      "transform-class-properties",
+      "transform-es2015-block-scoping",
+      "transform-es2015-classes",
+      "transform-react-jsx"
+    ]
   }
 }
