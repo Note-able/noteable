@@ -8,16 +8,11 @@
   },
   "scripts": {
     "clean": "rm -rf lib",
-    "babel-watch": "./node_modules/.bin/babel src -d lib -w",
-    "webpack-bundle": "./node_modules/.bin/webpack lib/client/entry.js",
-    "webpack-server": "node lib/server/webpack",
     "lint": "./node_modules/.bin/eslint ./src",
-    "dev": "nodemon lib/server/server",
-    "server": "nodemon lib/server/server",
+    "server": "node lib/server/server",
     "start-dev": "node start-dev.js",
     "start": "npm run build && npm run webpack-bundle",
-    "styles": "lessc ./public/less/bundle.less ./public/css/bundle.css",
-    "build": "npm run clean && ./node_modules/.bin/babel src -d lib && npm run styles"
+    "styles": "lessc ./public/less/bundle.less ./public/css/bundle.css"
   },
   "repository": {
     "type": "git",
@@ -57,7 +52,6 @@
     "moment": "^2.11.2",
     "multer": "^1.1.0",
     "node-ensure": "0.0.0",
-    "nodemon": "^1.8.1",
     "passport": "^0.3.2",
     "passport-facebook": "^2.0.0",
     "passport-local": "^1.0.0",
@@ -75,7 +69,6 @@
     "socket.io": "^1.4.5",
     "socket.io-client": "^1.4.5",
     "webpack": "^1.12.9",
-    "webpack-dashboard": "^0.1.6",
     "webpack-dev-server": "^1.14.0"
   },
   "engines": {
