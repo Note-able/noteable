@@ -134,7 +134,7 @@ const editorSection = ( state = {}, action) => {
   }
 }
 
-export const editor = (state = {}, action) => {
+export const editor = (state = { sectionData: []}, action) => {
   switch (action.type) {
     case 'DEFAULT_EDITOR':
       return {

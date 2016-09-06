@@ -47,7 +47,7 @@ const messages = (state = [], action) => {
   }
 }
 
-const messageApp = (state = {}, action) => {
+export const messageApp = (state = {}, action) => {
   switch (action.type) {
     case 'ADD_MESSAGE':
       return Object.assign({},
@@ -82,5 +82,3 @@ const messageApp = (state = {}, action) => {
       }
   }
 }
-
-module.exports = messageApp;

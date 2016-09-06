@@ -3,11 +3,7 @@
 const React = require('react');
 const Section= require('./section');
 const AJAX = require('../../ajax');
-import { createStore } from 'redux';
-import { editorReducer } from '../../reducers';
-const store = createStore(editorReducer);
 import { connect } from 'react-redux';
-import { initializeEditor } from './actions/editor-actions';
 
 class EditorComponent extends React.Component {
   constructor (props, context) {
@@ -23,11 +19,11 @@ class EditorComponent extends React.Component {
       AJAX.Get(`/document/${this.props.routeParams.documentId}`, (response) => {
         const sectionData = JSON.parse(JSON.parse(response).contents).sectionData;
         sectionData[0] = Object.assign({}, sectionData[0], { selectedIndex : 0, selectedLine : sectionData[0].lineData[0] });
-        this.props.dispatch(initializeEditor(sectionData));
+        this.props.initializeEditor(sectionData);
       });
     } else {
       const sectionData = [this.addSection(this.sections, 'text')];
-      this.props.dispatch(initializeEditor(sectionData));
+      this.props.initializeEditor(sectionData);
     }
   }
 
@@ -89,9 +85,4 @@ EditorComponent.propTypes = {
   }).isRequired).isRequired
 }
 
-function mapStateToProps(state) {
-  return { sectionData: state.editor.sectionData ? state.editor.sectionData : [] }
-}
-const Editor = connect(mapStateToProps)(EditorComponent);
-
-module.exports = Editor;
+module.exports = EditorComponent;
