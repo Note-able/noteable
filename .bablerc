@@ -8,6 +8,8 @@
     "transform-class-properties",
     "transform-es2015-block-scoping",
     "transform-es2015-classes",
-    "transform-react-jsx"
+    "transform-react-jsx",
+    "transform-object-rest-spread",
+    "syntax-decorators"
   ]
 }

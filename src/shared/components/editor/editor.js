@@ -4,8 +4,8 @@ const React = require('react');
 const Section= require('./section');
 const AJAX = require('../../ajax');
 import { createStore } from 'redux';
-import { editorStore } from '../../stores/store';
-const store = createStore(editorStore);
+import { editorReducer } from '../../reducers';
+const store = createStore(editorReducer);
 import { connect } from 'react-redux';
 import { initializeEditor } from './actions/editor-actions';
 

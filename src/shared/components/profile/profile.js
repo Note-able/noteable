@@ -1,6 +1,13 @@
 import React from 'react';
 import AJAX from '../../ajax';
 const NavigationSidebar = require('./navigation-sidebar.js');
+import { connect } from 'react-redux';
+
+function mapStateToProps(state) {
+  return {
+    profile: state.profile,
+  };
+}
 
 class Profile extends React.Component {
   constructor (props, context) {
@@ -97,4 +104,4 @@ class Profile extends React.Component {
   }
 }
 
-module.exports = Profile;
+module.exports = connect(mapStateToProps)(Profile);
