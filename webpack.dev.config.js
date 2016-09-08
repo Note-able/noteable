@@ -1,9 +1,8 @@
-var webpack = require('webpack');
-var path = require('path');
-var cleanWebpack = require('clean-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack');
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-var projectRoot = __dirname;
+const projectRoot = __dirname;
 
 module.exports = {
   entry: {
@@ -29,7 +28,7 @@ module.exports = {
       path.resolve(projectRoot, './node_modules'),
     ],
     extensions: ['', '.js', '.jsx'],
-    moduleDirectories: ['node_modules']
+    moduleDirectories: ['node_modules'],
   },
 
   module: {
@@ -39,6 +38,6 @@ module.exports = {
         loader: 'babel-loader',
         exclude: /(node_modules)/,
       },
-    ]
+    ],
   },
 };
