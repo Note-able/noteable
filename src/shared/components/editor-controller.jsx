@@ -1,4 +1,4 @@
-import { React, Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import {
   addChord as addChordToLine,
@@ -99,7 +99,7 @@ class EditorController extends Component {
     // this.unsubscribe = store.subscribe(() => { this.handleMessagesUpdate() })
 
     const lastIndex = this.state.messageApp.messages.length !== 0 ? this.state.messageApp.messages[this.state.messages.length - 1].id : 0;
-    AJAX.Get(`/messages/${this.state.messageApp.documentId}/${lastIndex}`, (response) => {
+    AJAX.get(`/messages/${this.state.messageApp.documentId}/${lastIndex}`, (response) => {
       this.props.editorDispatch.pageMessages(JSON.parse(response));
     });
   }

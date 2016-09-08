@@ -1,9 +1,9 @@
-import { React, Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 
 import { KeyCodes } from '../helpers/keyCodes';
 
-module.exports = class Chord extends React.Component {
+module.exports = class Chord extends Component {
   static propTypes = {
     index: PropTypes.number.isRequired,
     text: PropTypes.string.isRequired,
@@ -11,7 +11,7 @@ module.exports = class Chord extends React.Component {
   }
 
   state = {
-    contentEditable: true
+    contentEditable: true,
   };
 
   componentDidMount() {

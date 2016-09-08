@@ -1,4 +1,5 @@
-import { React } from 'react';
+import React from 'react';
+
 const AudioComponent = require('../record-audio-component');
 
 const RecordingLine = () => (

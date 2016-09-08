@@ -159,11 +159,15 @@ module.exports = function (app, options) {
         next(response);
       });
     });
-  }
+  };
 
-  /**MESSAGES API***/
+  /** MESSAGES API ***/
 
   app.get('/messages/:documentId/:index', options.auth, (req, res) => {
+    if (!req.user) {
+      res.status(400).send();
+    }
+
     options.connect(options.database, (connection) => {
       const messages = [];
       connection.client

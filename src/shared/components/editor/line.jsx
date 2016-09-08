@@ -1,4 +1,4 @@
-import { PropTypes, React, Component } from 'react';
+import React, { PropTypes, Component } from 'react';
 import { findDOMNode } from 'react-dom';
 
 const Chord = require('./chord');
@@ -29,7 +29,7 @@ class Line extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return nextProps.html !== findDOMNode(this.refs.line).innerHTML;
+    return nextProps.html !== findDOMNode(this._line).innerHTML;
   }
 
   componentDidUpdate(prevProps) {
@@ -47,7 +47,7 @@ class Line extends Component {
 
   componentWillUnmount() {
     if (this.props.handleDelete) {
-      this.props.handleDelete(findDOMNode(this.refs.line).innerHTML);
+      this.props.handleDelete(findDOMNode(this._line).innerHTML);
     }
   }
 
@@ -55,7 +55,7 @@ class Line extends Component {
     const chords = [];
     if (this.props.chords) {
       for (const chord of this.props.chords) {
-        const chordContent = this.refs[`chord${chord.index}`].getDataForPost();
+        const chordContent = this[`chord${chord.index}`].getDataForPost();
         chords.push(chordContent);
       }
     }
@@ -65,7 +65,7 @@ class Line extends Component {
   };
 
   getLineContent = () => {
-    const element = findDOMNode(this.refs.line).cloneNode(true);
+    const element = findDOMNode(this._line).cloneNode(true);
     while (element.lastElementChild) {
       element.removeChild(element.lastElementChild);
     }
@@ -73,7 +73,7 @@ class Line extends Component {
   };
 
   setCaretInEmptyDiv = () => {
-    const element = findDOMNode(this.refs.line);
+    const element = findDOMNode(this._line);
     const range = document.createRange();
     range.selectNodeContents(element);
     range.collapse(false);
@@ -83,7 +83,7 @@ class Line extends Component {
   };
 
   setCaretPosition = (position) => {
-    const element = findDOMNode(this.refs.line);
+    const element = findDOMNode(this._line);
     if (element.childNodes.length !== 0) {
       const caretPos = position > element.firstChild.length ? element.firstChild.length : position;
       const selection = window.getSelection();
@@ -119,7 +119,7 @@ class Line extends Component {
         return (
           <Chord
             key={`chord${chord.index}`}
-            ref={`chord${chord.index}`}
+            ref={ref => { this[`chord${chord.index}`] = ref; }}
             index={chord.index}
             text={chord.text || ''}
             updateSelectedToTextLine={() => this.props.updateSelected(this.props.lineId)}
@@ -138,7 +138,7 @@ class Line extends Component {
       <p
         className={'editor-line'}
         name={this.props.lineId}
-        ref="line"
+        ref={ref => { this._line = ref; }}
         onClick={this.handleClick}
         onChange={this.handleInput}
         suppressContentEditableWarning

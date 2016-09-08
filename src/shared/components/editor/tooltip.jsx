@@ -1,4 +1,4 @@
-import { React, Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 module.exports = class Tooltip extends Component {
   static propTypes = {
@@ -23,7 +23,7 @@ module.exports = class Tooltip extends Component {
     };
 
     return (
-      <div ref="tooltip" className="editor-tooltip" style={tooltipStyle}>
+      <div ref={ref => { this._tooltip = ref; }} className="editor-tooltip" style={tooltipStyle}>
         <div className="tooltip-option" onMouseDown={() => this.handleMouseDown(this.props.addRecordingLine)}>Record</div>
         <div className="tooltip-option" onMouseDown={() => this.handleMouseDown(this.props.addChord)}>Chord</div>
       </div>

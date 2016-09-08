@@ -1,4 +1,4 @@
-import { React, Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { findDOMNode, unmountComponentAtNode, render } from 'react-dom';
 
 import { KeyCodes } from '../helpers/keyCodes';
@@ -58,7 +58,7 @@ class Section extends Component {
   getDataForPost = () => {
     const lineContents = [];
     for (const line of this.props.section.lineData) {
-      const lineContent = this.refs[`line${line.lineId}`].getDataForPost();
+      const lineContent = this[`line${line.lineId}`].getDataForPost();
       lineContents.push(lineContent);
     }
     return { sectionId: this.props.sectionId, lineData: lineContents };
@@ -91,7 +91,7 @@ class Section extends Component {
         this.props.sectionDispatch.addLine(this.props.sectionId, this.lines, selectedIndex + (lines.length - 1), 'text', lines[lines.length - 1]);
         // lineActions.push(addLine(this.props.sectionId, this.lines, selectedIndex + lines.length - 1, 'text', lines[lines.length - 1]));
       }
-      const currentText = findDOMNode(this.refs[selected.ref]);
+      const currentText = findDOMNode(this[selected.ref]);
       this.props.sectionDispatch.updateText(this.props.sectionId, selected.lineId, currentText + lines[0], 0);
       // lineActions.push(updateText(this.props.sectionId, selected.lineId, currentText + lines[0], 0));
       // selectedIndex = selectedIndex + (lines.length - 1);
@@ -99,13 +99,13 @@ class Section extends Component {
     }
   }
 
-  handleKeyDown (e) {
+  handleKeyDown(e) {
     this.keyMap[e.keyCode] = e.type === 'keydown';
     /* Note: this is *probably* really bad. It should work by keeping a collection of functions for keycodes that need them,
       and then calling the function for that keycode if it exists instead of doing if else for all possible keys that have functions.
       But for relatively small numbers of hotkeys/overrides it doesn't matter */
     if (e.keyCode === KeyCodes.enter) {
-      if (!e.target.classList.contains('editor-chord')){
+      if (!e.target.classList.contains('editor-chord')) {
         e.preventDefault();
         this.enterPressed = true;
         const selection = window.getSelection();
@@ -147,7 +147,7 @@ class Section extends Component {
 
   handleOnClick() {
     if (this.tooltip) {
-      unmountComponentAtNode(this.refs.tooltip);
+      unmountComponentAtNode(this._tooltip);
     }
 
     const selection = window.getSelection();
@@ -166,7 +166,7 @@ class Section extends Component {
   handleOnFocus() {
     this.isFocused = true;
     if (this.props.section.lineData.length === 1) {
-      this.refs.section.childNodes[this.props.section.selectedIndex].focus();
+      this._section.childNodes[this.props.section.selectedIndex].focus();
     }
   }
 
@@ -185,7 +185,7 @@ class Section extends Component {
         addChord={() => this.addChord()}
         addRecordingLine={() => this.props.sectionDispatch.addLine(this.props.sectionId, ++this.lines, this.props.section.selectedIndex + 1, 'recording', '', false)}
       />,
-      this.refs.tooltip
+      this._tooltip
     );
 
     return tooltip;
@@ -199,7 +199,7 @@ class Section extends Component {
   // Need a way of adding the update selected function back in after retreiving saved chords\
   // could be moved to line where we set update selected to currentTetIndex + length of chord text
   // Also chords aren't being mounted to the dom properly. possibly because of html comments?
-  addChord () {
+  addChord() {
     console.log('add chord');
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
@@ -213,13 +213,13 @@ class Section extends Component {
     );
 
     if (this.tooltip) {
-      unmountComponentAtNode(this.refs.tooltip);
+      unmountComponentAtNode(this._tooltip);
     }
   }
 
   updateSelected(lineId) {
     this.shouldUpdate = false;
-    const selectedIndex = this.props.section.lineData.findIndex((e) => { return e.lineId === lineId });
+    const selectedIndex = this.props.section.lineData.findIndex((e) => (e.lineId === lineId));
     this.props.sectionDispatch.updateSelected(this.props.sectionId, selectedIndex, 0);
   }
 
@@ -238,7 +238,7 @@ class Section extends Component {
     const selected = this.props.section.selectedLine;
     // const selectedIndex = this.props.section.selectedIndex;
     const offset = text.length;
-    const currentText = findDOMNode(this.refs[selected.ref]);
+    const currentText = findDOMNode(this[selected.ref]);
     // TODO: Figure out how to get the correct offset
     this.props.sectionDispatch.updateText(this.props.sectionId, selected.lineId, currentText + text, offset);
   }
@@ -263,7 +263,7 @@ class Section extends Component {
 
   handleInput() {
     for (const elem of this.lineElements) {
-      this.refs[elem.ref].handleInput();
+      this[elem.ref].handleInput();
     }
   }
 
@@ -276,7 +276,7 @@ class Section extends Component {
         return (
           <Line
             key={line.lineId}
-            ref={`line${line.lineId}`}
+            ref={ref => { this[`line${line.lineId}`] = ref; }}
             lineId={line.lineId}
             text={line.text}
             chords={line.chords}
@@ -300,7 +300,7 @@ class Section extends Component {
     return (
       <div
         className="section"
-        ref="section"
+        ref={ref => { this._section = ref; }}
         name={this.props.sectionId}
         contentEditable="true"
         onPaste={() => this.handlePaste()}
@@ -314,9 +314,10 @@ class Section extends Component {
         suppressContentEditableWarning
       >
         { lineElements }
-        <div ref="tooltip" className="tooltip-container" />
+        <div ref={ref => { this._tooltip = ref; }} className="tooltip-container" />
       </div>
     );
   }
 }
+
 module.exports = Section;

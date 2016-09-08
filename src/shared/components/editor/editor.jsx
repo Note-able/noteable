@@ -1,4 +1,4 @@
-import { React, Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 const Section = require('./section');
 const AJAX = require('../../ajax');
@@ -27,7 +27,7 @@ class EditorComponent extends Component {
 
   componentDidMount() {
     if (this.props.routeParams.documentId) {
-      AJAX.Get(`/document/${this.props.routeParams.documentId}`, (response) => {
+      AJAX.get(`/document/${this.props.routeParams.documentId}`, (response) => {
         const sectionData = JSON.parse(JSON.parse(response).contents).sectionData;
         sectionData[0] = Object.assign({}, sectionData[0], { selectedIndex: 0, selectedLine: sectionData[0].lineData[0] });
         this.props.sectionDispatch.initializeEditor(sectionData);
@@ -60,7 +60,7 @@ class EditorComponent extends Component {
     });
 
     const postBody = { sectionData: sectionContents };
-    AJAX.PostJSON(`/document/${this.props.routeParams.documentId}`, postBody, (response) => this.updated(JSON.parse(response)));
+    AJAX.postJSON(`/document/${this.props.routeParams.documentId}`, postBody, (response) => this.updated(JSON.parse(response)));
   }
 
   /** updated (response) {
