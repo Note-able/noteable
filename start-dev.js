@@ -7,7 +7,7 @@ const forever = require('forever-monitor');
 const webpack = require('./src/server/webpack.js');
 webpack.runWebpackDevServer();
 
-let app = new forever.Monitor('./src/server/server.js', {
+let app = new forever.Monitor('./server.js', {
 	watch: true,
 	watchDirectory: './src',
 	usePolling: true,
