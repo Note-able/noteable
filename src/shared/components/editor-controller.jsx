@@ -52,7 +52,7 @@ const mapDispatchToProps = (dispatch) => ({
     deleteLine: (sectionId, index) =>
       dispatch(deleteLine(sectionId, index)),
     initializeEditor: (sectionData) =>
-      initializeEditor(sectionData),
+      dispatch(initializeEditor(sectionData)),
     updateLines: (sectionId, lineActions, selectedIndex, offset) =>
       dispatch(updateLines(sectionId, lineActions, selectedIndex, offset)),
     updateSelected: (sectionId, index, offset) =>
