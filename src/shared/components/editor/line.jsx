@@ -1,7 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import { findDOMNode } from 'react-dom';
-
-const Chord = require('./chord');
+import Chord from './chord';
+import TextBlock from './textBlock';
+import { moveChords} from './actions/editor-actions';
 
 class Line extends Component {
   static propTypes = {
@@ -114,21 +115,19 @@ class Line extends Component {
       sortedChords.sort(this.compareChords);
       const chords = sortedChords.map((chord) => {
         const text = this.props.text.substring(lastTextIndex, chord.index);
+        content.push(<TextBlock text={text} index={lastTextIndex} />);
         lastTextIndex = chord.index;
-        content.push(text);
-        return (
-          <Chord
-            key={`chord${chord.index}`}
-            ref={ref => { this[`chord${chord.index}`] = ref; }}
-            index={chord.index}
-            text={chord.text || ''}
-            updateSelectedToTextLine={() => this.props.updateSelected(this.props.lineId)}
-          />
+        return (<Chord
+          key={`chord${chord.index}`}
+          ref={`chord${chord.index}`}
+          index={chord.index}
+          text={ chord.text || '' }
+          updateSelectedToTextLine={ () => this.props.updateSelected(this.props.lineId) }/>
         );
       });
-      content.push(this.props.text.substring(lastTextIndex, this.props.text.length));
-      for (let i = 0; i < chords.length; i++) {
-        content.splice((i * 2) + 1, 0, chords[i]);
+      content.push(<TextBlock text={this.props.text.substring(lastTextIndex, this.props.text.length)} index={lastTextIndex} />);
+      for(let i = 0; i < chords.length; i++) {
+        content.splice(i*2+1,0,chords[i]);
       }
     } else {
       content = this.props.text;

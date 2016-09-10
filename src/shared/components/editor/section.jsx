@@ -200,17 +200,18 @@ class Section extends Component {
   // could be moved to line where we set update selected to currentTetIndex + length of chord text
   // Also chords aren't being mounted to the dom properly. possibly because of html comments?
   addChord() {
-    console.log('add chord');
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
 
-    this.props.sectionDispatch.addChordToLine(
+    const startIndex = parseInt(selection.baseNode.parentElement.getAttribute('data-index')) || 0;
+
+    this.props.dispatch(addChordToLine(
       this.props.sectionId,
       this.props.section.selectedLine.lineId,
       '',
-      range.startOffset,
-      () => { this.props.sectionDispatch.updateSelected(this.props.sectionId, this.props.section.selectedIndex, range.endOffset + 1); }
-    );
+      startIndex + range.startOffset,
+      () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex, range.endOffset + 1))}
+    ));
 
     if (this.tooltip) {
       unmountComponentAtNode(this._tooltip);
