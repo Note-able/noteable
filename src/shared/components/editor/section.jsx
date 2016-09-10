@@ -205,13 +205,13 @@ class Section extends Component {
 
     const startIndex = parseInt(selection.baseNode.parentElement.getAttribute('data-index')) || 0;
 
-    this.props.dispatch(addChordToLine(
+    this.props.sectionDispatch.addChordToLine(
       this.props.sectionId,
       this.props.section.selectedLine.lineId,
       '',
       startIndex + range.startOffset,
-      () => { this.props.dispatch(updateSelected(this.props.sectionId, this.props.section.selectedIndex, range.endOffset + 1))}
-    ));
+      () => { this.props.sectionDispatch.updateSelected(this.props.sectionId, this.props.section.selectedIndex, range.endOffset + 1) }
+    );
 
     if (this.tooltip) {
       unmountComponentAtNode(this._tooltip);
@@ -284,7 +284,7 @@ class Section extends Component {
             selected={selected}
             offset={offset}
             type={line.type}
-            updateSelected={() => this.updateSelected()}
+            updateSelected={() => this.updateSelected(line.lineId)}
             handleDelete={() => this.handleDelete()}
           />);
       } else if (line.type === 'recording') {
