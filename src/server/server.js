@@ -8,6 +8,8 @@ import Formidable from 'formidable';
 import fs from 'fs';
 import { connectToDb, ensureAuthenticated, validatePassword } from './server-util';
 
+const MongoStore = require('connect-mongo')(session);
+
 const app = express();
 app.use(express.static(`${__dirname}/../../public`));
 const config = require('../config');
@@ -24,6 +26,9 @@ app.use(session({
   secret: 'theAssyrianCameDownLikeAWolfOnTheFold',
   resave: true,
   saveUninitialized: true,
+  store: new MongoStore({
+    url: 'mongodb://localhost:27017/',
+  }),
 }));
 app.use(passport.initialize());
 app.use(passport.session());
