@@ -1,4 +1,4 @@
-'use strict';
+import UserService from './user-service';
 
 const Formidable = require(`formidable`);
 const config = require('../config');
@@ -13,6 +13,8 @@ function escaper(char){
 };
 
 module.exports = function (app, options) {
+  const m_userService = new UserService(options);
+
   app.get(`/database`, (req, res) => {
     options.connect(options.database, (connection) => {
       if(connection.status === `SUCCESS`){
@@ -83,27 +85,18 @@ module.exports = function (app, options) {
     if (!req.user) {
       res.status(400).send();
     }
-    options.connect(options.database, (connection) => {
-      const user = [];
-      connection.client.query(`
-        SELECT * FROM public.profile pr
-        WHERE ${req.params.id} = pr.id;`)
-      .on(`row`, (row) => { user.push(row); })
-      .on(`error`, (error) => { console.log(`error encountered ${error}`) })
-      .on(`end`, () => {
-        if (user.length === 0) {
-          res.status(404).send();
-          return;
-        }
-        user[0].profileImage = image.getPublicUrl(user[0].filename)
-        res.send(user[0]);
-        connection.fin();
-      });
+
+    const user = m_userService.getUser(req.params.id, (user) => {
+      if (user == null) {
+        res.status(404).send();
+      }
+
+      res.send(user);
     });
   });
 
   app.post(`/user/edit/picture/new`, options.auth, (req, res) => {
-    if(!req.user) {
+    if (!req.user) {
       res.status(400).send();
     }
 
