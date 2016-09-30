@@ -38,6 +38,18 @@ module.exports = {
         loader: 'babel-loader',
         exclude: /(node_modules)/,
       },
+      {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!autoprefixer-loader'),
+      },
+      {
+        test: /.less$/,
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!autoprefixer-loader!less-loader'),
+      },
+      {
+        test: /\.json$/,
+        loader: 'json',
+      },
     ],
   },
 };

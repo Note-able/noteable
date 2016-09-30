@@ -25,7 +25,7 @@ class Section extends Component {
       }),
     }).isRequired,
     sectionDispatch: PropTypes.shape({
-      addChordToLine: PropTypes.func.isRequired,
+      addChord: PropTypes.func.isRequired,
       addLine: PropTypes.func.isRequired,
       deleteLine: PropTypes.func.isRequired,
       initializeEditor: PropTypes.func.isRequired,
@@ -205,7 +205,7 @@ class Section extends Component {
 
     const startIndex = parseInt(selection.baseNode.parentElement.getAttribute('data-index')) || 0;
 
-    this.props.sectionDispatch.addChordToLine(
+    this.props.sectionDispatch.addChord(
       this.props.sectionId,
       this.props.section.selectedLine.lineId,
       '',

@@ -41,6 +41,7 @@ passport.deserializeUser((obj, done) => {
   done(null, obj);
 });
 
+
 passport.use(new LocalStrategy({ callbackURL: '/auth/local/callback' }, (username, password, done) => {
   connectToDb(config.connectionString, (connection) => {
     if (connection.status === 'SUCCESS') {
@@ -103,10 +104,10 @@ passport.use(new FacebookStrategy({
 app.get('/auth/facebook',
   passport.authenticate('facebook'));
 
-app.get('/auth/local',
+app.post('/auth/local',
   passport.authenticate('local'),
   (req, res) => {
-    res.redirect('/');
+    res.status(200).send();
   });
 
 app.get('/auth/facebook/callback',
@@ -126,8 +127,8 @@ app.get('/logout', (req, res) => {
   res.redirect('/test');
 });
 
-app.get('/me', ensureAuthenticated, (req, res) => {
-  res.redirect(`/user/${req.user.id}`);
+app.get('/me', (req, res) => {
+  res.redirect(`/user/${req.user == null ? -1 : req.user.id}`);
   // track here
 });
 

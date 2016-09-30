@@ -71,8 +71,16 @@ module.exports = function (app, options) {
     });
   });
 
-  app.get('/user/:id', options.auth, (req, res) => {
-    if(!req.user) {
+  app.post('/user/preferences/:userId', options.auth, (req, res) => {
+    if (!req.user) {
+      res.status(400).send();
+    }
+
+    console.log(req.body);
+  });
+
+  app.get('/user/:id', (req, res) => {
+    if (!req.user) {
       res.status(400).send();
     }
     options.connect(options.database, (connection) => {

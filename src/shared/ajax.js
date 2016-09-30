@@ -17,7 +17,7 @@ const AJAX = {
     xhr.setRequestHeader('Content-type', 'application/json');
     xhr.setRequestHeader('accept', 'application/json');
     xhr.onload = function () {
-      callback(this.response);
+      callback(this.response, this);
     };
     xhr.send(data);
   },

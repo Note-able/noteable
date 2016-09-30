@@ -8,7 +8,6 @@ html
       while(props.indexOf('&quot;') !== -1) {
         props = props.replace('&quot;', '"');
       }
-      console.log(props);
       window.__INITIAL_STATE__ = props;
 
 
@@ -16,7 +15,7 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1')
 
   body
-    div(id='react-app', data-props=props)
+    div(id='react-app', data-current-user=props)
 
   script(src='/js/facebook.js')
   script(src='http://localhost:8081/dist/main.bundle.js', defer)

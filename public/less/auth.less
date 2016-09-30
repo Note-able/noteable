@@ -12,15 +12,12 @@
 }
 
 .login-container, .register-container {
-  font-family: 'Ubuntu';
   border-radius: 2px;
   
   &__header {
-    background: #f46b45; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #f46b45 , @orange); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #f46b45 , @orange); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    color: white;
-    font: 16px BlinkMacSystemFont;
+    background: @blue;
+    color: @white;
+    font: @large-font;
     line-height: 48px;
     text-align: center;
   }
@@ -33,10 +30,16 @@
     top: 25px;
     width: 200px;
 
-    &__username, &__password, &__password__verify{
+    &__error-message {
+      color: red;
+      font-size: @message-font-size;
+      text-align: center;
+    }
+
+    &__username, &__password, &__password__verify {
       border: 1px solid @grey-medium;
       border-radius: @border-radius;
-      font-size: @normal-font-size;
+      font: @normal-font;
       line-height: @normal-line-height;
       margin: 10px 0;
       outline: none;
@@ -48,18 +51,24 @@
       background: none;
       border: 1px solid @grey-medium;
       border-radius: @border-radius;
+      color: @grey-medium;
       cursor: pointer;
       float: right;
+      font: @regular-font;
       height: 30px;
+      outline: none;
       padding: 5px;
 
       &:hover {
         background: @blue;
+        border: 1px solid transparent;
+        color: @white;
       }
     }
   }
 
   .button-container {
+    height: 48px;
     left: 0;
     margin: auto;
     right: 0;
@@ -67,7 +76,6 @@
 
     &__open-register {
       color: @blue;
-      margin: 15px 0 0;
       text-align: center;
     }
 
@@ -85,8 +93,10 @@
       border: none;
       border-radius: 100px;
       cursor: pointer;
-      font-size: @normal-font-size;
       height: 30px;
+      line-height: 30px;
+      margin: 9px 0;
+      outline: none;
       width: 100%;
     }
   }

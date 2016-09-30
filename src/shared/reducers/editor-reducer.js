@@ -1,48 +1,62 @@
+import { editorActionTypes } from '../actions/action-types';
+
+const {
+  addChordType,
+  addLineType,
+  addSectionType,
+  defaultEditorType,
+  deleteLineType,
+  updateLinesType,
+  updateSelectedType,
+  updateTextType,
+} = editorActionTypes;
 
 const editorLine = (state = {}, action) => {
-  switch (action.type){
-  case 'UPDATE_TEXT':
-    /*eslint-disable*/
-    if(state.lineId != action.lineId)
-      return state;
-      
-    return Object.assign({},
-    state,
-    {
-      text: action.text,
-      updateTextFunction: action.updateTextFunction
-    });
-  case 'ADD_LINE':
-    return Object.assign({},
-    state,
-    {
-      lineId: action.lineId,
-      text: action.text,
-      type: action.lineType
-    });
-  case 'ADD_CHORD':
-    if(state.lineId != action.lineId)
-      return state;
-    else {
-      const chords = state.chords || [];
-      chords.push({ index: action.index, text: action.text, updateSelectedFunction: action.updateSelectedFunction });
+  switch (action.type) {
+    case updateTextType:
+      /*eslint-disable*/
+      if(state.lineId != action.lineId)
+        return state;
+        
       return Object.assign({},
       state,
       {
-        chords: chords,
+        text: action.text,
+        updateTextFunction: action.updateTextFunction
       });
-    }
+    case addLineType:
+      return Object.assign({},
+      state,
+      {
+        lineId: action.lineId,
+        text: action.text,
+        type: action.lineType
+      });
+    case addChordType:
+      if(state.lineId != action.lineId)
+        return state;
+      else {
+        const chords = state.chords || [];
+        chords.push({ index: action.index, text: action.text, updateSelectedFunction: action.updateSelectedFunction });
+        return Object.assign({},
+        state,
+        {
+          chords: chords,
+        });
+      }
+    default:
+      return state;
   }
 }
 
 const editorSection = ( state = {}, action) => {
   switch (action.type){
-  case 'ADD_SECTION':
+  case addSectionType:
       return {
        lineData: [],
        selectedIndex: 0
      };
-  case 'UPDATE_LINES':
+  case updateLinesType:
     if(state.sectionId != action.sectionId)
       return state;
     else {
@@ -60,7 +74,7 @@ const editorSection = ( state = {}, action) => {
         offset: action.offset
       });
     }
-  case 'UPDATE_SELECTED':
+  case updateSelectedType:
     if(state.sectionId != action.sectionId)
       return state;
     else {
@@ -73,7 +87,7 @@ const editorSection = ( state = {}, action) => {
       });
     }
      /* Line Reducer */
-  case 'UPDATE_TEXT':
+  case updateTextType:
     if(state.sectionId != action.sectionId)
       return state;
     /*eslint-disable*/
@@ -83,7 +97,7 @@ const editorSection = ( state = {}, action) => {
       lineData: state.lineData.map(line => editorLine(line, action)),
       offset: action.offset
     });
-  case 'ADD_CHORD':
+  case addChordType:
     if(state.sectionId != action.sectionId)
       return state;
     /*eslint-disable*/
@@ -92,7 +106,7 @@ const editorSection = ( state = {}, action) => {
     {
       lineData: state.lineData.map(line => editorLine(line, action)),
     });
-  case 'ADD_LINE':
+  case addLineType:
     if(state.sectionId != action.sectionId)
       return state;
     else {
@@ -115,7 +129,7 @@ const editorSection = ( state = {}, action) => {
         });
       }
     }
-  case 'DELETE_LINE':
+  case deleteLineType:
     if(state.sectionId != action.sectionId)
       return state;
     else {
@@ -136,30 +150,30 @@ const editorSection = ( state = {}, action) => {
 
 export const editor = (state = { sectionData: []}, action) => {
   switch (action.type) {
-    case 'DEFAULT_EDITOR':
+    case defaultEditorType:
       return {
         sectionData: action.sectionData
       };
     /* Section Reducer */
-    case 'UPDATE_LINES':
+    case updateLinesType:
       return Object.assign({},
       state,
       {
         sectionData: state.sectionData.map(section => editorSection(section, action))
       });
     /*eslint-disable*/
-    case 'ADD_SECTION':
+    case addSectionType:
       return Object.assign({},
       state,
       {
         sectionData: [...state.sectionData, editorSection(undefined, action)]
       });
     /* Line Reducer */
-    case 'UPDATE_TEXT':
-    case 'ADD_LINE':
-    case 'DELETE_LINE':
-    case 'UPDATE_SELECTED':
-    case 'ADD_CHORD':
+    case updateTextType:
+    case addLineType:
+    case deleteLineType:
+    case updateSelectedType:
+    case addChordType:
     return Object.assign({},
     state,
     {

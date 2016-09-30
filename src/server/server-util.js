@@ -18,7 +18,7 @@ export function connectToDb(connectionString, callback) {
 }
 
 export function ensureAuthenticated (req, res, next) {
-  if (req.isAuthenticated() || req.xhr || req.headers.accept.indexOf('json') > -1) {
+  if (req.isAuthenticated()) {
     next();
     return;
   }

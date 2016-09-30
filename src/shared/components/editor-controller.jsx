@@ -1,20 +1,22 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import {
-  addChord as addChordToLine,
-  addLine,
-  deleteLine,
-  initializeEditor,
-  updateLines,
-  updateSelected,
-  updateText,
-} from './editor/actions/editor-actions';
+import { editorActions } from '../actions';
 
 const Editor = require('./editor/editor');
 const AudioRecord = require('./record-audio-component');
 const MessageComponent = require('./messaging/message-component');
 const MessageFeed = require('./messaging/message-feed');
 const AJAX = require('../ajax');
+
+const {
+  addChord,
+  addLine,
+  deleteLine,
+  initializeEditor,
+  updateLines,
+  updateSelected,
+  updateText,
+} = editorActions;
 
 let socket;
 
@@ -59,8 +61,8 @@ const mapDispatchToProps = (dispatch) => ({
       dispatch(updateSelected(sectionId, index, offset)),
     updateText: (sectionId, lineId, text, offset) =>
       dispatch(updateText(sectionId, lineId, text, offset)),
-    addChordToLine: (sectionId, lineId, text, index, updateSelectedFunction) =>
-      dispatch(addChordToLine(sectionId, lineId, text, index, updateSelectedFunction)),
+    addChord: (sectionId, lineId, text, index, updateSelectedFunction) =>
+      dispatch(addChord(sectionId, lineId, text, index, updateSelectedFunction)),
   },
 });
 

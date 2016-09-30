@@ -2,7 +2,6 @@ import React, { PropTypes, Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import Chord from './chord';
 import TextBlock from './textBlock';
-import { moveChords} from './actions/editor-actions';
 
 class Line extends Component {
   static propTypes = {

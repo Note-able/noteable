@@ -1,15 +1,17 @@
 import { combineReducers } from 'redux';
 
+import * as currentUserReducers from './current-user-reducer.js';
 import * as editorReducers from './editor-reducer.js';
 import * as profileReducers from './profile-reducer.js';
 import * as messageReducers from './message-reducer.js';
 
 export const editorReducer = combineReducers({
-	...editorReducers,
+  ...editorReducers,
 });
 
 export const appReducer = combineReducers({
-	...profileReducers,
-	...editorReducers,
-	...messageReducers,
+  ...profileReducers,
+  ...editorReducers,
+  ...messageReducers,
+  ...currentUserReducers,
 });

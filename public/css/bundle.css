@@ -101,19 +101,13 @@
 }
 .login-container,
 .register-container {
-  font-family: 'Ubuntu';
   border-radius: 2px;
 }
 .login-container__header,
 .register-container__header {
-  background: #f46b45;
-  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #f46b45, #eea849);
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #f46b45, #eea849);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  color: white;
-  font: 16px BlinkMacSystemFont;
+  background: #5C8CA7;
+  color: #ffffff;
+  font: 200 24px 'Roboto';
   line-height: 48px;
   text-align: center;
 }
@@ -127,6 +121,14 @@
   right: 0;
   top: 25px;
   width: 200px;
+}
+.login-container .signin-form__error-message,
+.register-container .signin-form__error-message,
+.login-container .register-form__error-message,
+.register-container .register-form__error-message {
+  color: red;
+  font-size: 13px;
+  text-align: center;
 }
 .login-container .signin-form__username,
 .register-container .signin-form__username,
@@ -142,7 +144,7 @@
 .register-container .register-form__password__verify {
   border: 1px solid #b1b1b1;
   border-radius: 2px;
-  font-size: 16px;
+  font: 200 16px 'Roboto';
   line-height: 20px;
   margin: 10px 0;
   outline: none;
@@ -156,9 +158,12 @@
   background: none;
   border: 1px solid #b1b1b1;
   border-radius: 2px;
+  color: #b1b1b1;
   cursor: pointer;
   float: right;
+  font: 200 14px 'Roboto';
   height: 30px;
+  outline: none;
   padding: 5px;
 }
 .login-container .signin-form__submit-button:hover,
@@ -166,9 +171,12 @@
 .login-container .register-form__submit-button:hover,
 .register-container .register-form__submit-button:hover {
   background: #5C8CA7;
+  border: 1px solid transparent;
+  color: #ffffff;
 }
 .login-container .button-container,
 .register-container .button-container {
+  height: 48px;
   left: 0;
   margin: auto;
   right: 0;
@@ -177,7 +185,6 @@
 .login-container .button-container__open-register,
 .register-container .button-container__open-register {
   color: #5C8CA7;
-  margin: 15px 0 0;
   text-align: center;
 }
 .login-container .button-container__submit-button,
@@ -197,8 +204,10 @@
   border: none;
   border-radius: 100px;
   cursor: pointer;
-  font-size: 16px;
   height: 30px;
+  line-height: 30px;
+  margin: 9px 0;
+  outline: none;
   width: 100%;
 }
 body {
@@ -285,7 +294,7 @@ button {
   background: white;
   left: 0;
   margin: 100px auto;
-  position: absolute;
+  position: fixed;
   right: 0;
   width: 300px;
   z-index: 2;
@@ -444,7 +453,7 @@ button {
 }
 .home-container .main-content .header .header-container .account-registration .register-button:hover {
   background-color: #ffffff;
-  color: #eea849;
+  color: #f46b45;
 }
 .home-container .main-content .header .header-container .account-registration .signin-button {
   background: transparent;
@@ -460,7 +469,7 @@ button {
 }
 .home-container .main-content .header .header-container .account-registration .signin-button:hover {
   background-color: #ffffff;
-  color: #eea849;
+  color: #f46b45;
 }
 .home-container .main-content .header .header-container .account-registration__component,
 .home-container .main-content .header .header-container .account-registration__submit {
@@ -1188,6 +1197,10 @@ button {
 .profile-four .profile-container {
   margin: 44px 0 0;
 }
+ul {
+  list-style: none;
+  padding: 0;
+}
 .app-container button {
   background: none;
   border: none;
@@ -1282,6 +1295,11 @@ button {
 .app-container .profile-container .profile-about {
   padding: 24px;
 }
+.app-container .profile-container .profile-about__icon {
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+}
 .app-container .profile-container .profile-about__title {
   font: 100 40px 'Roboto';
 }
@@ -1361,4 +1379,97 @@ button {
 }
 .app-container .navigation-sidebar__content__options--option--active {
   color: #5C8CA7;
+}
+.app-container .edit-profile-container {
+  margin: 100px auto;
+  max-width: 700px;
+}
+.app-container .edit-profile-container .map {
+  display: none;
+}
+.app-container .edit-profile-container__header {
+  border-bottom: 10px solid #eea849;
+  font: 100 40px 'Roboto';
+  padding: 12px 12px 12px 0;
+}
+.app-container .edit-profile-container__field {
+  border: 1px solid #eee;
+  border-radius: 1px;
+  display: block;
+  font: 200 16px 'Roboto';
+  height: 40px;
+  margin: 24px auto 24px 0;
+  max-width: 700px;
+  min-width: 300px;
+  outline: none;
+  width: 100%;
+}
+.app-container .edit-profile-container__field--label {
+  background: #eee;
+  border-right: 1px solid #eee;
+  box-sizing: border-box;
+  color: #646460;
+  display: inline-block;
+  font: 200 14px 'Roboto';
+  height: 100%;
+  line-height: 40px;
+  text-align: center;
+  width: 120px;
+}
+.app-container .edit-profile-container__field__name,
+.app-container .edit-profile-container__field__profession,
+.app-container .edit-profile-container__field__years,
+.app-container .edit-profile-container__field__location {
+  border: none;
+  color: black;
+  font: inherit;
+  height: 40px;
+  outline: none;
+  padding: 6px 12px;
+  width: 78%;
+}
+.app-container .edit-profile-container__field__instruments {
+  border: 1px solid #eee;
+  border-radius: 1px;
+  margin: 0;
+  max-height: 500px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  width: 100%;
+}
+.app-container .edit-profile-container__field__instruments--header {
+  font: 200 24px 'Roboto';
+  margin: 20px 0 0;
+  text-align: center;
+}
+.app-container .edit-profile-container__field__instruments--submit-button {
+  background: #5C8CA7;
+  color: #ffffff;
+  cursor: pointer;
+  font: 200 24px 'Roboto';
+  height: 40px;
+  line-height: 40px;
+  margin: 20px 0;
+  text-align: center;
+  width: 100%;
+}
+.app-container .edit-profile-container__field__instruments--submit-button:hover {
+  background: #3C718E;
+}
+.app-container .edit-profile-container__field__instruments--instrument:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+.app-container .edit-profile-container__field__instruments--instrument {
+  font: 200 16px 'Roboto';
+  height: 40px;
+  line-height: 40px;
+  padding: 4px 12px;
+  width: 100%;
+}
+.app-container .edit-profile-container__field__instruments--instrument:hover {
+  background: #eee;
+  cursor: pointer;
+}
+.app-container .edit-profile-container__field__instruments--instrument--checkbox {
+  margin: 0 12px;
 }
