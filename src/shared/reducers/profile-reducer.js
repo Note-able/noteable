@@ -2,7 +2,8 @@ import { profileActionTypes } from '../actions/action-types';
 
 const {
   loadUserTypes,
-  savePreferencesTypes,
+  saveProfileTypes,
+  updateBioType,
   updateInstrumentsType,
 } = profileActionTypes;
 
@@ -15,6 +16,11 @@ export const profile = (state = {}, action) => {
         ...state,
         ...action.result,
       };
+    case updateBioType:
+      return {
+        ...state,
+        bio: action.bio,
+      };
     case updateInstrumentsType:
       return {
         ...state,
@@ -24,6 +30,11 @@ export const profile = (state = {}, action) => {
             [...state.preferences.instruments, action.instrument] :
             state.preferences.instruments.filter(instrument => instrument !== action.instrument),
         },
+      };
+    case saveProfileTypes.success:
+      return {
+        ...state,
+        ...action.profile,
       };
     default:
       return state;

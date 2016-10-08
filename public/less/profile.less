@@ -396,7 +396,7 @@ ul {
   }
   
   .profile-container {
-    margin: @navbar-height 320px 0 0;
+    margin: @navbar-height 0 0 200px;
     position: relative;
     
     .profile-header {
@@ -425,7 +425,7 @@ ul {
         color: white;
         font: @normal-font;
         height: 48px;
-        left: 20px;
+        right: 20px;
         line-height: 48px;      
         position: fixed;
         text-align: center;
@@ -458,7 +458,7 @@ ul {
         }
         
         &__name {
-          font: @massive-garamond-font;
+          font: @title-garamond-font;
           padding: 8px;
         }
         
@@ -498,19 +498,51 @@ ul {
       padding: 24px;
 
       &__icon {
+        cursor: pointer;
         display: inline-block;
         height: 40px;
+        padding: 0 12px;
         width: 40px;
       }
       
       &__title {
-        font: @thin-large-font;
+        font: @huge-thin-font;
+        margin: 0 0 12px;
       }
       
       &__content {
         font: @normal-font;
       }
-      
+
+      &__container {
+        &__actions {
+          &--cancel, &--save {
+            height: 36px;
+            width: 76px;
+          }
+
+          &--cancel {
+            color: @blue;
+          }
+
+          &--save {
+            background: @blue;
+          }
+        }
+      }
+
+      &__editor-container {
+        font: @normal-font;
+        margin: 12px 0;
+        max-width: 700px;
+        min-height: 100px;
+
+        &--is-editing {
+          border: 1px solid @grey-light;
+          padding: 12px;
+        }
+      }
+
       &__nav-bar {
         border-bottom: 1px solid @grey-light;
         box-shadow: 0 -3px 8px 0 rgba(0, 0, 0, 0.2);
@@ -549,12 +581,12 @@ ul {
     
     &__content {
       background: @white;
-      box-shadow: -3px 6px 3px -1px rgba(0, 0, 0, 0.4);
+      box-shadow: 1px 5px 3px -1px rgba(0, 0, 0, 0.4);
       bottom: 0;
       position: fixed;
-      right: 0;
+      left: 0;
       top: 44px;
-      width: 320px;
+      width: 200px;
       
       &__filter-bar {
         border: 1px solid @grey-light;
@@ -574,14 +606,13 @@ ul {
       }
       
       &__options {
-        border-bottom: 1px solid @grey-light;
         border-top: 1px solid @grey-light;
         width: 100%;
         
         &--option {
           cursor: pointer;
           flex: 1;
-          font: @medium-font;
+          font: @normal-font;
           font-variant-ligatures: no-common-ligatures;
           height: 32px;
           line-height: 32px;

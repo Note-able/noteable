@@ -47,14 +47,14 @@ class NavigationSidebar extends React.Component {
             <input className="navigation-sidebar__content__filter-bar" onFocus={(event) => this.focusSearch(event)} onBlur={(event) => this.blurSearch(event)} placeholder="Search"/>
           </div>
           <div className="navigation-sidebar__content__options">
-            <div className={`navigation-sidebar__content__options--option ${activeTab === 'profile' ? 'navigation-sidebar__content__options--option--active' : ''}`} onClick={() => this.props.navigate('profile')}>&bull; Profile</div>
-            <div className={`navigation-sidebar__content__options--option ${activeTab === 'documents' ? 'navigation-sidebar__content__options--option--active' : ''}`} onClick={() => this.props.navigate('documents')}>&bull; Documents</div>
+            <div className={`navigation-sidebar__content__options--option ${activeTab === 'profile' ? 'navigation-sidebar__content__options--option--active' : ''}`} onClick={() => this.props.navigate('profile')}>Profile</div>
+            <div className={`navigation-sidebar__content__options--option ${activeTab === 'documents' ? 'navigation-sidebar__content__options--option--active' : ''}`} onClick={() => this.props.navigate('documents')}>Documents</div>
             {activeTab !== 'documents' ? null :
               <div className="navigation-sidebar__content__options--option__sub-options">
               </div>
             }
-            <div className={`navigation-sidebar__content__options--option ${activeTab === 'messages' ? 'navigation-sidebar__content__options--option--active' : ''}`} onClick={() => this.props.navigate('messages')}>&bull; Messages</div>
-            <div className={`navigation-sidebar__content__options--option ${activeTab === 'events' ? 'navigation-sidebar__content__options--option--active' : ''}`} onClick={() => this.props.navigate('events')}>&bull; Events</div>
+            <div className={`navigation-sidebar__content__options--option ${activeTab === 'messages' ? 'navigation-sidebar__content__options--option--active' : ''}`} onClick={() => this.props.navigate('messages')}>Messages</div>
+            <div className={`navigation-sidebar__content__options--option ${activeTab === 'events' ? 'navigation-sidebar__content__options--option--active' : ''}`} onClick={() => this.props.navigate('events')}>Events</div>
             {activeTab !== 'events' ? null :
               <div className="navigation-sidebar__content__options--option__sub-options">
               </div>

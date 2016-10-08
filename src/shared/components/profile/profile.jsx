@@ -1,4 +1,6 @@
 import { Editor, EditorState } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
+import { stateFromHTML } from 'draft-js-import-html';
 import React, { Component, PropTypes, cloneElement } from 'react';
 import { connect } from 'react-redux';
 
@@ -9,7 +11,8 @@ import { profileActions } from '../../actions';
 
 const {
   loadUser,
-  savePreferences,
+  saveProfile,
+  updateBio,
   updateInstruments,
 } = profileActions;
 
@@ -20,13 +23,15 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   loadUser: (userId) => dispatch(loadUser(userId)),
-  savePreferences: (userId) => dispatch(savePreferences(userId)),
+  saveProfile: (profile) => dispatch(saveProfile(profile)),
+  updateBio: (bio) => dispatch(updateBio(bio)),
   updateInstruments: (instrument) => dispatch(updateInstruments(instrument)),
 });
 
 class Profile extends Component {
   static propTypes = {
     children: PropTypes.object,
+    createEditorState: PropTypes.func,
     currentUser: PropTypes.shape({
       isAuthenticated: PropTypes.bool.isRequired,
       userId: PropTypes.number.isRequired,
@@ -35,17 +40,16 @@ class Profile extends Component {
     params: PropTypes.object.isRequired,
     profile: PropTypes.shape({
       bio: PropTypes.string,
+      id: PropTypes.number.isRequired,
     }),
+    saveProfile: PropTypes.func.isRequired,
+    updateBio: PropTypes.func.isRequired,
   }
 
-  componentDidMount() {
-    this.props.loadUser(this.props.params != null && this.props.params.profileId != null ? this.props.params.profileId : this.props.currentUser.userId);
-  }
-
-  followUser(userId) {
-    AJAX.post(`/user/follow?userId=${userId}`, null, (response) => {
-      console.log(response);
-    });
+  state = {
+    editorState: this.props.profile.bio == null ? EditorState.createEmpty() : EditorState.createWithContent(stateFromHTML(this.props.profile.bio)),
+    isEditing: false,
+    profile: this.props.profile,
   }
 
   sendImageToServer(e) {
@@ -76,6 +80,31 @@ class Profile extends Component {
     this.props.history.pushState(`${this.props.location.pathname}${hashLocation}`);
   }
 
+  onBioChange(editorState) {
+    this.setState({
+      editorState,
+    });
+
+    this.props.updateBio(stateToHTML(editorState.getCurrentContent()));
+  }
+
+  saveBio() {
+    this.props.saveProfile(this.props.profile);
+    this.closeEditor();
+  }
+
+  followUser(userId) {
+    AJAX.post(`/user/follow?userId=${userId}`, null, (response) => {
+      console.log(response);
+    });
+  }
+
+  closeEditor() {
+    this.setState({
+      isEditing: false,
+    });
+  }
+
   render() {
     if (this.props.location.pathname.indexOf('create') !== -1) {
       return (cloneElement(this.props.children, { ...this.props, ...this.state }));
@@ -83,6 +112,7 @@ class Profile extends Component {
 
     return (
       <div className="app-container">
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/draft-js/0.7.0/Draft.min.css" />
         <div className="navbar">
           <a href="/"><div className="home-button">Noteable</div></a>
           <button>Messages</button>
@@ -109,8 +139,24 @@ class Profile extends Component {
           <div className="profile-about__nav-bar"><a href="#about"><button>About</button></a><button href="#interests">Interests</button><button href="#demos">My demos</button></div>
           <div className="profile-about">
             <div className={`about-tab ${this.props.location.hash === 'about' || this.props.location.hash === '' ? 'about-tab--active' : ''}`}>
-              <div className="profile-about__title">About Me{<span className="profile-about__icon"><PencilIcon /></span>}</div>
-              <div>{this.props.profile.bio}</div>
+              <div className="profile-about__title">About Me{<span className="profile-about__icon" onClick={() => this.setState({ isEditing: true })}><PencilIcon /></span>}</div>
+              <div className="profile-about__container">
+                {this.state.isEditing ?
+                  <div className="profile-about__container__actions">
+                    <button className="profile-about__container__actions--save" onClick={() => this.saveBio()}>Save</button>
+                    <button className="profile-about__container__actions--cancel" onClick={() => this.closeEditor()}>Cancel</button>
+                  </div> :
+                  null
+                }
+                <div className={`profile-about__editor-container ${this.state.isEditing ? 'profile-about__editor-container--is-editing' : ''}`}>
+                  <Editor
+                    editorState={this.state.editorState}
+                    onChange={(editorState) => this.onBioChange(editorState)}
+                    placeholder={this.state.isEditing ? 'Tell the world who you are.' : ''}
+                    readOnly={!this.state.isEditing}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -28,12 +28,12 @@ const DemoProfile = require('../shared/components/profile/demo');
   React.render(<Handler/>, document.getElementById('react-app'));
 });**/
 const node = document.getElementById('react-app');
-const currentUser = JSON.parse(node.getAttribute('data-current-user'));
+const props = JSON.parse(node.getAttribute('data-current-user'));
 const store = compose(applyMiddleware(thunk), typeof window !== 'undefined' && window.devToolsExtension ? window.devToolsExtension() : args => args)
   (createStore)
   (appReducer, {
-    currentUser: { ...currentUser },
-    profile: { preferences: { instruments: [] } },
+    currentUser: { isAuthenticated: props.isAuthenticated, userId: props.profile.id },
+    profile: { ...props.profile },
   });
 
 // ReactDOM.render(App(), node);

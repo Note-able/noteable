@@ -5,6 +5,7 @@ import FacebookStrategy from 'passport-facebook';
 import LocalStrategy from 'passport-local';
 import session from 'express-session';
 import Formidable from 'formidable';
+import UserService from './user-service';
 import fs from 'fs';
 import { connectToDb, ensureAuthenticated, validatePassword } from './server-util';
 
@@ -15,6 +16,7 @@ app.use(express.static(`${__dirname}/../../public`));
 const config = require('../config');
 const audio = require('../util/gcloud-util')(config.gcloud, config.cloudAudioStorageBucket);
 const image = require('../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
+const m_userService = new UserService({ auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
 
 // set up Jade
 app.use(BodyParser.urlencoded({ extended: false }));
@@ -177,13 +179,15 @@ app.post('/add-image', ensureAuthenticated, (req, res) => {
 });
 
 app.get('/*', (req, res) => {
-  res.render('index', {
-    props: JSON.stringify(
-      {
-        isAuthenticated: req.isAuthenticated(),
-        userId: req.user ? req.user.id : -1,
-      }
-    ),
+  m_userService.getUser(req.user.id, user => {
+    res.render('index', {
+      props: JSON.stringify(
+        {
+          isAuthenticated: user == null,
+          profile: user,
+        }
+      ),
+    });
   });
 });
 

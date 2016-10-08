@@ -73,12 +73,15 @@ module.exports = function (app, options) {
     });
   });
 
-  app.post('/user/preferences/:userId', options.auth, (req, res) => {
-    if (!req.user) {
+  app.post('/user/profile/:userId', (req, res) => {
+    if (req.user.id != req.params.userId) {
+      console.log(req.params.userId === req.user.id);
       res.status(400).send();
     }
 
-    console.log(req.body);
+    m_userService.updateProfile(req.body, () => {
+      res.status(201).send();
+    });
   });
 
   app.get('/user/:id', (req, res) => {
@@ -86,7 +89,7 @@ module.exports = function (app, options) {
       res.status(400).send();
     }
 
-    const user = m_userService.getUser(req.params.id, (user) => {
+    m_userService.getUser(req.params.id, (user) => {
       if (user == null) {
         res.status(404).send();
       }

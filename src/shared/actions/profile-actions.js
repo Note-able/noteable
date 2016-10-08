@@ -3,7 +3,8 @@ import checkStatus from './util';
 
 const {
   loadUserTypes,
-  savePreferencesTypes,
+  saveProfileTypes,
+  updateBioType,
   updateInstrumentsType,
 } = profileActionTypes;
 
@@ -35,32 +36,43 @@ export const profileActions = {
       });
   }),
 
-  savePreferences: (userId, preferences) => ((dispatch) => {
+  saveProfile: (profile) => ((dispatch) => {
     dispatch({
-      type: savePreferencesTypes.processing,
+      type: saveProfileTypes.processing,
     });
 
-    window.fetch(`/user/preferences?userId=${userId}`,
+    window.fetch(`/user/profile/${profile.id}`,
       {
+        credentials: 'same-origin',
         method: 'POST',
-        accept: 'application/json',
-        preferences,
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profile),
       }).then(checkStatus, () => {
         dispatch({
-          type: savePreferencesTypes.error,
+          type: saveProfileTypes.error,
         });
       })
-      .then(response => response.json())
-      .then(result => {
+      .then(checkStatus, () => {
+        console.log('bad status code returned');
+      })
+      .then(() => {
         dispatch({
-          type: savePreferencesTypes.success,
-          result,
+          type: saveProfileTypes.success,
+          profile,
         });
       }, () => {
         dispatch({
-          type: savePreferencesTypes.error,
+          type: saveProfileTypes.error,
         });
       });
+  }),
+
+  updateBio: (bio) => ({
+    type: updateBioType,
+    bio,
   }),
 
   updateInstruments: (instrument) => ({

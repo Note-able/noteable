@@ -144,7 +144,7 @@
 .register-container .register-form__password__verify {
   border: 1px solid #b1b1b1;
   border-radius: 2px;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   line-height: 20px;
   margin: 10px 0;
   outline: none;
@@ -276,7 +276,7 @@ button {
 .navbar {
   background: #f46b45;
   /* fallback for old browsers */
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 44px;
   position: fixed;
   top: 0;
@@ -329,7 +329,7 @@ button {
   z-index: 2;
 }
 .navbar .user-options .dropdown-button {
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 48px;
   line-height: 48px;
   text-align: center;
@@ -340,7 +340,7 @@ button {
   background: #5C8CA7;
   border: none;
   color: white;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   line-height: 48px;
 }
 .navbar .signin-button {
@@ -348,7 +348,7 @@ button {
   border-radius: 2px;
   color: #ffffff;
   float: right;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 28px;
   letter-spacing: .5px;
   line-height: 28px;
@@ -361,7 +361,7 @@ button {
   background: #5C8CA7;
   border-color: transparent;
   color: white;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   line-height: 28px;
 }
 .navbar .home {
@@ -430,7 +430,7 @@ button {
   border: none;
   border-radius: 2px;
   cursor: pointer;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 40px;
   width: 150px;
 }
@@ -444,7 +444,7 @@ button {
   border-radius: 2px;
   cursor: pointer;
   color: #ffffff;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 40px;
   letter-spacing: .5px;
   padding: 4px;
@@ -461,7 +461,7 @@ button {
   border-radius: 2px;
   color: white;
   cursor: pointer;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 40px;
   margin: 0 10px;
   padding: 4px;
@@ -535,7 +535,7 @@ button {
 }
 .editor-container {
   display: flex;
-  font: 500 16px 'Bariol';
+  font: 500 14px 'Bariol';
 }
 .editor-container .editor {
   background: white;
@@ -1212,7 +1212,7 @@ ul {
   width: 150px;
 }
 .app-container .profile-container {
-  margin: 44px 320px 0 0;
+  margin: 44px 0 0 200px;
   position: relative;
 }
 .app-container .profile-container .profile-header {
@@ -1232,9 +1232,9 @@ ul {
   border-bottom-left-radius: 2px;
   border-bottom-right-radius: 2px;
   color: white;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 48px;
-  left: 20px;
+  right: 20px;
   line-height: 48px;
   position: fixed;
   text-align: center;
@@ -1247,7 +1247,7 @@ ul {
 .app-container .profile-container .profile-header .profile {
   box-sizing: border-box;
   color: white;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   margin: 44px 0 0;
   padding: 20px;
   text-align: center;
@@ -1264,7 +1264,7 @@ ul {
   width: 100px;
 }
 .app-container .profile-container .profile-header .profile__name {
-  font: 200 48px 'Garamond';
+  font: 200 40px 'Garamond';
   padding: 8px;
 }
 .app-container .profile-container .profile-header .profile__title {
@@ -1275,7 +1275,7 @@ ul {
   border: none;
   color: #ffffff;
   cursor: pointer;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 32px;
   margin: 12px;
   width: 100px;
@@ -1296,15 +1296,39 @@ ul {
   padding: 24px;
 }
 .app-container .profile-container .profile-about__icon {
+  cursor: pointer;
   display: inline-block;
   height: 40px;
+  padding: 0 12px;
   width: 40px;
 }
 .app-container .profile-container .profile-about__title {
-  font: 100 40px 'Roboto';
+  font: 100 36px 'Roboto';
+  margin: 0 0 12px;
 }
 .app-container .profile-container .profile-about__content {
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
+}
+.app-container .profile-container .profile-about__container__actions--cancel,
+.app-container .profile-container .profile-about__container__actions--save {
+  height: 36px;
+  width: 76px;
+}
+.app-container .profile-container .profile-about__container__actions--cancel {
+  color: #5C8CA7;
+}
+.app-container .profile-container .profile-about__container__actions--save {
+  background: #5C8CA7;
+}
+.app-container .profile-container .profile-about__editor-container {
+  font: 200 14px 'Roboto';
+  margin: 12px 0;
+  max-width: 700px;
+  min-height: 100px;
+}
+.app-container .profile-container .profile-about__editor-container--is-editing {
+  border: 1px solid #eee;
+  padding: 12px;
 }
 .app-container .profile-container .profile-about__nav-bar {
   border-bottom: 1px solid #eee;
@@ -1317,7 +1341,7 @@ ul {
   border: none;
   border-right: 1px solid #eee;
   color: black;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 44px;
   line-height: 44px;
   width: 100px;
@@ -1337,18 +1361,18 @@ ul {
 }
 .app-container .navigation-sidebar__content {
   background: #ffffff;
-  box-shadow: -3px 6px 3px -1px rgba(0, 0, 0, 0.4);
+  box-shadow: 1px 5px 3px -1px rgba(0, 0, 0, 0.4);
   bottom: 0;
   position: fixed;
-  right: 0;
+  left: 0;
   top: 44px;
-  width: 320px;
+  width: 200px;
 }
 .app-container .navigation-sidebar__content__filter-bar {
   border: 1px solid #eee;
   border-radius: 2px;
   flex: 1;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 32px;
   line-height: 32px;
   margin: 8px;
@@ -1360,14 +1384,13 @@ ul {
   display: flex;
 }
 .app-container .navigation-sidebar__content__options {
-  border-bottom: 1px solid #eee;
   border-top: 1px solid #eee;
   width: 100%;
 }
 .app-container .navigation-sidebar__content__options--option {
   cursor: pointer;
   flex: 1;
-  font: 200 18px 'Roboto';
+  font: 200 14px 'Roboto';
   font-variant-ligatures: no-common-ligatures;
   height: 32px;
   line-height: 32px;
@@ -1396,7 +1419,7 @@ ul {
   border: 1px solid #eee;
   border-radius: 1px;
   display: block;
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 40px;
   margin: 24px auto 24px 0;
   max-width: 700px;
@@ -1460,7 +1483,7 @@ ul {
   border-bottom: 1px solid #eee;
 }
 .app-container .edit-profile-container__field__instruments--instrument {
-  font: 200 16px 'Roboto';
+  font: 200 14px 'Roboto';
   height: 40px;
   line-height: 40px;
   padding: 4px 12px;
