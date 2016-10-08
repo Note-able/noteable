@@ -75,8 +75,8 @@ module.exports = function (app, options) {
 
   app.post('/user/profile/:userId', (req, res) => {
     if (req.user.id != req.params.userId) {
-      console.log(req.params.userId === req.user.id);
       res.status(400).send();
+      return;
     }
 
     m_userService.updateProfile(req.body, () => {
