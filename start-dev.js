@@ -6,12 +6,9 @@ require('babel-core/register')({
 
 const forever = require('forever-monitor');
 
-const webpack = require('./src/server/webpack.js');
-webpack.runWebpackDevServer();
-
 let app = new forever.Monitor('./server.js', {
 	watch: true,
-	watchDirectory: './src',
+	watchDirectory: './src/server',
 	usePolling: true,
 }).start();
 

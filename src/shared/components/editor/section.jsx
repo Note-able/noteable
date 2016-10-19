@@ -7,9 +7,9 @@ import { KeyCodes } from '../helpers/keyCodes';
 // I've removed your batching because I don't think it makes a difference. We can discuss it later.
 // import { addLine, updateText } from './actions/editor-actions';
 
-const Line = require('./line');
-const RecordingLine = require('./recordingLine');
-const Tooltip = require('./tooltip');
+const Line = require('./line.jsx');
+const RecordingLine = require('./recordingLine.jsx');
+const Tooltip = require('./tooltip.jsx');
 
 class Section extends Component {
   static propTypes = {

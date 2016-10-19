@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-const Section = require('./section');
+const Section = require('./section.jsx');
 const AJAX = require('../../ajax');
 
 class EditorComponent extends Component {

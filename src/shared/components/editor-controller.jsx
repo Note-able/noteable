@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { editorActions } from '../actions';
 
-const Editor = require('./editor/editor');
+const Editor = require('./editor/editor.jsx');
 const AudioRecord = require('./record-audio-component');
 const MessageComponent = require('./messaging/message-component');
 const MessageFeed = require('./messaging/message-feed');

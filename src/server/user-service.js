@@ -15,7 +15,16 @@ export default class UserService {
   }
 
   getUser(userId, callback) {
+    if (userId == null) {
+      callback({ id: -1 });
+      return;
+    }
+
     this.options.connect(this.options.database, (connection) => {
+      if (connection.client == null) {
+        return callback({ id: -1});
+      }
+
       const user = [];
       connection.client.query(`
         SELECT p.id, p.email, p.location, p.name, p.bio, i.instruments FROM public.profile p, public.instruments i 
@@ -24,11 +33,11 @@ export default class UserService {
       .on('row', (row) => { user.push(row); })
       .on('error', (error) => {
         console.log(`error encountered ${error}`);
-        callback(null);
+        callback({ id: -1 });
       })
       .on('end', () => {
         if (user.length === 0) {
-          callback(null);
+          callback({ id: -1 });
         }
 
         // user[0].profileImage = image.getPublicUrl(user[0].filename);
@@ -38,19 +47,10 @@ export default class UserService {
     });
   }
 
-  /** { preferences: { instruments: [] },
-  id: 1,
-  email: 'sportnak@gmail.com',
-  location: 'Bellingham, WA',
-  average_event_rating: 4,
-  user_id: 1,
-  name: null,
-  bio: '<p>asdfasdf</p>' } **/
-
   updateProfile(profile, callback) {
     this.options.connect(this.options.database, (connection) => {
       connection.client.query(`
-        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio.replace('\'', '\\\'')}$$, name = '${profile.name}'
+        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, name = '${profile.name}'
         WHERE id = ${profile.id};
         UPDATE public.instruments SET instruments = '${profile.preferences.instruments.toString()}'
         WHERE user_id = ${profile.id};

@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 
 import AJAX from '../../ajax';
 import NavigationSidebar from './navigation-sidebar.js';
-import { PencilIcon } from '../icons/common-icons.g';
+import { CogIcon, PencilIcon } from '../icons/common-icons.g';
 import { profileActions } from '../../actions';
 
 const {
@@ -14,11 +14,13 @@ const {
   saveProfile,
   updateBio,
   updateInstruments,
+  validateBio,
 } = profileActions;
 
 const mapStateToProps = (state) => ({
   currentUser: state.currentUser,
   profile: state.profile,
+  validation: state.validation,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -26,6 +28,7 @@ const mapDispatchToProps = (dispatch) => ({
   saveProfile: (profile) => dispatch(saveProfile(profile)),
   updateBio: (bio) => dispatch(updateBio(bio)),
   updateInstruments: (instrument) => dispatch(updateInstruments(instrument)),
+  validateBio: (bio) => dispatch(validateBio(bio)),
 });
 
 class Profile extends Component {
@@ -44,6 +47,11 @@ class Profile extends Component {
     }),
     saveProfile: PropTypes.func.isRequired,
     updateBio: PropTypes.func.isRequired,
+    validation: PropTypes.shape({
+      isValidBio: PropTypes.bool.isRequired,
+    }),
+    validateBio: PropTypes.func.isRequired,
+
   }
 
   state = {
@@ -85,10 +93,19 @@ class Profile extends Component {
       editorState,
     });
 
+    this.props.validateBio(editorState.getCurrentContent().getPlainText());
     this.props.updateBio(stateToHTML(editorState.getCurrentContent()));
   }
 
   saveBio() {
+    const validstate = Object.keys(this.props.validation).filter(option => {
+      return !this.props.validation[option];
+    });
+
+    if (validstate.length !== 0) {
+      return;
+    }
+
     this.props.saveProfile(this.props.profile);
     this.closeEditor();
   }
@@ -101,6 +118,7 @@ class Profile extends Component {
 
   closeEditor() {
     this.setState({
+      editorState: EditorState.createWithContent(stateFromHTML(this.props.profile.bio)),
       isEditing: false,
     });
   }
@@ -119,27 +137,35 @@ class Profile extends Component {
           <button>New Document</button>
         </div>
         <div className="profile-container">
-          <div className="profile-header">
-            <div className="filter" />
-            <div className="profile">
-              <div className="profile__image"/>
-              <div className="profile__name">{ this.props.profile.name == null ? 'Michael Nakayama' : this.props.profile.name }</div>
-              <div className="profile__title">Studying songwriting &bull; Belmont University</div>
-              <div className="profile__title">1 year experience</div>
-              <div className="profile__location">{ this.props.profile.location == null ? 'Bellingham, WA' : this.props.profile.location }</div>
-              <button className="profile__follow" onClick={() => this.followUser(this.props.profile.id)}>Follow</button>
-              <button className="profile__message">Message</button>
+          {this.state.settingsView ?
+            <div className="profile-settings">
+              <input className="profile-settings__name" type="text" placeholder="Name" />
+              <input className="profile-settings__title" type="text" placeholder="Titles" />
+              <input className="profile-settings__location" type="text" placeholder="Location" />
               <form ref="uploadForm" className="uploader" encType="multipart/form-data" >
                 <input ref="file" type="file" name="file" className="upload-file"/>
                 <input type="button" ref="button" value="Upload" onClick={(e) => { this.sendImageToServer(e) }} />
               </form>
+            </div> :
+            <div className="profile-header">
+              <div className="filter" />
+              <div className="profile">
+                <span className="profile__edit-icon" onClick={() => this.setState({ settingsView: true })}><CogIcon /></span>
+                <div className="profile__image" />
+                <div className="profile__name">{ this.props.profile.name == null ? 'Michael Nakayama' : this.props.profile.name }</div>
+                <div className="profile__title">Studying songwriting &bull; Belmont University</div>
+                <div className="profile__title">1 year experience</div>
+                <div className="profile__location">{ this.props.profile.location == null ? 'Bellingham, WA' : this.props.profile.location }</div>
+                <button className="profile__follow" onClick={() => this.followUser(this.props.profile.id)}>Follow</button>
+                <button className="profile__message">Message</button>
+              </div>
+              <div className="isLooking">{this.props.profile.isLooking == null ? 'I\'m looking to start a band!' : ''}</div>
             </div>
-            <div className="isLooking">{this.props.profile.isLooking == null ? 'I\'m looking to start a band!' : ''}</div>
-          </div>
+          }
           <div className="profile-about__nav-bar"><a href="#about"><button>About</button></a><button href="#interests">Interests</button><button href="#demos">My demos</button></div>
           <div className="profile-about">
             <div className={`about-tab ${this.props.location.hash === 'about' || this.props.location.hash === '' ? 'about-tab--active' : ''}`}>
-              <div className="profile-about__title">About Me{<span className="profile-about__icon" onClick={() => this.setState({ isEditing: true })}><PencilIcon /></span>}</div>
+              <div className="profile-about__title">About Me{<span className="profile-about__icon" onClick={() => this.setState({ isEditing: true })}><PencilIcon /></span>}{this.props.validation.isValidBio ? '' : <span className="error profile-about__error-message">Your about section is too long.</span>}</div>
               <div className="profile-about__container">
                 {this.state.isEditing ?
                   <div className="profile-about__container__actions">

@@ -9,7 +9,14 @@ import UserService from './user-service';
 import fs from 'fs';
 import { connectToDb, ensureAuthenticated, validatePassword } from './server-util';
 
+require('nodejs-dashboard');
+
 const MongoStore = require('connect-mongo')(session);
+
+const env = process.env.NODE_ENV;
+global.DEBUG = env !== 'production' && env !== 'internal';
+global.PRODUCTION = env === 'production';
+global.CLIENT = false;
 
 const app = express();
 app.use(express.static(`${__dirname}/../../public`));
@@ -179,14 +186,14 @@ app.post('/add-image', ensureAuthenticated, (req, res) => {
 });
 
 app.get('/*', (req, res) => {
-  m_userService.getUser(req.user.id, user => {
+  m_userService.getUser(req.user ? req.user.id : null, user => {
     res.render('index', {
-      props: JSON.stringify(
+      props: encodeURIComponent(JSON.stringify(
         {
           isAuthenticated: user == null,
           profile: user,
         }
-      ),
+      )),
     });
   });
 });

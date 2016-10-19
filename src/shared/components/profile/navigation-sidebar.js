@@ -41,7 +41,6 @@ class NavigationSidebar extends React.Component {
 
     return (
       <div className="navigation-sidebar">
-        <div className={`navigation-sidebar__pullout ${!this.state.showsidebar ? 'navigation-sidebar__pullout--is-open' : ''}`} onClick={() => this.opensidebar} />
         <div className="navigation-sidebar__content" style={this.state.showsidebar ? {'display' : 'initial'} : null}>
           <div className="navigation-sidebar__content__filter-bar-container">
             <input className="navigation-sidebar__content__filter-bar" onFocus={(event) => this.focusSearch(event)} onBlur={(event) => this.blurSearch(event)} placeholder="Search"/>

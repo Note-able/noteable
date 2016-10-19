@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import Login from './auth/login.jsx';
 import Register from './auth/register.jsx';
 
-const initialState = window.__INITIAL_STATE__ ? JSON.parse(window.__INITIAL_STATE__) : null;
+const initialState = window.__INITIAL_STATE__ ? JSON.parse(decodeURIComponent((window.__INITIAL_STATE__))) : null;
 
 module.exports = class HomeController extends Component {
   state = {
     isAuthenticated: initialState ? initialState.isAuthenticated : false,
     showUserOptions: false,
-    userId: initialState ? initialState.userId : -1,
+    userId: initialState ? initialState.profile.id : -1,
   };
 
   flipped = false;

@@ -398,6 +398,10 @@ ul {
   .profile-container {
     margin: @navbar-height 0 0 200px;
     position: relative;
+
+    .profile-settings {
+      position: relative;
+    }
     
     .profile-header {
       position: relative;
@@ -441,10 +445,32 @@ ul {
         box-sizing: border-box;
         color: white;
         font: @normal-font;
-        margin: @navbar-height 0 0;
+        margin: @navbar-height auto 0;
         padding: 20px;
+        position: relative;
         text-align: center;
         width: 100%;
+
+        &__edit-icon {
+          background: rgba(0, 0, 0, .35);
+          border-radius: 2px;
+          cursor: pointer;
+          fill: @grey-light;
+          left: 40px;
+          position: absolute;
+          top: 20px;
+          width: 40px;
+
+          &:hover {
+            fill: white;
+          }
+
+          svg {
+            height: 40px;
+            margin: auto;
+            width: 28px;
+          }
+        }
         
         &__image {
           background-image: url('/images/railroad.jpeg');
@@ -503,6 +529,10 @@ ul {
         height: 40px;
         padding: 0 12px;
         width: 40px;
+      }
+
+      &__error-message {
+        font: @normal-font;
       }
       
       &__title {

@@ -1,37 +1,55 @@
-var webpack = require('webpack');
-var cleanWebpack = require('clean-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack');
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const projectRoot = __dirname;
 
 module.exports = {
-  devtool: 'inline-source-map',
-  entry: [
-    'webpack-dev-server/client?http://localhost:8081',
-    'webpack/hot/only-dev-server',
-    './src/client/entry',
-  ],
-  output: {
-    path: __dirname + '/public/js/',
-    filename: 'app.js',
-    publicPath: 'http://localhost:8081/js/',
+  entry: {
+    main: path.join(projectRoot, '/src/client/entry.js'),
   },
+
+  output: {
+    path: path.resolve(projectRoot, './dist'),
+    filename: '[name].bundle.js',
+  },
+
+  devtool: '#source-map',
+
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
-    new ExtractTextPlugin('style.css', {
+    new ExtractTextPlugin({
+      filename: 'style.css',
       allChunks: true,
     }),
   ],
-  resolve: {
-    extensions: ['', '.js'],
-    moduleDirectories: ['./node_modules']
+
+  resolveLoader: {
+    modules: [
+      path.resolve(projectRoot, './node_modules'),
+    ],
+    extensions: ['*', '.js', '.jsx'],
   },
+
   module: {
     loaders: [
       {
-        test: /\.js?$/,
-        loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=stage-1,presets[]=es2015,plugins[]=transform-class-properties,plugins[]=transform-es2015-modules-commonjs'],
+        test: /\.jsx?$/,
+        loader: 'babel-loader',
         exclude: /(node_modules)/,
       },
-    ]
+      {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader!autoprefixer-loader' }),
+      },
+      {
+        test: /.less$/,
+        loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader!autoprefixer-loader!less-loader' }),
+      },
+      {
+        test: /\.json$/,
+        loader: 'json',
+      },
+    ],
   },
-}
+};

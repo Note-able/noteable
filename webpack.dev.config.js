@@ -18,17 +18,17 @@ module.exports = {
 
   plugins: [
     new webpack.NoErrorsPlugin(),
-    new ExtractTextPlugin('style.css', {
+    new ExtractTextPlugin({
+      filename: 'style.css',
       allChunks: true,
     }),
   ],
 
-  resolve: {
-    root: [
+  resolveLoader: {
+    modules: [
       path.resolve(projectRoot, './node_modules'),
     ],
-    extensions: ['', '.js', '.jsx'],
-    moduleDirectories: ['node_modules'],
+    extensions: ['*', '.js', '.jsx'],
   },
 
   module: {
@@ -40,11 +40,11 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!autoprefixer-loader'),
+        loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader!autoprefixer-loader' }),
       },
       {
         test: /.less$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!autoprefixer-loader!less-loader'),
+        loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader!autoprefixer-loader!less-loader' }),
       },
       {
         test: /\.json$/,

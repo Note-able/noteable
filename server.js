@@ -1,5 +1,5 @@
 require('babel-core/register')({
-	only: __dirname + '/src',
+	only: __dirname + '/src/server',
 });
 
 require.extensions['.less'] = function() {

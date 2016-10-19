@@ -3,6 +3,7 @@ import checkStatus from './util';
 
 const {
   loadUserTypes,
+  saveBioTypes,
   saveProfileTypes,
   updateBioType,
   updateInstrumentsType,
@@ -34,6 +35,20 @@ export const profileActions = {
           type: loadUserTypes.error,
         });
       });
+  }),
+
+  validateBio: (bio) => ((dispatch) => {
+    if (bio.length > 5000) {
+      dispatch({
+        type: saveBioTypes.error,
+      });
+
+      return;
+    }
+
+    dispatch({
+      type: saveBioTypes.success,
+    });
   }),
 
   saveProfile: (profile) => ((dispatch) => {

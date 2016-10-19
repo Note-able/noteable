@@ -12,14 +12,14 @@ const createBrowserHistory = require('history/lib/createBrowserHistory');
 const AppController = require(`../shared/components/app-controller.jsx`);
 //var ServerErrorController = require('./shared/components/ServerErrorController');
 const SuccessDisplayController = require(`../shared/components/success-display-controller`); // use this as a placeholder for successful requests.
-const EditorController = require(`../shared/components/editor-controller`)
+const EditorController = require('../shared/components/editor-controller.jsx');
 const AudioComponent = require('../shared/components/record-audio-component');
 const SigninController = require('../shared/components/signin-controller.jsx');
 const SongsController = require('../shared/components/songs-controller');
 const EventController = require('../shared/components/event-controller');
 const BrowseEvents = require('../shared/components/events/browse-events');
 const CreateEvent = require('../shared/components/events/create-event');
-const Editor = require('../shared/components/editor/editor');
+const Editor = require('../shared/components/editor/editor.jsx');
 const Profile = require('../shared/components/profile/profile.jsx');
 const DemoProfile = require('../shared/components/profile/demo');
 
@@ -28,7 +28,7 @@ const DemoProfile = require('../shared/components/profile/demo');
   React.render(<Handler/>, document.getElementById('react-app'));
 });**/
 const node = document.getElementById('react-app');
-const props = JSON.parse(node.getAttribute('data-current-user'));
+const props = JSON.parse(decodeURIComponent(node.getAttribute('data-current-user')));
 const store = compose(applyMiddleware(thunk), typeof window !== 'undefined' && window.devToolsExtension ? window.devToolsExtension() : args => args)
   (createStore)
   (appReducer, {

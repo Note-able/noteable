@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import Home from './home';
-import './app-styles/app-controller.less';
+import Home from './home.jsx';
 
 module.exports = class AppController extends Component {
   static propTypes = {
@@ -19,7 +18,7 @@ module.exports = class AppController extends Component {
   renderGrid() {
     return (
       <div>
-        <div className="testing-vertical" />
+        <div className="testing-verticals" />
         <div className="testing-horizontal" />
       </div>
     );

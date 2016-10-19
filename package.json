@@ -11,7 +11,7 @@
     "lint": "./node_modules/.bin/eslint ./src",
     "server": "node lib/server/server",
     "mongo": "sudo mongod --dbpath=/data",
-    "start-dev": "node start-dev.js",
+    "start-dev": "./node_modules/.bin/webpack-dev-server --config ./webpack.dev.config.js --port 8081 & node start-dev.js",
     "start": "npm run build && npm run webpack-bundle",
     "styles": "lessc ./public/less/bundle.less ./public/css/bundle.css"
   },
@@ -49,7 +49,7 @@
     "eslint-plugin-react": "^6.2.0",
     "express": "^4.13.3",
     "express-session": "^1.14.1",
-    "extract-text-webpack-plugin": "^1.0.1",
+    "extract-text-webpack-plugin": "^2.0.0-beta.4",
     "forever-monitor": "^1.7.0",
     "formidable": "1.0.17",
     "gcloud": "^0.30.3",
@@ -78,8 +78,8 @@
     "socket.io-client": "^1.4.5",
     "style-loader": "^0.13.1",
     "svgo": "^0.7.1",
-    "webpack": "^1.12.9",
-    "webpack-dev-server": "^1.14.0"
+    "webpack": "^2.1.0-beta.25",
+    "webpack-dev-server": "^2.1.0-beta.9"
   },
   "engines": {
     "node": "4.3.0"
@@ -99,7 +99,7 @@
   },
   "babel": {
     "presets": [
-      "es2015",
+      ["es2015"],
       "react"
     ],
     "plugins": [

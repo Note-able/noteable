@@ -2,6 +2,7 @@ import { createAsyncActionTypes } from './util';
 
 export const profileActionTypes = {
   loadUserTypes: createAsyncActionTypes('PROFILE/LOAD_USER'),
+  saveBioTypes: createAsyncActionTypes('PROFILE/BIO'),
   saveProfileTypes: createAsyncActionTypes('PROFILE/SAVE_PROFILE'),
   updateBioType: 'PROFILE/UPDATE_BIO',
   updateInstrumentsType: 'PROFILE/UPDATE_INSTRUMENTS',
