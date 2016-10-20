@@ -1218,6 +1218,36 @@ ul {
   margin: 44px 0 0 200px;
   position: relative;
 }
+.app-container .profile-container .profile-settings {
+  box-sizing: border-box;
+  font: 200 14px 'Roboto';
+  margin: 44px auto 0;
+  padding: 30px;
+  position: relative;
+  width: 100%;
+}
+.app-container .profile-container .profile-settings__input-container {
+  display: block;
+  margin: 0 0 16px 16px;
+}
+.app-container .profile-container .profile-settings__input-container label {
+  display: inline-block;
+  width: 72px;
+}
+.app-container .profile-container .profile-settings__name,
+.app-container .profile-container .profile-settings__title,
+.app-container .profile-container .profile-settings__location {
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  display: inline-block;
+  font: 200 14px 'Roboto';
+  height: 28px;
+  line-height: 32px;
+  margin: 0 0 16px 16px;
+  outline: none;
+  padding: 0 6px;
+  width: 300px;
+}
 .app-container .profile-container .profile-header {
   position: relative;
 }

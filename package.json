@@ -11,9 +11,10 @@
     "lint": "./node_modules/.bin/eslint ./src",
     "server": "node lib/server/server",
     "mongo": "sudo mongod --dbpath=/data",
-    "start-dev": "./node_modules/.bin/webpack-dev-server --config ./webpack.dev.config.js --port 8081 & node start-dev.js",
+    "start-dev": "rm -rf dist && ./node_modules/.bin/webpack && ./node_modules/.bin/webpack-dev-server --config ./webpack.dev.config.js --port 8081 --content-base dist & node start-dev.js",
     "start": "npm run build && npm run webpack-bundle",
-    "styles": "lessc ./public/less/bundle.less ./public/css/bundle.css"
+    "styles": "lessc ./public/less/bundle.less ./public/css/bundle.css",
+    "dash": "./node_modules/.bin/nodejs-dashboard npm run start-dev"
   },
   "repository": {
     "type": "git",
@@ -91,6 +92,7 @@
     "draft-js": "^0.9.1",
     "draft-js-export-html": "^0.4.0",
     "draft-js-import-html": "^0.2.0",
+    "lodash": "^4.16.4",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
     "react-redux": "^4.4.5",
@@ -99,7 +101,9 @@
   },
   "babel": {
     "presets": [
-      ["es2015"],
+      [
+        "es2015"
+      ],
       "react"
     ],
     "plugins": [

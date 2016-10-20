@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import AJAX from '../../ajax';
 import NavigationSidebar from './navigation-sidebar.js';
+import ProfileSettings from './profile-settings.jsx';
 import { CogIcon, PencilIcon } from '../icons/common-icons.g';
 import { profileActions } from '../../actions';
 
@@ -58,6 +59,12 @@ class Profile extends Component {
     editorState: this.props.profile.bio == null ? EditorState.createEmpty() : EditorState.createWithContent(stateFromHTML(this.props.profile.bio)),
     isEditing: false,
     profile: this.props.profile,
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      profile: nextProps.profile,
+    });
   }
 
   sendImageToServer(e) {
@@ -116,6 +123,10 @@ class Profile extends Component {
     });
   }
 
+  profileChange(profile) {
+    this.props.saveProfile(profile);
+  }
+
   closeEditor() {
     this.setState({
       editorState: EditorState.createWithContent(stateFromHTML(this.props.profile.bio)),
@@ -138,15 +149,7 @@ class Profile extends Component {
         </div>
         <div className="profile-container">
           {this.state.settingsView ?
-            <div className="profile-settings">
-              <input className="profile-settings__name" type="text" placeholder="Name" />
-              <input className="profile-settings__title" type="text" placeholder="Titles" />
-              <input className="profile-settings__location" type="text" placeholder="Location" />
-              <form ref="uploadForm" className="uploader" encType="multipart/form-data" >
-                <input ref="file" type="file" name="file" className="upload-file"/>
-                <input type="button" ref="button" value="Upload" onClick={(e) => { this.sendImageToServer(e) }} />
-              </form>
-            </div> :
+            <ProfileSettings profile={this.state.profile} profileChange={(profile) => this.profileChange(profile)} /> :
             <div className="profile-header">
               <div className="filter" />
               <div className="profile">

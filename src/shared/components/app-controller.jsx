@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Home from './home.jsx';
+import './app-styles/app-controller.less';
 
 module.exports = class AppController extends Component {
   static propTypes = {

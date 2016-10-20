@@ -16,7 +16,6 @@ export function runWebpackDevServer() {
   });
 
   const server = new WebpackDevServer(compiler, {
-    // webpack-dev-server options
     info: false,
     inline: true,
     host: 'localhost',
