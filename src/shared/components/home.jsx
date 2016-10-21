@@ -1,14 +1,16 @@
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import Login from './auth/login.jsx';
 import Register from './auth/register.jsx';
 
-const initialState = window.__INITIAL_STATE__ ? JSON.parse(decodeURIComponent((window.__INITIAL_STATE__))) : null;
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.profile.id !== -1,
+  userId: state.profile.id,
+});
 
-module.exports = class HomeController extends Component {
+class HomeController extends Component {
   state = {
-    isAuthenticated: initialState ? initialState.isAuthenticated : false,
     showUserOptions: false,
-    userId: initialState ? initialState.profile.id : -1,
   };
 
   flipped = false;
@@ -88,7 +90,7 @@ module.exports = class HomeController extends Component {
   }
 
   renderAuthenticationOptions() {
-    if (this.state.isAuthenticated) {
+    if (this.props.isAuthenticated) {
       return (
         <a className="user-options-menu" onClick={this.state.showUserOptions ? null : this.showOptions}><div className="home" /></a>
       );
@@ -136,7 +138,7 @@ module.exports = class HomeController extends Component {
             <div className="header-container">
               <h1 className="header-container__title"><span className="cursor">Noteable. Be inspired</span></h1>
               <h5 className="header-container__sub-title">Connect, Create, and Collaborate with artists near you.</h5>
-              {this.state.isAuthenticated ? <div className="account-registration" /> : this.renderAccountRegistration() }
+              {this.props.isAuthenticated ? <div className="account-registration" /> : this.renderAccountRegistration() }
             </div>
           </div>
           <div className="connect">
@@ -181,3 +183,6 @@ module.exports = class HomeController extends Component {
     );
   }
 }
+
+
+module.exports = connect(mapStateToProps)(HomeController);
