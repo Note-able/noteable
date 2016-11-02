@@ -111,17 +111,12 @@ class HomeController extends Component {
   }
 
   renderAccountRegistration() {
-    return [
+    return (
       <div className="account-registration">
         <button className="register-button" onClick={() => this.showRegister()}>Register</button>
-        <button className="signin-button">Learn more</button>
-      </div>,
-      <div className="demo-container">
-        <a href="/editor">
-          <button className="demo-container__button">Try the Editor</button>
-        </a>
-      </div>,
-    ];
+        <button className="signin-button" onClick={() => { window.location.href = 'editor'; }}>Try the Editor</button>
+      </div>
+    );
   }
 
   render() {
@@ -134,6 +129,7 @@ class HomeController extends Component {
           {this.state.showAccountDialog ? this.renderSignInDialog() : null}
         </div>
         <div className="main-content">
+          <div className="main-background" />
           <div className="header">
             <div className="header-container">
               <h1 className="header-container__title"><span className="cursor">Noteable. Be inspired</span></h1>

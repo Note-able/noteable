@@ -1,4 +1,5 @@
 const userMapper = (dbUser) => ({
+  avatarUrl: dbUser.avatar_url,
   id: dbUser.id,
   email: dbUser.email,
   location: dbUser.location,
@@ -27,7 +28,7 @@ export default class UserService {
 
       const user = [];
       connection.client.query(`
-        SELECT p.id, p.email, p.location, p.name, p.bio, i.instruments FROM public.profile p, public.instruments i 
+        SELECT p.id, p.email, p.location, p.name, p.avatar_url, p.bio, i.instruments FROM public.profile p, public.instruments i 
         WHERE p.id = i.user_id
         AND ${userId} = p.id;`)
       .on('row', (row) => { user.push(row); })
@@ -50,7 +51,7 @@ export default class UserService {
   updateProfile(profile, callback) {
     this.options.connect(this.options.database, (connection) => {
       connection.client.query(`
-        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, name = '${profile.name}'
+        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, name = '${profile.name}', avatar_url = '${profile.avatarUrl}'
         WHERE id = ${profile.id};
         UPDATE public.instruments SET instruments = '${profile.preferences.instruments.toString()}'
         WHERE user_id = ${profile.id};

@@ -14,6 +14,17 @@
 'use strict';
 
 const gcloud = require('gcloud');
+const path = require('path');
+
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
 
 module.exports = function (gcloudConfig, cloudStorageBucket) {
 
@@ -21,8 +32,12 @@ module.exports = function (gcloudConfig, cloudStorageBucket) {
   const bucket = storage.bucket(cloudStorageBucket);
 
   function sendUploadToGCS(filename, buffer, next) {
+    let gcsname = `${Date.now()}${guid()}${filename}`;
 
-    const gcsname = `${ Date.now() }${ filename }`;
+    if (gcsname.length >= 101) {
+      gcsname = gcsname.substring(gcsname.length - 100);
+    }
+
     const file = bucket.file(gcsname);
     const stream = file.createWriteStream();
 
@@ -39,7 +54,7 @@ module.exports = function (gcloudConfig, cloudStorageBucket) {
   }
 
   function getPublicUrl(filename) {
-    return `https://storage.googleapis.com/${ cloudStorageBucket }/${ filename }`;
+    return `https://storage.googleapis.com/${cloudStorageBucket}/${filename}`;
   }
 
   return {

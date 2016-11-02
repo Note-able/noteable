@@ -1,9 +1,10 @@
 import UserService from './user-service';
 
-const Formidable = require(`formidable`);
+const Formidable = require('formidable');
 const config = require('../config');
 const image = require('../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
 const bcrypt = require('bcrypt-nodejs');
+const fs = require('fs');
 
 const regex = new RegExp(/[\0\x08\x09\x1a\n\r"'\\\%]/g)
 function escaper(char){
@@ -98,12 +99,17 @@ module.exports = function (app, options) {
     });
   });
 
-  app.post(`/user/edit/picture/new`, options.auth, (req, res) => {
+  app.post('/user/edit/picture/new', options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
     }
 
     uploadPicture(req, res, (gcloudResponse) => {
+      if (gcloudResponse == null) {
+        res.status(500).send();
+        return;
+      }
+
       options.connect(options.database, (connection) => {
         const user = [];
         connection.client.query(`INSERT INTO pictures (user_id, filename, picture_type) VALUES (${req.user.id}, '${gcloudResponse.cloudStorageObject}', 1);`)
@@ -122,7 +128,7 @@ module.exports = function (app, options) {
       res.status(400).send();
     }
 
-    if (req.user.id === parseInt(req.params.userId)) {
+    if (req.user.id === parseInt(req.params.userId, 10)) {
       res.status(204).send();
     }
 
@@ -142,20 +148,22 @@ module.exports = function (app, options) {
     });
   });
 
-  /***PICTURES API***/
+  /** *PICTURES API* **/
 
+
+  // Currently only works with one picture. No mass upload.
   const uploadPicture = (req, res, next) => {
     const form = new Formidable.IncomingForm();
-    form.uploadDir = '/uploads';
+    form.maxFieldsSize = 50 * 1024 * 1024;
 
     form.onPart = (part) => {
       form.handlePart(part);
     }
 
     form.parse(req, (err, fields) => {
-      const buffer = new Buffer(fields.file, 'base64');
+      const buffer = new Buffer(fields[Object.keys(fields)[0]], 'base64');
 
-      image.sendUploadToGCS(`${fields.name}`, buffer, (response) => {
+      image.sendUploadToGCS(Object.keys(fields)[0], buffer, (response) => {
         if (response && response.error) {
           return null;
         }

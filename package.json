@@ -8,6 +8,7 @@
   },
   "scripts": {
     "clean": "rm -rf lib",
+    "icons": "node civilize-svgs.js ./public/icons ./src/shared/components/icons",
     "lint": "./node_modules/.bin/eslint ./src",
     "server": "node lib/server/server",
     "mongo": "sudo mongod --dbpath=/data",

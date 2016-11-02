@@ -394,42 +394,102 @@ ul {
     outline: none;
     width: 150px;
   }
+
+  .profile-settings {
+    box-sizing: border-box;
+    font: @normal-font;
+    height: 350px;
+    margin: @navbar-height 0 0 200px;
+    padding: 20px 50px;
+    position: relative;
+    width: 100%;
+
+    &__save {
+      background: @blue;
+      color: @white;
+      cursor: pointer;
+      height: 36px;
+      line-height: 36px;
+      margin: 0 0 6px 16px;
+      text-align: center;
+      width: 76px;
+    }
+
+    &__close-icon {
+      cursor: pointer;
+      left: 20px;
+      position: absolute;
+      top: 20px;
+
+      svg {
+        fill: @grey-medium;
+      }
+    }
+
+    &__input-container {
+      display: block;
+      margin: 0 0 16px 16px;
+
+      label {
+        display: inline-block;
+        width: 72px;
+      }
+    }
+
+    &__upload-button {
+      background: none;
+      border-radius: 50%;
+      bottom: 0;
+      cursor: pointer;
+      height: 100px;
+      left: 0;
+      margin: auto;
+      position: absolute;
+      top: 0;
+      width: 100px;
+      z-index: 2;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    &__file-upload {
+      display: none;
+    }
+
+    &__avatar {
+      background-position: center;
+      background-size: cover;
+      border-radius: 50%;
+      display: inline-block;
+      height: 100px;
+      width: 100px;
+    }
+
+    .uploader {
+      margin: 0 0 16px 16px;
+      position: relative;
+    }
+
+    &__name, &__title, &__location {
+      border: 1px solid @grey-light;
+      border-radius: 2px;
+      display: inline-block;
+      font: @normal-font;
+      height: 28px;
+      line-height: 32px;
+      margin: 0 0 6px 16px;
+      max-width: 600px;
+      outline: none;
+      padding: 0 6px;
+      width: 100%;
+    }
+  }
   
   .profile-container {
     margin: @navbar-height 0 0 200px;
     position: relative;
-
-    .profile-settings {
-      box-sizing: border-box;
-      font: @normal-font;
-      margin: @navbar-height auto 0;
-      padding: 30px;
-      position: relative;
-      width: 100%;
-
-      &__input-container {
-        display: block;
-        margin: 0 0 16px 16px;
-
-        label {
-          display: inline-block;
-          width: 72px;
-        }
-      }
-
-      &__name, &__title, &__location {
-        border: 1px solid @grey-light;
-        border-radius: 2px;
-        display: inline-block;
-        font: @normal-font;
-        height: 28px;
-        line-height: 32px;
-        margin: 0 0 16px 16px;
-        outline: none;
-        padding: 0 6px;
-        width: 300px;
-      }
-    }
     
     .profile-header {
       position: relative;
@@ -473,18 +533,18 @@ ul {
         box-sizing: border-box;
         color: white;
         font: @normal-font;
+        height: 350px;
         margin: @navbar-height auto 0;
         padding: 20px;
         position: relative;
         text-align: center;
         width: 100%;
 
-        &__edit-icon {
+        &__edit-icon, &__camera-icon {
           background: rgba(0, 0, 0, .35);
           border-radius: 2px;
           cursor: pointer;
           fill: @grey-light;
-          left: 40px;
           position: absolute;
           top: 20px;
           width: 40px;
@@ -498,6 +558,14 @@ ul {
             margin: auto;
             width: 28px;
           }
+        }
+
+        &__edit-icon {
+          left: 40px;
+        }
+
+        &__camera-icon {
+          left: 90px;
         }
         
         &__image {
@@ -672,8 +740,7 @@ ul {
           flex: 1;
           font: @normal-font;
           font-variant-ligatures: no-common-ligatures;
-          height: 32px;
-          line-height: 32px;
+          line-height: 24px;
           padding: 4px 24px;
           text-align: left;
 
@@ -681,12 +748,21 @@ ul {
             color: @blue;
           }
 
-          &--active {
-            color: @blue;
+          &__suboptions {
+            color: black;
+            padding: 0 12px;
+
+            &:hover {
+              color: @blue;
+            }
           }
         }
       }
     }
+  }
+
+  .active-tab {
+    color: @blue;
   }
 
   .edit-profile-container {

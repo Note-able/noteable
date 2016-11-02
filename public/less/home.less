@@ -9,6 +9,7 @@ button {
   background: none;
   border: none;
   cursor: pointer;
+  outline: none;
 }
 
 .error {
@@ -52,7 +53,6 @@ button {
 };
 
 .navbar {
-  background: #f46b45; /* fallback for old browsers */
   //background: -webkit-linear-gradient(to right, #f46b45 , @orange); /* Chrome 10-25, Safari 5.1-6 */
   //background: linear-gradient(to right, #f46b45 , @orange); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font: @normal-font;
@@ -61,9 +61,6 @@ button {
   top: 0;
   width: 100%;
   z-index: 2;
-  -webkit-box-shadow: 0px -3px 8px 2px rgba(0,0,0,0.75);
-  -moz-box-shadow: 0px -3px 8px 2px rgba(0,0,0,0.75);
-  box-shadow: 0px -3px 8px 2px rgba(0,0,0,0.75);
 
   button {
     float: right;
@@ -136,22 +133,21 @@ button {
     border: 1px solid @white;
     border-radius: 2px;
     color: @white;
+    cursor: pointer;
     float: right;
     font: @normal-font;
-    height: 28px;
+    height: 36px;
     letter-spacing: .5px;
-    line-height: 28px;
+    line-height: 36px;
     margin: 8px 24px 8px 0;
     text-align: center;
     width: 100px;
     z-index: 2;
       
+    
     &:hover {
-      background: #5C8CA7;
-      border-color: transparent;
-      color: white;
-      font: @normal-font;
-      line-height: 28px;
+      background-color: @white;
+      color: @orange;
     }
   }
   
@@ -171,36 +167,44 @@ button {
 
 .home-container {
   .main-content {
+    color: @white;
     font-family: 'Garamond';
-    margin: @navbar-height 0 0;
     position: relative;
     width: 100%;
-    
-    @media (min-width: 1350px) {
-      .header {
-        background-position-y: -200px !important;
-      }
-    }
-    
-    .header {
-      background: url('/images/musician_fog_3.jpg');
+
+    .main-background {
+      background: linear-gradient(to bottom right, @orange, @pink);
       background-size: cover;
       border-bottom: 1px solid #ccc;
       color: #ffffff;
+      height: 100%;
+      min-height: 400px;
+      position: fixed;
+      width: 100%;
+      z-index: -1;
+    }
+    
+    .header {
+      color: #ffffff;
+      height: 100%;
       margin: auto;
       position: relative;
-      text-align: left;
       
       .header-container {
-        background: rgba(0, 0, 0, 0.15);
-        min-height: 400px;
-        
+        bottom: 0;
+        left: 0;
+        height: 200px;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        text-align: center;
+        top: 0;
+
         &__title {
           font: @gigantic-lobster-font;
           font-size: 5em;
           letter-spacing: 4px;
           margin: 0;
-          padding: 100px 100px 0;
           
           .cursor {
             animation: blink 1s infinite;
@@ -216,11 +220,6 @@ button {
         }
         
         .demo-container {
-          bottom: 10px;
-          left: 0;
-          margin: auto;
-          position: absolute;
-          right: 0;
           text-align: center;
           
           &__button {
@@ -236,24 +235,24 @@ button {
         
         .account-registration {
           display: flex;
-          padding: 0 100px 150px;
-          width: 600px;
+          margin: auto;
+          width: 250px;
           
           .register-button {
+            background-color: @blue;
             border: none;
             border-radius: 2px;
             cursor: pointer;
             color: @white;
+            flex: 1;
             font: @normal-font;
             height: 40px;
             letter-spacing: .5px;
             padding: 4px;
-            width: 120px;
-            background-color: @blue;
             
             &:hover {
               background-color: @white;
-              color: #f46b45;
+              color: @orange;
             }
           }
           
@@ -263,15 +262,15 @@ button {
             border-radius: 2px;
             color: white;
             cursor: pointer;
+            flex: 1;
             font: @normal-font;
             height: 40px;
             margin: 0 10px;
             padding: 4px;
-            width: 120px;
             
             &:hover {
               background-color: @white;
-              color:  #f46b45;
+              color: @orange;
             }
           }
           

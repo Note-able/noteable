@@ -105,7 +105,7 @@
 }
 .login-container__header,
 .register-container__header {
-  background: #5C8CA7;
+  background: #00E19E;
   color: #ffffff;
   font: 200 24px 'Roboto';
   line-height: 48px;
@@ -170,7 +170,7 @@
 .register-container .signin-form__submit-button:hover,
 .login-container .register-form__submit-button:hover,
 .register-container .register-form__submit-button:hover {
-  background: #5C8CA7;
+  background: #00E19E;
   border: 1px solid transparent;
   color: #ffffff;
 }
@@ -184,7 +184,7 @@
 }
 .login-container .button-container__open-register,
 .register-container .button-container__open-register {
-  color: #5C8CA7;
+  color: #00E19E;
   text-align: center;
 }
 .login-container .button-container__submit-button,
@@ -220,6 +220,7 @@ button {
   background: none;
   border: none;
   cursor: pointer;
+  outline: none;
 }
 .error {
   color: #f46b45;
@@ -277,17 +278,12 @@ button {
   }
 }
 .navbar {
-  background: #f46b45;
-  /* fallback for old browsers */
   font: 200 14px 'Roboto';
   height: 44px;
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 2;
-  -webkit-box-shadow: 0px -3px 8px 2px rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: 0px -3px 8px 2px rgba(0, 0, 0, 0.75);
-  box-shadow: 0px -3px 8px 2px rgba(0, 0, 0, 0.75);
 }
 .navbar button {
   float: right;
@@ -350,22 +346,20 @@ button {
   border: 1px solid #ffffff;
   border-radius: 2px;
   color: #ffffff;
+  cursor: pointer;
   float: right;
   font: 200 14px 'Roboto';
-  height: 28px;
+  height: 36px;
   letter-spacing: .5px;
-  line-height: 28px;
+  line-height: 36px;
   margin: 8px 24px 8px 0;
   text-align: center;
   width: 100px;
   z-index: 2;
 }
 .navbar .signin-button:hover {
-  background: #5C8CA7;
-  border-color: transparent;
-  color: white;
-  font: 200 14px 'Roboto';
-  line-height: 28px;
+  background-color: #ffffff;
+  color: #eea849;
 }
 .navbar .home {
   background: url('/images/harmburger.svg') no-repeat center;
@@ -380,35 +374,43 @@ button {
   width: 76px;
 }
 .home-container .main-content {
+  color: #ffffff;
   font-family: 'Garamond';
-  margin: 44px 0 0;
   position: relative;
   width: 100%;
 }
-@media (min-width: 1350px) {
-  .home-container .main-content .header {
-    background-position-y: -200px !important;
-  }
-}
-.home-container .main-content .header {
-  background: url('/images/musician_fog_3.jpg');
+.home-container .main-content .main-background {
+  background: linear-gradient(to bottom right, #eea849, #DE3163);
   background-size: cover;
   border-bottom: 1px solid #ccc;
   color: #ffffff;
+  height: 100%;
+  min-height: 400px;
+  position: fixed;
+  width: 100%;
+  z-index: -1;
+}
+.home-container .main-content .header {
+  color: #ffffff;
+  height: 100%;
   margin: auto;
   position: relative;
-  text-align: left;
 }
 .home-container .main-content .header .header-container {
-  background: rgba(0, 0, 0, 0.15);
-  min-height: 400px;
+  bottom: 0;
+  left: 0;
+  height: 200px;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
 }
 .home-container .main-content .header .header-container__title {
   font: 200 100px 'Lobster';
   font-size: 5em;
   letter-spacing: 4px;
   margin: 0;
-  padding: 100px 100px 0;
 }
 .home-container .main-content .header .header-container__title .cursor {
   animation: blink 1s infinite;
@@ -421,11 +423,6 @@ button {
   padding: 0 100px;
 }
 .home-container .main-content .header .header-container .demo-container {
-  bottom: 10px;
-  left: 0;
-  margin: auto;
-  position: absolute;
-  right: 0;
   text-align: center;
 }
 .home-container .main-content .header .header-container .demo-container__button {
@@ -439,24 +436,24 @@ button {
 }
 .home-container .main-content .header .header-container .account-registration {
   display: flex;
-  padding: 0 100px 150px;
-  width: 600px;
+  margin: auto;
+  width: 250px;
 }
 .home-container .main-content .header .header-container .account-registration .register-button {
+  background-color: #00E19E;
   border: none;
   border-radius: 2px;
   cursor: pointer;
   color: #ffffff;
+  flex: 1;
   font: 200 14px 'Roboto';
   height: 40px;
   letter-spacing: .5px;
   padding: 4px;
-  width: 120px;
-  background-color: #5C8CA7;
 }
 .home-container .main-content .header .header-container .account-registration .register-button:hover {
   background-color: #ffffff;
-  color: #f46b45;
+  color: #eea849;
 }
 .home-container .main-content .header .header-container .account-registration .signin-button {
   background: transparent;
@@ -464,15 +461,15 @@ button {
   border-radius: 2px;
   color: white;
   cursor: pointer;
+  flex: 1;
   font: 200 14px 'Roboto';
   height: 40px;
   margin: 0 10px;
   padding: 4px;
-  width: 120px;
 }
 .home-container .main-content .header .header-container .account-registration .signin-button:hover {
   background-color: #ffffff;
-  color: #f46b45;
+  color: #eea849;
 }
 .home-container .main-content .header .header-container .account-registration__component,
 .home-container .main-content .header .header-container .account-registration__submit {
@@ -781,7 +778,7 @@ button {
   width: 100%;
 }
 .event-controller-container .create-event-container .event-form .event-form-wrapper .submit-event {
-  background: #5C8CA7;
+  background: #00E19E;
   border: none;
   border-radius: 4px;
   color: white;
@@ -1214,39 +1211,91 @@ ul {
   outline: none;
   width: 150px;
 }
-.app-container .profile-container {
-  margin: 44px 0 0 200px;
-  position: relative;
-}
-.app-container .profile-container .profile-settings {
+.app-container .profile-settings {
   box-sizing: border-box;
   font: 200 14px 'Roboto';
-  margin: 44px auto 0;
-  padding: 30px;
+  height: 350px;
+  margin: 44px 0 0 200px;
+  padding: 20px 50px;
   position: relative;
   width: 100%;
 }
-.app-container .profile-container .profile-settings__input-container {
+.app-container .profile-settings__save {
+  background: #00E19E;
+  color: #ffffff;
+  cursor: pointer;
+  height: 36px;
+  line-height: 36px;
+  margin: 0 0 6px 16px;
+  text-align: center;
+  width: 76px;
+}
+.app-container .profile-settings__close-icon {
+  cursor: pointer;
+  left: 20px;
+  position: absolute;
+  top: 20px;
+}
+.app-container .profile-settings__close-icon svg {
+  fill: #b1b1b1;
+}
+.app-container .profile-settings__input-container {
   display: block;
   margin: 0 0 16px 16px;
 }
-.app-container .profile-container .profile-settings__input-container label {
+.app-container .profile-settings__input-container label {
   display: inline-block;
   width: 72px;
 }
-.app-container .profile-container .profile-settings__name,
-.app-container .profile-container .profile-settings__title,
-.app-container .profile-container .profile-settings__location {
+.app-container .profile-settings__upload-button {
+  background: none;
+  border-radius: 50%;
+  bottom: 0;
+  cursor: pointer;
+  height: 100px;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  top: 0;
+  width: 100px;
+  z-index: 2;
+}
+.app-container .profile-settings__upload-button:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+.app-container .profile-settings__file-upload {
+  display: none;
+}
+.app-container .profile-settings__avatar {
+  background-position: center;
+  background-size: cover;
+  border-radius: 50%;
+  display: inline-block;
+  height: 100px;
+  width: 100px;
+}
+.app-container .profile-settings .uploader {
+  margin: 0 0 16px 16px;
+  position: relative;
+}
+.app-container .profile-settings__name,
+.app-container .profile-settings__title,
+.app-container .profile-settings__location {
   border: 1px solid #ddd;
   border-radius: 2px;
   display: inline-block;
   font: 200 14px 'Roboto';
   height: 28px;
   line-height: 32px;
-  margin: 0 0 16px 16px;
+  margin: 0 0 6px 16px;
+  max-width: 600px;
   outline: none;
   padding: 0 6px;
-  width: 300px;
+  width: 100%;
+}
+.app-container .profile-container {
+  margin: 44px 0 0 200px;
+  position: relative;
 }
 .app-container .profile-container .profile-header {
   position: relative;
@@ -1281,29 +1330,38 @@ ul {
   box-sizing: border-box;
   color: white;
   font: 200 14px 'Roboto';
+  height: 350px;
   margin: 44px auto 0;
   padding: 20px;
   position: relative;
   text-align: center;
   width: 100%;
 }
-.app-container .profile-container .profile-header .profile__edit-icon {
+.app-container .profile-container .profile-header .profile__edit-icon,
+.app-container .profile-container .profile-header .profile__camera-icon {
   background: rgba(0, 0, 0, 0.35);
   border-radius: 2px;
   cursor: pointer;
   fill: #ddd;
-  left: 40px;
   position: absolute;
   top: 20px;
   width: 40px;
 }
-.app-container .profile-container .profile-header .profile__edit-icon:hover {
+.app-container .profile-container .profile-header .profile__edit-icon:hover,
+.app-container .profile-container .profile-header .profile__camera-icon:hover {
   fill: white;
 }
-.app-container .profile-container .profile-header .profile__edit-icon svg {
+.app-container .profile-container .profile-header .profile__edit-icon svg,
+.app-container .profile-container .profile-header .profile__camera-icon svg {
   height: 40px;
   margin: auto;
   width: 28px;
+}
+.app-container .profile-container .profile-header .profile__edit-icon {
+  left: 40px;
+}
+.app-container .profile-container .profile-header .profile__camera-icon {
+  left: 90px;
 }
 .app-container .profile-container .profile-header .profile__image {
   background-image: url('/images/railroad.jpeg');
@@ -1370,10 +1428,10 @@ ul {
   width: 76px;
 }
 .app-container .profile-container .profile-about__container__actions--cancel {
-  color: #5C8CA7;
+  color: #00E19E;
 }
 .app-container .profile-container .profile-about__container__actions--save {
-  background: #5C8CA7;
+  background: #00E19E;
 }
 .app-container .profile-container .profile-about__editor-container {
   font: 200 14px 'Roboto';
@@ -1447,16 +1505,22 @@ ul {
   flex: 1;
   font: 200 14px 'Roboto';
   font-variant-ligatures: no-common-ligatures;
-  height: 32px;
-  line-height: 32px;
+  line-height: 24px;
   padding: 4px 24px;
   text-align: left;
 }
 .app-container .navigation-sidebar__content__options--option:hover {
-  color: #5C8CA7;
+  color: #00E19E;
 }
-.app-container .navigation-sidebar__content__options--option--active {
-  color: #5C8CA7;
+.app-container .navigation-sidebar__content__options--option__suboptions {
+  color: black;
+  padding: 0 12px;
+}
+.app-container .navigation-sidebar__content__options--option__suboptions:hover {
+  color: #00E19E;
+}
+.app-container .active-tab {
+  color: #00E19E;
 }
 .app-container .edit-profile-container {
   margin: 100px auto;
@@ -1521,7 +1585,7 @@ ul {
   text-align: center;
 }
 .app-container .edit-profile-container__field__instruments--submit-button {
-  background: #5C8CA7;
+  background: #00E19E;
   color: #ffffff;
   cursor: pointer;
   font: 200 24px 'Roboto';

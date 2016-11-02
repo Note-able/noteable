@@ -1,11 +1,12 @@
 'use strict';
+const path = require('path');
 
 const config = module.exports = {
   port: process.env.PORT || 8080,
   dataBackend: 'datastore',
   gcloud: {
     projectId: process.env.GCLOUD_PROJECT || 'jovial-welder-128202',
-    keyFilename: '../../Noteable-b17f41e4f608.json'
+    keyFilename: path.resolve(__dirname, '../Noteable-e4d2cea40c15.json'),
   },
   cloudAudioStorageBucket: 'user-audio-files-staging',
   cloudImageStorageBucket: 'user-image-files-staging',
