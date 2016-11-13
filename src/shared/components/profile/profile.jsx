@@ -48,6 +48,7 @@ class Profile extends Component {
     profile: PropTypes.shape({
       avatarUrl: PropTypes.string,
       bio: PropTypes.string,
+      coverImage: PropTypes.string,
       id: PropTypes.number.isRequired,
     }),
     saveProfile: PropTypes.func.isRequired,
@@ -154,10 +155,8 @@ class Profile extends Component {
     return (
       <div className="app-container">
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/draft-js/0.7.0/Draft.min.css" />
-        <div className="navbar">
+        <div className="navbar navbar__no-home">
           <a href="/"><div className="home-button">Noteable</div></a>
-          <button>Messages</button>
-          <button>New Document</button>
         </div>
         {this.state.settingsView ?
           <ProfileSettings
@@ -168,7 +167,7 @@ class Profile extends Component {
           /> :
           <div className="profile-container">
             <div className="profile-header">
-              <div className="filter" />
+              <div className="filter" style={{ backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.45)), url("${this.props.profile.coverImage}")` }} />
               <div className="profile">
                 <span className="profile__edit-icon" onClick={() => { this.setState({ settingsView: true }); this.navigate('profilesettings'); }}><CogIcon /></span>
                 <form className="uploader" encType="multipart/form-data" >

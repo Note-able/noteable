@@ -387,7 +387,6 @@ ul {
   button {
     background: none;
     border: none;
-    border-left: 1px solid @grey-light;
     color: @white;
     font-size: 14px;
     height: 100%;
@@ -405,7 +404,8 @@ ul {
     width: 100%;
 
     &__save {
-      background: @blue;
+      background: @green;
+      border: none;
       color: @white;
       cursor: pointer;
       height: 36px;
@@ -413,6 +413,10 @@ ul {
       margin: 0 0 6px 16px;
       text-align: center;
       width: 76px;
+
+      &:hover {
+        background: @green-hover;
+      }
     }
 
     &__close-icon {
@@ -449,8 +453,24 @@ ul {
       width: 100px;
       z-index: 2;
 
+      svg {
+        bottom: 0;
+        fill: none;
+        left: 0;
+        height: 36px;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 36px;
+      }
+
       &:hover {
         background: rgba(0, 0, 0, 0.2);
+
+        svg {
+          fill: @white;
+        }
       }
     }
 
@@ -461,7 +481,9 @@ ul {
     &__avatar {
       background-position: center;
       background-size: cover;
+      border: 2px solid @grey-medium;
       border-radius: 50%;
+      box-sizing: border-box;
       display: inline-block;
       height: 100px;
       width: 100px;
@@ -498,7 +520,8 @@ ul {
         background: 
           /* top, transparent red, faked with gradient */ 
           linear-gradient(
-            rgba(0, 0, 0, 0.45), 
+            to bottom,
+            rgba(0, 0, 0, 0.05), 
             rgba(0, 0, 0, 0.45)
           ),
           url('/images/mountains_fog.jpg');
@@ -511,7 +534,7 @@ ul {
       }
       
       .isLooking {
-        background: #5C8CA7;
+        background: @green;
         border-bottom-left-radius: 2px;      
         border-bottom-right-radius: 2px;
         color: white;
@@ -599,18 +622,18 @@ ul {
         }
         
         &__follow {
-          background: #E79D10;
+          background: @orange;
           
           &:hover {
-            background: #D7920F;
+            background: @orange-hover;
           }
         }
         
         &__message {
-          background: #F55923;
+          background: @pink;
           
           &:hover {
-            background: #F3470B;
+            background: @pink-hover;
           }
         }
       }
@@ -648,11 +671,15 @@ ul {
           }
 
           &--cancel {
-            color: @blue;
+            color: @green;
           }
 
           &--save {
-            background: @blue;
+            background: @green;
+
+            &:hover {
+              background: @green-hover;
+            }
           }
         }
       }
@@ -741,19 +768,22 @@ ul {
           font: @normal-font;
           font-variant-ligatures: no-common-ligatures;
           line-height: 24px;
-          padding: 4px 24px;
+          padding: 8px 24px 0;
           text-align: left;
 
           &:hover {
-            color: @blue;
+            color: @green;
           }
 
           &__suboptions {
             color: black;
-            padding: 0 12px;
 
-            &:hover {
-              color: @blue;
+            &--option {
+              padding: 8px 12px 0;
+
+              &:hover {
+                color: @green;
+              }
             }
           }
         }
@@ -762,7 +792,7 @@ ul {
   }
 
   .active-tab {
-    color: @blue;
+    color: @green;
   }
 
   .edit-profile-container {
@@ -830,7 +860,7 @@ ul {
         }
 
         &--submit-button {
-          background: @blue;
+          background: @green;
           color: @white;
           cursor: pointer;
           font: @large-font;
@@ -841,7 +871,7 @@ ul {
           width: 100%;
 
           &:hover {
-            background: @blue-hover;
+            background: @green-hover;
           }
         }
 

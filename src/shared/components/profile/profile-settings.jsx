@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { CrossIcon } from '../icons/common-icons.g';
+import { CameraIcon, CrossIcon } from '../icons/common-icons.g';
 
 class ProfileSettings extends Component {
   static propTypes = {
@@ -79,7 +79,7 @@ class ProfileSettings extends Component {
         </div>
         <form className="uploader" encType="multipart/form-data" >
           <div className="profile-settings__avatar" style={{ backgroundImage: `url('${this.state.profile.avatarUrl}'` }} />
-          <div className="profile-settings__upload-button" onClick={() => { this._file.click(); }} />
+          <div className="profile-settings__upload-button" onClick={() => { this._file.click(); }}><CameraIcon /></div>
           <input className="profile-settings__file-upload" ref={ref => { this._file = ref; }} type="file" name="file" onChange={() => this.changeAvatar(this._file.files[0])} />
         </form>
         <div className="profile-settings__input-container">

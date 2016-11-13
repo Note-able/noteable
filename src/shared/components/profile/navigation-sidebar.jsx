@@ -25,9 +25,10 @@ class NavigationSidebar extends Component {
           </div>
           <div className="navigation-sidebar__content__options">
             <div className={`navigation-sidebar__content__options--option ${activeTab.indexOf('profile') !== -1 || activeTab.length === 0 ? 'active-tab' : ''}`} onClick={(event) => { event.stopPropagation(); this.props.navigate('profile'); }}>
-              <div>Profile</div>
+              <div>Home</div>
               {activeTab.indexOf('profile') === -1 && activeTab.length !== 0 ? null :
                 <div className="navigation-sidebar__content__options--option__suboptions">
+                  <div className={`navigation-sidebar__content__options--option__suboptions--option ${activeTab.indexOf('view') !== -1 ? 'active-tab' : ''}`} onClick={(event) => { event.stopPropagation(); this.props.navigate('profileview'); }}>Profile</div>
                   <div className={`navigation-sidebar__content__options--option__suboptions--option ${activeTab.indexOf('settings') !== -1 ? 'active-tab' : ''}`} onClick={(event) => { event.stopPropagation(); this.props.navigate('profilesettings'); }}>Settings</div>
                 </div>
               }
