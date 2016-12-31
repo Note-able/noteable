@@ -9,11 +9,9 @@ import UserService from './user-service';
 import fs from 'fs';
 import { connectToDb, ensureAuthenticated, validatePassword } from './server-util';
 
-require('nodejs-dashboard');
-
 const MongoStore = require('connect-mongo')(session);
 
-const env = process.env.NODE_ENV;
+const env = 'production'; // process.env.NODE_ENV;
 global.DEBUG = env !== 'production' && env !== 'internal';
 global.PRODUCTION = env === 'production';
 global.CLIENT = false;
@@ -36,7 +34,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
   store: new MongoStore({
-    url: 'mongodb://localhost:27017/',
+    url: 'mongodb://mongo:27017/',
   }),
 }));
 app.use(passport.initialize());
@@ -194,6 +192,7 @@ app.get('/*', (req, res) => {
           profile: user,
         }
       )),
+      env: global.PRODUCTION ? 'production' : 'dev',
     });
   });
 });

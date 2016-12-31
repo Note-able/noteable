@@ -6,9 +6,9 @@ RUN mkdir -p /app
 WORKDIR /app
 RUN ls
 
-COPY . /app
+COPY ./lib /app
 
-RUN npm install
+RUN npm install --only={prod}
 # --loglevel=silent install
 # You have to specify "--unsafe-perm" with npm install
 # when running as root.  Failing to do this can cause
@@ -19,4 +19,5 @@ RUN npm install
 # build, if it exists.
 
 EXPOSE 8080
-CMD npm run server
+CMD cd ./app/lib
+CMD npm run mongo & node server.js
