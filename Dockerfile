@@ -20,4 +20,4 @@ RUN npm install --only={prod}
 
 EXPOSE 8080
 CMD cd ./app/lib
-CMD npm run mongo & node server.js
+CMD node server.js

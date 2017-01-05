@@ -5,7 +5,7 @@ import FacebookStrategy from 'passport-facebook';
 import LocalStrategy from 'passport-local';
 import session from 'express-session';
 import Formidable from 'formidable';
-import UserService from './user-service';
+import { UserService } from './services';
 import fs from 'fs';
 import { connectToDb, ensureAuthenticated, validatePassword } from './server-util';
 
@@ -184,6 +184,7 @@ app.post('/add-image', ensureAuthenticated, (req, res) => {
 });
 
 app.get('/*', (req, res) => {
+  console.log(global.PRODUCTION);
   m_userService.getUser(req.user ? req.user.id : null, user => {
     res.render('index', {
       props: encodeURIComponent(JSON.stringify(

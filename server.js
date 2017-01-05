@@ -36,7 +36,10 @@ fs.stat('./proc/1/cgroup', function(err, stat) {
 				console.log(err);
 			})
 	} else if(err.code == 'ENOENT') {
-			require('./src/server/server.js');
+		require('babel-core/register')({
+			only: __dirname + '/src/server',
+		});
+		require('./src/server/server.js');
 	}
 
 });

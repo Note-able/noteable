@@ -1,4 +1,4 @@
-import UserService from './user-service';
+import { MessageService, UserService } from './services';
 
 const Formidable = require('formidable');
 const config = require('../config');
@@ -15,6 +15,7 @@ function escaper(char){
 
 module.exports = function (app, options) {
   const m_userService = new UserService(options);
+  const m_messageService = new MessageService(options);
 
   app.get(`/database`, (req, res) => {
     options.connect(options.database, (connection) => {
@@ -88,11 +89,13 @@ module.exports = function (app, options) {
   app.get('/user/:id', (req, res) => {
     if (!req.user) {
       res.status(400).send();
+      return;
     }
 
     m_userService.getUser(req.params.id, (user) => {
       if (user == null) {
         res.status(404).send();
+        return;
       }
 
       res.send(user);
@@ -174,6 +177,59 @@ module.exports = function (app, options) {
   };
 
   /** MESSAGES API ***/
+  /**
+   * MESSAGE {
+   *  CONTENT
+   *  ID
+   *  SOURCE
+   *  DESTINATION
+   *  CONVERSATION
+   * }
+   * 
+   * SEQUENCE CONVERSATION ID
+   * 
+   * CONVERSATION {
+   *  USERID
+   *  CONVERSATIONID
+   *  LAST READ MESSAGE
+   *  ID
+   * }
+   * 
+   * GET CONVERSATION BY ID
+   * GET CONVERSATIONS BY USER ID
+   * GET MESSAGE BY ID
+   * GET MESSAGES BY CONVERSATION ID
+   * GET MESSAGES BY USER ID
+   * GET MESSAGE BY ID
+   */
+
+  app.post('/conversation', (req, res) => {
+
+    const userIds = req.body.userIds.split(',');
+    m_messageService.createConversation(userIds, (conversationId, error) => {
+      if (error != null) {
+        res.status(500).send();
+      }
+
+      res.json({ conversationId });
+      res.status(201).send();
+      return;
+    })
+  })
+  
+  app.get('/conversation/:conversationId', options.auth, (req, res) => {
+    if (!req.user) {
+      res.status(400).send();
+    }
+
+    m_userService.getUser(req.params.id, (user) => {
+      if (user == null) {
+        res.status(404).send();
+      }
+
+      res.send(user);
+    });
+  })
 
   app.get('/messages/:documentId/:index', options.auth, (req, res) => {
     if (!req.user) {
