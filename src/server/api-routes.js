@@ -199,11 +199,14 @@ module.exports = function (app, options) {
    * GET CONVERSATIONS BY USER ID
    * GET MESSAGE BY ID
    * GET MESSAGES BY CONVERSATION ID
-   * GET MESSAGES BY USER ID
    * GET MESSAGE BY ID
    */
 
-  app.post('/conversation', (req, res) => {
+  app.post('/conversations', options.auth, (req, res) => {
+    if (!req.user) {
+      res.status(404).send();
+      return;
+    }
 
     const userIds = req.body.userIds.split(',');
     m_messageService.createConversation(userIds, (conversationId, error) => {
@@ -215,44 +218,107 @@ module.exports = function (app, options) {
       res.status(201).send();
       return;
     })
-  })
-  
-  app.get('/conversation/:conversationId', options.auth, (req, res) => {
+  });
+
+  app.get('/conversations', options.auth, (req, res) => {
     if (!req.user) {
+      res.status(404).send();
+    } else {
+      m_messageService.getConversationsByUserId(req.user.id, (conversations, error) => {
+        if (error != null) {
+          res.json(error);
+          res.status(500).send();
+        } else {
+          res.json(conversations);
+          res.status(200).send();
+        }
+      })
+    }
+  });
+  
+  app.get('/conversation', options.auth, (req, res) => {
+    if (!req.user) {
+      res.status(404).send();
+    } else if (req.query.conversationId == null) {
       res.status(400).send();
+    } else {
+      m_messageService.getConversation(req.query.conversationId, req.user.id, (conversation, error) => {
+        if (error != null) {
+          res.json({ error: error });
+          res.status(500).send();
+        } else {
+          res.json(conversation);
+          res.status(200).send();
+        }
+      });
+    }
+  });
+
+  app.get('/message', options.auth, (req, res) => {
+    if (!req.user) {
+      res.status(404).send();
+      return;
     }
 
-    m_userService.getUser(req.params.id, (user) => {
-      if (user == null) {
-        res.status(404).send();
+    if (req.query.messageId == null) {
+      res.status(400).send();
+      return;
+    }
+
+    m_messageService.getMessage(req.query.messageId, req.user.id, (message, error) => {
+      if (error != null) {
+        res.json(error);
+        res.status(500).send();
+        return;
       }
 
-      res.send(user);
-    });
+      res.json(message);
+      res.status(200).send();
+      return;
+    })
+  });
+
+  app.get('/messages', options.auth, (req,res) => {
+    console.log(req.query);
+    if (req.user == null) {
+      res.status(404).send();
+    } else if (req.query.conversationId == null) {
+      res.status(400).send();
+    } else {
+      m_messageService.getMessages(req.user.id, req.query.conversationId, req.query.start, req.query.count, (messages, error) => {
+        if (error != null) {
+          res.json(error);
+          res.status(500).send();
+        } else {
+          res.json(messages);
+          res.status(200).send();
+        }
+      })
+    }
   })
 
-  app.get('/messages/:documentId/:index', options.auth, (req, res) => {
+  app.post('/messages', options.auth, (req, res) => {
     if (!req.user) {
-      res.status(400).send();
+      res.status(404).send();
+      return;
     }
 
-    options.connect(options.database, (connection) => {
-      const messages = [];
-      connection.client
-      .query(`WITH documents AS
-        (SELECT id FROM documents WHERE profiles @> '{${req.user.id}}'::int[])
-        SELECT * FROM messages WHERE id > ${req.params.index} AND document_id = ${req.params.documentId} AND ${req.params.documentId} IN
-        (SELECT id FROM documents) ORDER BY id DESC LIMIT 15;`)
-      .on('error', (error) => {
-        console.log(error);
-      })
-      .on('row', (row) => {
-        messages.push(row);
-      }).on('end', () => {
-        res.send(messages.reverse());
-        connection.fin();
-      });
-    });
+    if (req.body.content == null || req.body.conversationId == null) {
+      res.status(400).send();
+      return;
+    }
+
+    m_messageService.createMessage(req.body.conversationId, req.body.userId, req.body.content, req.body.destinationId, (messageId, error) => {
+      if (error != null) {
+        res.json(error);
+        res.status(500).send();
+        return;
+      }
+
+      res.json({ messageId });
+      res.status(201).send();
+      return;
+    })
   });
 
   /**

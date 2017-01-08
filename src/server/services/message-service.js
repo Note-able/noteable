@@ -89,25 +89,114 @@ export default class MessageService {
     })
   }
 
-  getConversation(conversationId, callback) {
-    if (conversationId == null) {
-      callback(null, 'Cannot have empty conversationId.');
+  getConversationsByUserId(userId, callback) {
+    if (userId == null) {
+      callback(null, 'Empty userId');
       return;
     }
 
     this.options.connect(this.options.database, (connection) => {
       if (connection.client == null) {
-        return callback(null, 'Failed to connect to database.');
+        callback(null, 'Failed to connect to database.');
+        return;
+      }
+
+      const conversations = [];
+      connection.client.query(`SELECT * FROM conversations WHERE user_id = ${userId};`)
+        .on('row', row => { conversations.push(row); })
+        .on('error', error => { callback(null, error); })
+        .on('end', () => { callback(conversations); });
+    })
+  }
+
+  getConversation(conversationId, userId, callback) {
+    if (conversationId == null) {
+      callback(null, 'Empty conversation or user id.');
+      return;
+    }
+
+    this.options.connect(this.options.database, (connection) => {
+      if (connection.client == null) {
+        callback(null, 'Failed to connect to database.');
+        return;
       }
 
       const conversation = [];
       connection.client.query(`
-        DO $$
-        DECLARE next integer;
-        BEGIN
-        SELECT nextval('conversation_ids');
+        SELECT * FROM conversations AS c INNER JOIN messages AS m ON c.conversation_id = m.conversation_id WHERE c.conversation_id = ${conversationId} AND c.user_id = ${userId} LIMIT 20;
       `)
+      .on('row', row => { conversation.push(row); })
+      .on('error', error => { callback(null, error); })
+      .on('end', () => { callback(conversation); });
     })
+  }
+
+  getMessage(messageId, userId, callback) {
+    if (messageId == null) {
+      callback(null, 'Empty message or user id.');
+      return;
+    }
+
+    this.options.connect(this.options.database, (connection) => {
+      if (connection.client == null) {
+        callback(null, 'Failed to connect to database.');
+        return;
+      }
+
+      const message = [];
+      let errorMessage;
+      connection.client.query(`
+        SELECT * FROM messages WHERE user_id = ${userId} AND id = ${messageId} LIMIT 20;
+      `)
+      .on('row', row => { message.push(row); })
+      .on('error', error => { callback(null, error); errorMessage = error; })
+      .on('end', () => { callback(message[0]); });
+    })
+  }
+
+  getMessages(userId, conversationId, start, count, callback) {
+    if (userId == null || conversationId == null) {
+      callback(null, 'Empty userId or conversationId');
+    } else {
+      this.options.connect(this.options.database, (connection) => {
+        if (connection.client == null) {
+          callback(null, 'Failed to connect to database.');
+          return;
+        }
+
+        const messages = [];
+        connection.client.query(`
+          SELECT m.id, m.user_id, m.content, m.conversation_id, m.time_stamp FROM messages AS m INNER JOIN conversations AS c
+          ON c.conversation_id = m.conversation_id
+          WHERE c.user_id = ${userId} AND m.conversation_id = ${conversationId} LIMIT ${count || 10} OFFSET ${start || 0};
+        `)
+        .on('row', row => { messages.push(row); })
+        .on('error', error => { callback(null, error); return; })
+        .on('end', end => { callback(messages); });
+      });
+    }
+  }
+
+  createMessage(conversationId, userId, content, destinationId, callback) {
+    if (conversationId == null || userId == null) {
+      callback(null, 'Empty conversation or user id.');
+      return;
+    }
+
+    this.options.connect(this.options.database, (connection) => {
+      if (connection.client == null) {
+        callback(null, 'Failed to connect to database.');
+        return;
+      }
+
+      let messageId = -1;
+      connection.client.query(`
+        INSERT INTO messages (content, user_id, time_stamp, destination_id, conversation_id) values ('${content}', ${userId}, now(), ${destinationId == null ? 'default' : destinationId}, ${conversationId}) RETURNING id;
+      `)
+      .on('row', row => { messageId = row.id })
+      .on('error', error => { callback(null, error); return; })
+      .on('end', () => { callback(messageId); });
+    });
   }
 
   updateProfile(profile, callback) {
