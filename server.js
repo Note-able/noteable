@@ -11,7 +11,7 @@ global.CLIENT = false;
 
 fs.stat('/proc/1/cgroup', function(err, stat) {
 	if (err == null) {
-		var stream = fs.createReadStream('./proc/1/cgroup', {encoding: 'utf8'});
+		var stream = fs.createReadStream('/proc/1/cgroup', {encoding: 'utf8'});
 
 		var acc = '';
 		var pos = 0;
@@ -39,7 +39,7 @@ fs.stat('/proc/1/cgroup', function(err, stat) {
 		require('babel-core/register')({
 			only: __dirname + '/src/server',
 		});
-		
+
 		require('./src/server/server.js');
 	}
 
