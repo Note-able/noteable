@@ -9,7 +9,6 @@ RUN ls
 COPY ./lib /app
 
 RUN npm install
-RUN npm run dist
 # --loglevel=silent install
 # You have to specify "--unsafe-perm" with npm install
 # when running as root.  Failing to do this can cause
