@@ -1,0 +1,152 @@
+.event-controller-container {
+  height: 100%;
+  width: 100%;
+  
+  .create-event-container {
+    display: flex;
+    height: 100%;
+    min-height: 500px;
+    width: 100%;
+    
+    .event-form {
+      flex: 3;
+      text-align: center;
+      
+      .event-form-wrapper {
+        margin: 50px auto;
+        text-align: left;
+        width: 90%;
+        
+        input {
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          font-size: 12px;
+          line-height: 32px;
+          margin: 2px 0 10px;
+          padding: 0 5px;
+          width: 100%;
+        }
+        
+        label {
+          font-size: 13px;
+          padding: 0 4px;
+        }
+        
+        textarea {
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          font-size: 12px;
+          height: 150px;
+          resize: none;
+          width: 100%;
+        }
+        
+        .submit-event {
+          background: @blue;
+          border: none;
+          border-radius: 4px;
+          color: white;
+          float: right;
+          font-size: 13px;
+          height: 32px;
+          margin: 10px 0;
+          width: 75px;
+          
+          &:hover {
+            background: #08599C;
+            cursor: pointer;
+          }
+          
+          &:disabled {
+            background: grey;
+            
+            &:hover {
+              background: grey;
+            }
+          }
+        }
+      }
+    }
+    
+    #map {
+      flex: 7;
+    }
+    
+    .loader {
+      height: 100%;
+      width: 100%;
+      
+      .spinner {
+        background: red;
+        bottom: 0;
+        height: 50px;
+        left: 0;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 50px;
+        z-index: 2;
+      }
+    }
+  }
+  
+  .events-container {
+    height: 100%;
+    width: 100%;
+    
+    .view-toggle-bar {
+      border-bottom: 1px solid #ccc;
+      height: 56px;
+      
+      .toggle {
+        height: 100%;
+        margin: auto;
+        position: relative;
+        width: 200px;
+        
+        &__option {
+          background: transparent;
+          cursor: pointer;
+          height: 100%;
+          text-align: center;
+          width: 50%;
+        }
+        
+        .list-view {
+          float: left;
+        }
+        
+        .map-view {
+          float: right;
+        }
+        
+        .highlight {
+          background-color: green;
+          position: absolute;
+          z-index: -1;
+        }
+      }
+    }
+    
+    .events-map-container {
+      display: flex;
+      width: 100%;
+      
+      #map {
+        flex: 7;
+        height: 100%;
+      }
+      
+      .maps-list-view {
+        flex: 3;
+      }
+      
+      .map-search {
+        left: 20px;
+        position: absolute;
+        top: 20px;
+      }
+    }
+  }
+}

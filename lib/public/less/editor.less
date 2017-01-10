@@ -1,0 +1,200 @@
+.editor-container {
+  display: flex;
+  font: @editor-font;
+
+  .editor {
+    background: white;
+    border: 10px solid black;
+    flex: 3;
+    height: 80%;
+    margin: 20px;
+    padding: 10px;
+
+    editor-line.selected {
+      outline: none;
+    }
+
+    .editor-line, .editor-recording {
+      min-height: 20px;
+      pointer-events: all;
+      margin-bottom: 8px;
+      margin-top: 2px;
+    }
+    
+    .editor-chord-line {
+      min-height: 20px;
+      pointer-events: all;
+      font: bold 14px arial;
+      margin: 6px auto 0;
+    }
+
+    .editor-chord-line {
+      animation-name: blink;
+      animation-duration: 4s;
+      animation-timing-function: step-end;
+      animation-iteration-count: 1;
+      outline: none;
+    }
+
+    .editor-chord-container {
+      position: relative;
+      .editor-chord {
+        animation-name: blinkCursor;
+        animation-duration: .5s;
+        animation-timing-function: step-end;
+        animation-iteration-count: 1;
+        font: bold 14px arial;
+        position: absolute;
+        top: -15px;
+        left: 0;
+
+        &:focus {
+          outline: none;
+        }
+
+        &:empty::before {
+          content: 'chord';
+          color: #CCC;
+          font-size: 12;
+          font-weight: normal;
+        }
+      }
+    }
+
+    .editor-tooltip {
+      background-image: radial-gradient(ellipse 100px 30px, #666 40%, #111);
+      border-radius: 5px;
+      display: inline-flex;
+      height: 25px;
+      width: 120px;
+
+      &:after {
+        border-top: solid 8px #444;
+        border-left: solid 10px transparent;
+        border-right: solid 10px transparent;
+        content: '';
+        position: absolute;
+        top: 90%;
+        left: 2px;
+      }
+
+      .tooltip-option {
+        margin: auto 0;
+        padding: 0 4px;
+        color: #F5F5F5;
+        cursor: pointer;
+        border-left: 1px solid white;
+        pointer-events: all;
+
+        &:first-child {
+          border-left: none;
+        }
+      }
+    }
+  }
+
+  @keyframes blinkCursor {
+    50% { border-color: #000; } 
+  }
+
+  .record {
+    left: 0;
+    position: absolute;
+  }
+
+  .messages-container {
+    border-radius: 4px;
+    box-shadow: -1px 0px 7px 2px rgba(0,0,0,0.5);
+    font: @message-font-size;
+    height: 100%;
+    position: relative;
+    width: 350px;
+
+    .messages-wrapper {
+      bottom: 0;
+      position: absolute;
+      width: 100%;
+
+      .message-feed {
+        font: @message-font;
+        list-style: none;
+        padding: 5px;
+
+        &__message {
+          background: @message-blue;
+          border-radius: 4px;
+          border-bottom-left-radius: 0;
+          margin: 15px 55px 0 45px;
+          padding: 4px;
+
+          &--me {
+            background: @grey-light;
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 0;
+            margin: 15px 45px 0 55px;
+          }
+        }
+
+        .message-collection {
+          margin: 0 55px 0 0;
+        }
+
+        .top-message {
+          border-bottom-right-radius: 0;
+        }
+
+        .middle-message {
+          border-radius: 0;
+        }
+
+        .bottom-message {
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
+        }
+      }
+
+      .message-reply-editor {
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        border-top: 2px solid @grey-medium;
+        font: @message-font;
+        height: 50px;
+        outline: none;
+        padding: 10px;
+        resize: none;
+        width: 100%;
+      }
+    }
+  }
+
+  .section {
+  	min-height: 50px;
+  	pointer-events: none;
+  	outline: none;
+  }
+}
+
+.editor {
+  background: white;
+  border: 10px solid black;
+  flex: 3;
+  height: 80%;
+  margin: 20px;
+  padding: 10px;
+
+  editor-line.selected {
+    outline: none;
+  }
+
+  .editor-line, .editor-recording {
+    min-height: 20px;
+    pointer-events: all;
+  }
+  }
+  
+.section {
+  min-height: 50px;
+  pointer-events: none;
+  outline: none;
+}
