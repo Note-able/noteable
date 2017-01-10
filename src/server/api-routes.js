@@ -321,6 +321,48 @@ module.exports = function (app, options) {
     })
   });
 
+  app.delete('/message', options.auth, (req, res) => {
+    if (req.user == null) {
+      res.status(404).send();
+      return;
+    } else if (req.query.messageId == null) {
+      res.status(400).send();
+    }
+
+    m_messageService.deleteMessage(req.query.messageId, (count, error) => {
+      if (error != null) {
+        res.json(error);
+        res.status(500).send();
+        return;
+      }
+
+      res.json(count);
+      res.status(200).send();
+      return;
+    })
+  });
+  
+  app.delete('/conversation', options.auth, (req, res) => {
+    if (req.user == null) {
+      res.status(404).send();
+      return;
+    } else if (req.query.conversationId == null) {
+      res.status(400).send();
+    }
+
+    m_messageService.deleteConversation(req.query.conversationId, (count, error) => {
+      if (error != null) {
+        res.json(error);
+        res.status(500).send();
+        return;
+      }
+
+      res.json(count);
+      res.status(200).send();
+      return;
+    })
+  });
+
   /**
   Events API - consider moving the queries to elasticsearch to order by popularity of events and user ratings
   **/

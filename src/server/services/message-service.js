@@ -102,7 +102,7 @@ export default class MessageService {
       }
 
       const conversations = [];
-      connection.client.query(`SELECT * FROM conversations WHERE user_id = ${userId};`)
+      connection.client.query(`SELECT * FROM conversations WHERE is_deleted = 0 AND user_id = ${userId};`)
         .on('row', row => { conversations.push(row); })
         .on('error', error => { callback(null, error); })
         .on('end', () => { callback(conversations); });
@@ -123,7 +123,7 @@ export default class MessageService {
 
       const conversation = [];
       connection.client.query(`
-        SELECT * FROM conversations AS c INNER JOIN messages AS m ON c.conversation_id = m.conversation_id WHERE c.conversation_id = ${conversationId} AND c.user_id = ${userId} LIMIT 20;
+        SELECT * FROM conversations AS c INNER JOIN messages AS m ON c.conversation_id = m.conversation_id WHERE c.is_deleted = 0 AND c.conversation_id = ${conversationId} AND c.user_id = ${userId} LIMIT 20;
       `)
       .on('row', row => { conversation.push(row); })
       .on('error', error => { callback(null, error); })
@@ -146,7 +146,7 @@ export default class MessageService {
       const message = [];
       let errorMessage;
       connection.client.query(`
-        SELECT * FROM messages WHERE user_id = ${userId} AND id = ${messageId} LIMIT 20;
+        SELECT * FROM messages WHERE user_id = ${userId} AND id = ${messageId} AND is_deleted = 0 LIMIT 20;
       `)
       .on('row', row => { message.push(row); })
       .on('error', error => { callback(null, error); errorMessage = error; })
@@ -168,7 +168,7 @@ export default class MessageService {
         connection.client.query(`
           SELECT m.id, m.user_id, m.content, m.conversation_id, m.time_stamp FROM messages AS m INNER JOIN conversations AS c
           ON c.conversation_id = m.conversation_id
-          WHERE c.user_id = ${userId} AND m.conversation_id = ${conversationId} LIMIT ${count || 10} OFFSET ${start || 0};
+          WHERE m.is_deleted = 0 AND c.is_deleted = 0 AND c.user_id = ${userId} AND m.conversation_id = ${conversationId} LIMIT ${count || 10} OFFSET ${start || 0};
         `)
         .on('row', row => { messages.push(row); })
         .on('error', error => { callback(null, error); return; })
@@ -199,18 +199,47 @@ export default class MessageService {
     });
   }
 
-  updateProfile(profile, callback) {
+  deleteMessage(messageId, callback) {
+    if (messageId == null) {
+      callback(null, 'Empty messageId.');
+      return;
+    }
+
     this.options.connect(this.options.database, (connection) => {
+      if (connection.client == null) {
+        callback(null, 'Failed to connect to database.');
+        return;
+      }
+
+      let messageId = -1;
       connection.client.query(`
-        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, cover_url = '${profile.coverImage}', name = '${profile.name}', avatar_url = '${profile.avatarUrl}'
-        WHERE id = ${profile.id};
-        UPDATE public.instruments SET instruments = '${profile.preferences.instruments.toString()}'
-        WHERE user_id = ${profile.id};
-      `).on('error', (error) => {
-        console.log(error);
-      }).on('end', () => {
-        callback();
-      });
+        UPDATE messages SET is_deleted = 1 where id = ${messageId} RETURNING id;
+      `)
+      .on('row', row => { messageId = row.id; })
+      .on('error', error => { callback(null, error); return; })
+      .on('end', () => { callback(messageId); });
+    });
+  }
+
+  deleteConversation(conversationId, callback) {
+    if (conversationId == null) {
+      callback(null, 'Empty conversationId.');
+      return;
+    }
+
+    this.options.connect(this.options.database, (connection) => {
+      if (connection.client == null) {
+        callback(null, 'Failed to connect to database.');
+        return;
+      }
+
+      const conversations = [];
+      connection.client.query(`
+        UPDATE messages SET is_deleted = 1 where conversation_id = ${conversationId} RETURNING id;
+      `)
+      .on('row', row => { conversations.push(row.id); })
+      .on('error', error => { callback(null, error); return; })
+      .on('end', () => { callback(conversations.length); });
     });
   }
 }
