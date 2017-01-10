@@ -18,6 +18,6 @@ RUN npm install
 # This command will also cat the npm-debug.log file after the
 # build, if it exists.
 
-EXPOSE 8081
+EXPOSE 8080
 CMD cd ./app/lib
 CMD node server.js
