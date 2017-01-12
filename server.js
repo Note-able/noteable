@@ -9,9 +9,18 @@ global.DEBUG = env !== 'production' && env !== 'internal';
 global.PRODUCTION = env === 'production';
 global.CLIENT = false;
 
-fs.stat('./proc/1/cgroup', function(err, stat) {
+fs.stat('./public/js/dist/main.bundle.js', function (err, stat) {
 	if (err == null) {
-		var stream = fs.createReadStream('./proc/1/cgroup', {encoding: 'utf8'});
+		
+	}
+	else if (err.code == 'ENOENT') {
+		console.log('no main bundle!');
+	}
+});
+
+fs.stat('/proc/1/cgroup', function(err, stat) {
+	if (err == null) {
+		var stream = fs.createReadStream('/proc/1/cgroup', {encoding: 'utf8'});
 
 		var acc = '';
 		var pos = 0;
@@ -36,6 +45,10 @@ fs.stat('./proc/1/cgroup', function(err, stat) {
 				console.log(err);
 			})
 	} else if(err.code == 'ENOENT') {
+		require('babel-core/register')({
+			only: __dirname + '/src/server',
+		});
+
 		require('./src/server/server.js');
 	}
 

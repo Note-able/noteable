@@ -184,7 +184,6 @@ app.post('/add-image', ensureAuthenticated, (req, res) => {
 });
 
 app.get('/*', (req, res) => {
-  console.log(global.PRODUCTION);
   m_userService.getUser(req.user ? req.user.id : null, user => {
     res.render('index', {
       props: encodeURIComponent(JSON.stringify(
