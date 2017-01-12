@@ -1,7 +1,6 @@
 /uploads/
 dist/
 /node_modules/
-/public/js
 /tmp*
 .vscode/
 typings
