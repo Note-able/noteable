@@ -89,11 +89,7 @@
 }
 /** same as light-normal **/
 .auth-container {
-  border: 1px solid #b1b1b1;
-=======
-.login-container {
   border: 1px solid #569A00;
->>>>>>> 71cb51b... Add simple paste handling for plaintext
   border-radius: 4px;
   bottom: 0;
   margin: auto;
