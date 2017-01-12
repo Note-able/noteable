@@ -20,4 +20,6 @@ RUN npm install
 
 EXPOSE 8080
 CMD cd ./app/lib
+CMD ls
+CMD ls /public
 CMD node server.js
