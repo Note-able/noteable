@@ -18,7 +18,6 @@
   font-family: 'Icomoon';
   src: url('/fonts/icomoon.ttf');
 }
-<<<<<<< HEAD
 @font-face {
   font-family: 'Open Sans';
   src: url('/fonts/OpenSans-Regular.ttf');
@@ -89,7 +88,7 @@
 }
 /** same as light-normal **/
 .auth-container {
-  border: 1px solid #569A00;
+  border: 1px solid #b1b1b1;
   border-radius: 4px;
   bottom: 0;
   margin: auto;
@@ -207,7 +206,6 @@
   cursor: pointer;
   height: 30px;
   line-height: 30px;
-<<<<<<< HEAD
   margin: 9px 0;
   outline: none;
   width: 100%;
@@ -336,20 +334,12 @@ button {
   font: 200 14px 'Roboto';
   height: 48px;
   line-height: 48px;
-=======
-  background: #569A00;
->>>>>>> 71cb51b... Add simple paste handling for plaintext
   text-align: center;
   width: 100%;
   z-index: 2;
 }
-<<<<<<< HEAD
 .navbar .user-options .dropdown-button:hover {
   background: #5C8CA7;
-=======
-.login-container__submit-button {
-  background: #3B5998;
->>>>>>> 71cb51b... Add simple paste handling for plaintext
   border: none;
   color: white;
   font: 200 14px 'Roboto';
