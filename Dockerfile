@@ -8,7 +8,7 @@ RUN ls
 
 COPY ./lib /app
 
-RUN npm install --loglevel=silent install
+RUN npm install --silent
 # You have to specify "--unsafe-perm" with npm install
 # when running as root.  Failing to do this can cause
 # install to appear to succeed even if a preinstall

@@ -42,6 +42,7 @@ const store = compose(applyMiddleware(thunk), typeof window !== 'undefined' && w
 render(
   <Provider store={store}>
     <Router history={createBrowserHistory()}>
+      <Route path="/home" component={AppController} />
       <Route path="/" component={AppController}>
         <Route path="/signin" component={SigninController} />
         <Route path="/success" component={SuccessDisplayController} />

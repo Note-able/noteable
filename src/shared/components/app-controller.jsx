@@ -1,8 +1,15 @@
+import { connect } from 'react-redux';
 import React, { Component, PropTypes } from 'react';
 import Home from './home.jsx';
 import './app-styles/app-controller.less';
 
-module.exports = class AppController extends Component {
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.profile.id !== -1,
+  userId: state.profile.id,
+});
+
+
+class AppController extends Component {
   static propTypes = {
     location: PropTypes.shape({
       pathname: PropTypes.string.isRequired,
@@ -11,6 +18,11 @@ module.exports = class AppController extends Component {
   }
 
   renderHome() {
+    if (this.props.isAuthenticated && this.props.location.pathname !== '/home') {
+      window.location.pathname = '/profile';
+      return;
+    }
+
     return (
       <Home />
     );
@@ -30,8 +42,11 @@ module.exports = class AppController extends Component {
       <div>
         <link href="/css/bundle.css" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" />
-        { this.props.location.pathname === '/' ? this.renderHome() : this.props.children}
+        { this.props.location.pathname === '/' || this.props.location.pathname === '/home' ? this.renderHome() : this.props.children}
       </div>
     );
   }
 };
+
+
+module.exports = connect(mapStateToProps)(AppController);
