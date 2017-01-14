@@ -209,30 +209,30 @@ module.exports = function (app, options) {
     }
 
     const userIds = req.body.userIds.split(',');
-    m_messageService.createConversation(userIds, (conversationId, error) => {
-      if (error != null) {
+    m_messageService.createConversation(userIds)
+      .then(conversationId => {
+        res.json({ conversationId });
+        res.status(201).send();
+      })
+      .catch(error => {
+        res.json(error);
         res.status(500).send();
-      }
-
-      res.json({ conversationId });
-      res.status(201).send();
-      return;
-    })
+      });
   });
 
   app.get('/conversations', options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
     } else {
-      m_messageService.getConversationsByUserId(req.user.id, (conversations, error) => {
-        if (error != null) {
-          res.json(error);
-          res.status(500).send();
-        } else {
+      m_messageService.getConversationsByUserId(req.user.id)
+        .then(conversations => {
           res.json(conversations);
           res.status(200).send();
-        }
-      })
+        })
+        .catch(error => {
+          res.json(error)
+          res.status(500).send();
+        });
     }
   });
   
@@ -242,15 +242,15 @@ module.exports = function (app, options) {
     } else if (req.query.conversationId == null) {
       res.status(400).send();
     } else {
-      m_messageService.getConversation(req.query.conversationId, req.user.id, (conversation, error) => {
-        if (error != null) {
-          res.json({ error: error });
-          res.status(500).send();
-        } else {
+      m_messageService.getConversation(req.query.conversationId, req.user.id)
+        .then(conversation => {
           res.json(conversation);
           res.status(200).send();
-        }
-      });
+        })
+        .catch(error => {
+          res.json(error);
+          res.status(500).send();
+        });
     }
   });
 
@@ -265,17 +265,15 @@ module.exports = function (app, options) {
       return;
     }
 
-    m_messageService.getMessage(req.query.messageId, req.user.id, (message, error) => {
-      if (error != null) {
+    m_messageService.getMessage(req.query.messageId, req.user.id)
+      .then(message => {
+        res.json(message);
+        res.status(200).send();
+      })
+      .catch(error => {
         res.json(error);
         res.status(500).send();
-        return;
-      }
-
-      res.json(message);
-      res.status(200).send();
-      return;
-    })
+      })
   });
 
   app.get('/messages', options.auth, (req,res) => {
@@ -285,17 +283,17 @@ module.exports = function (app, options) {
     } else if (req.query.conversationId == null) {
       res.status(400).send();
     } else {
-      m_messageService.getMessages(req.user.id, req.query.conversationId, req.query.start, req.query.count, (messages, error) => {
-        if (error != null) {
-          res.json(error);
-          res.status(500).send();
-        } else {
+      m_messageService.getMessages(req.user.id, req.query.conversationId, req.query.start, req.query.count)
+        .then(messages => {
           res.json(messages);
           res.status(200).send();
-        }
-      })
+        })
+        .catch(error => {
+          res.json(error);
+          res.status(500).send();
+        });
     }
-  })
+  });
 
   app.post('/messages', options.auth, (req, res) => {
     if (!req.user) {
@@ -308,17 +306,16 @@ module.exports = function (app, options) {
       return;
     }
 
-    m_messageService.createMessage(req.body.conversationId, req.body.userId, req.body.content, req.body.destinationId, (messageId, error) => {
-      if (error != null) {
+    m_messageService.createMessage(req.body.conversationId, req.body.userId, req.body.content, req.body.destinationId)
+      .then(messageId => {
+        res.json({ messageId });
+        res.status(201).send();
+        return;
+      })
+      .catch(error => {
         res.json(error);
         res.status(500).send();
-        return;
-      }
-
-      res.json({ messageId });
-      res.status(201).send();
-      return;
-    })
+      });
   });
 
   app.delete('/message', options.auth, (req, res) => {
@@ -329,17 +326,15 @@ module.exports = function (app, options) {
       res.status(400).send();
     }
 
-    m_messageService.deleteMessage(req.query.messageId, (count, error) => {
-      if (error != null) {
+    m_messageService.deleteMessage(req.query.messageId)
+      .then(count => {
+        res.json(count);
+        res.status(200).send();
+      })
+      .catch(error => {
         res.json(error);
         res.status(500).send();
-        return;
-      }
-
-      res.json(count);
-      res.status(200).send();
-      return;
-    })
+      });
   });
   
   app.delete('/conversation', options.auth, (req, res) => {
@@ -350,17 +345,15 @@ module.exports = function (app, options) {
       res.status(400).send();
     }
 
-    m_messageService.deleteConversation(req.query.conversationId, (count, error) => {
-      if (error != null) {
+    m_messageService.deleteConversation(req.query.conversationId)
+      .then(count => {
+        res.json(count);
+        res.status(200).send();
+      })
+      .catch(error => {
         res.json(error);
         res.status(500).send();
-        return;
-      }
-
-      res.json(count);
-      res.status(200).send();
-      return;
-    })
+      });
   });
 
   /**

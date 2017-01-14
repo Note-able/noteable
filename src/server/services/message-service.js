@@ -56,190 +56,204 @@ export default class MessageService {
     this.options = options;
   }
 
-  createConversation(userIds, callback) {
-    if (userIds == null || userIds.length === 0) {
-      callback(null, 'Cannot have empty userIds');
-    }
-
-    this.options.connect(this.options.database, (connection) => {
-      if (connection.client == null) {
-        return callback(null, 'Failed to connect to database.');
-      }
-
-      const conversation = [];
-      connection.client.query(`
-        BEGIN;
-          CREATE OR REPLACE FUNCTION createConversation() RETURNS int LANGUAGE plpgsql AS $$
-          DECLARE conversationId integer;
-          BEGIN
-          SELECT nextval('conversation_ids') INTO conversationId;
-          ${createConversationSql(userIds, 'conversationId')}
-          RETURN conversationId;
-          END $$;
-          SELECT createConversation();
-        COMMIT;
-      `)
-      .on('row', (row) => { conversation.push(row); })
-      .on('error', (error) => {
-        callback(null, error);
-      })
-      .on('end', () => {
-        callback(conversation[0].createconversation);
-      })
-    })
-  }
-
-  getConversationsByUserId(userId, callback) {
-    if (userId == null) {
-      callback(null, 'Empty userId');
-      return;
-    }
-
-    this.options.connect(this.options.database, (connection) => {
-      if (connection.client == null) {
-        callback(null, 'Failed to connect to database.');
+  createConversation(userIds) {
+    return new Promise((resolve, reject) => {
+      if (userIds == null || userIds.length === 0) {
+        reject('Cannot have empty userIds');
         return;
       }
 
-      const conversations = [];
-      connection.client.query(`SELECT * FROM conversations WHERE is_deleted = 0 AND user_id = ${userId};`)
-        .on('row', row => { conversations.push(row); })
-        .on('error', error => { callback(null, error); })
-        .on('end', () => { callback(conversations); });
-    })
-  }
-
-  getConversation(conversationId, userId, callback) {
-    if (conversationId == null) {
-      callback(null, 'Empty conversation or user id.');
-      return;
-    }
-
-    this.options.connect(this.options.database, (connection) => {
-      if (connection.client == null) {
-        callback(null, 'Failed to connect to database.');
-        return;
-      }
-
-      const conversation = [];
-      connection.client.query(`
-        SELECT * FROM conversations AS c INNER JOIN messages AS m ON c.conversation_id = m.conversation_id WHERE c.is_deleted = 0 AND c.conversation_id = ${conversationId} AND c.user_id = ${userId} LIMIT 20;
-      `)
-      .on('row', row => { conversation.push(row); })
-      .on('error', error => { callback(null, error); })
-      .on('end', () => { callback(conversation); });
-    })
-  }
-
-  getMessage(messageId, userId, callback) {
-    if (messageId == null) {
-      callback(null, 'Empty message or user id.');
-      return;
-    }
-
-    this.options.connect(this.options.database, (connection) => {
-      if (connection.client == null) {
-        callback(null, 'Failed to connect to database.');
-        return;
-      }
-
-      const message = [];
-      let errorMessage;
-      connection.client.query(`
-        SELECT * FROM messages WHERE user_id = ${userId} AND id = ${messageId} AND is_deleted = 0 LIMIT 20;
-      `)
-      .on('row', row => { message.push(row); })
-      .on('error', error => { callback(null, error); errorMessage = error; })
-      .on('end', () => { callback(message[0]); });
-    })
-  }
-
-  getMessages(userId, conversationId, start, count, callback) {
-    if (userId == null || conversationId == null) {
-      callback(null, 'Empty userId or conversationId');
-    } else {
       this.options.connect(this.options.database, (connection) => {
         if (connection.client == null) {
-          callback(null, 'Failed to connect to database.');
+          reject('Failed to connect to database.');
           return;
         }
 
-        const messages = [];
+        const conversation = [];
         connection.client.query(`
-          SELECT m.id, m.user_id, m.content, m.conversation_id, m.time_stamp FROM messages AS m INNER JOIN conversations AS c
-          ON c.conversation_id = m.conversation_id
-          WHERE m.is_deleted = 0 AND c.is_deleted = 0 AND c.user_id = ${userId} AND m.conversation_id = ${conversationId} LIMIT ${count || 10} OFFSET ${start || 0};
+          BEGIN;
+            CREATE OR REPLACE FUNCTION createConversation() RETURNS int LANGUAGE plpgsql AS $$
+            DECLARE conversationId integer;
+            BEGIN
+            SELECT nextval('conversation_ids') INTO conversationId;
+            ${createConversationSql(userIds, 'conversationId')}
+            RETURN conversationId;
+            END $$;
+            SELECT createConversation();
+          COMMIT;
         `)
-        .on('row', row => { messages.push(row); })
-        .on('error', error => { callback(null, error); return; })
-        .on('end', end => { callback(messages); });
+        .on('row', (row) => { conversation.push(row); })
+        .on('error', (error) => { reject(error); return; })
+        .on('end', () => { resolve(conversation[0].createconversation); })
       });
-    }
-  }
-
-  createMessage(conversationId, userId, content, destinationId, callback) {
-    if (conversationId == null || userId == null) {
-      callback(null, 'Empty conversation or user id.');
-      return;
-    }
-
-    this.options.connect(this.options.database, (connection) => {
-      if (connection.client == null) {
-        callback(null, 'Failed to connect to database.');
-        return;
-      }
-
-      let messageId = -1;
-      connection.client.query(`
-        INSERT INTO messages (content, user_id, time_stamp, destination_id, conversation_id) values ('${content}', ${userId}, now(), ${destinationId == null ? 'default' : destinationId}, ${conversationId}) RETURNING id;
-      `)
-      .on('row', row => { messageId = row.id })
-      .on('error', error => { callback(null, error); return; })
-      .on('end', () => { callback(messageId); });
     });
   }
 
-  deleteMessage(messageId, callback) {
-    if (messageId == null) {
-      callback(null, 'Empty messageId.');
-      return;
-    }
-
-    this.options.connect(this.options.database, (connection) => {
-      if (connection.client == null) {
-        callback(null, 'Failed to connect to database.');
+  getConversationsByUserId(userId) {
+    return new Promise((resolve, reject) => {
+      if (userId == null) {
+        reject('Empty userId');
         return;
       }
 
-      let messageId = -1;
-      connection.client.query(`
-        UPDATE messages SET is_deleted = 1 where id = ${messageId} RETURNING id;
-      `)
-      .on('row', row => { messageId = row.id; })
-      .on('error', error => { callback(null, error); return; })
-      .on('end', () => { callback(messageId); });
+      this.options.connect(this.options.database, (connection) => {
+        if (connection.client == null) {
+          reject('Failed to connect to database.');
+          return;
+        }
+
+        const conversations = [];
+        connection.client.query(`SELECT * FROM conversations WHERE is_deleted = 0 AND user_id = ${userId};`)
+          .on('row', row => { conversations.push(row); })
+          .on('error', error => { reject(error); return; })
+          .on('end', () => { resolve(conversations); });
+      })
     });
   }
 
-  deleteConversation(conversationId, callback) {
-    if (conversationId == null) {
-      callback(null, 'Empty conversationId.');
-      return;
-    }
-
-    this.options.connect(this.options.database, (connection) => {
-      if (connection.client == null) {
-        callback(null, 'Failed to connect to database.');
+  getConversation(conversationId, userId) {
+    return new Promise((resolve, reject) => {
+      if (conversationId == null) {
+        reject('Empty conversation or user id.');
         return;
       }
 
-      const conversations = [];
-      connection.client.query(`
-        UPDATE messages SET is_deleted = 1 where conversation_id = ${conversationId} RETURNING id;
-      `)
-      .on('row', row => { conversations.push(row.id); })
-      .on('error', error => { callback(null, error); return; })
-      .on('end', () => { callback(conversations.length); });
+      this.options.connect(this.options.database, (connection) => {
+        if (connection.client == null) {
+          reject('Failed to connect to database.');
+          return;
+        }
+
+        const conversation = [];
+        connection.client.query(`
+          SELECT * FROM conversations AS c INNER JOIN messages AS m ON c.conversation_id = m.conversation_id WHERE c.is_deleted = 0 AND c.conversation_id = ${conversationId} AND c.user_id = ${userId} LIMIT 20;
+        `)
+        .on('row', row => { conversation.push(row); })
+        .on('error', error => { reject(error); return; })
+        .on('end', () => { resolve(conversation); });
+      })
+    });
+  }
+
+  getMessage(messageId, userId) {
+    return new Promise((resolve, reject) => {
+      if (messageId == null) {
+        reject('Empty message or user id.');
+        return;
+      }
+
+      this.options.connect(this.options.database, (connection) => {
+        if (connection.client == null) {
+          reject('Failed to connect to database.');
+          return;
+        }
+
+        const message = [];
+        let errorMessage;
+        connection.client.query(`
+          SELECT * FROM messages WHERE user_id = ${userId} AND id = ${messageId} AND is_deleted = 0 LIMIT 20;
+        `)
+        .on('row', row => { message.push(row); })
+        .on('error', error => { reject(error); return; })
+        .on('end', () => { resolve(message[0]); return; });
+      })
+    });
+  }
+
+  getMessages(userId, conversationId, start, count) {
+    return new Promise((resolve, reject) => {
+      if (userId == null || conversationId == null) {
+        reject('Empty userId or conversationId');
+      } else {
+        this.options.connect(this.options.database, (connection) => {
+          if (connection.client == null) {
+            reject('Failed to connect to database.');
+            return;
+          }
+
+          const messages = [];
+          connection.client.query(`
+            SELECT m.id, m.user_id, m.content, m.conversation_id, m.time_stamp FROM messages AS m INNER JOIN conversations AS c
+            ON c.conversation_id = m.conversation_id
+            WHERE m.is_deleted = 0 AND c.is_deleted = 0 AND c.user_id = ${userId} AND m.conversation_id = ${conversationId} LIMIT ${count || 10} OFFSET ${start || 0};
+          `)
+          .on('row', row => { messages.push(row); })
+          .on('error', error => { reject(error); return; })
+          .on('end', end => { resolve(messages); });
+        });
+      }
+    });
+  }
+
+  createMessage(conversationId, userId, content, destinationId) {
+    return new Promise((resolve, reject) => {
+      if (conversationId == null || userId == null) {
+        reject('Empty conversation or user id.');
+        return;
+      }
+
+      this.options.connect(this.options.database, (connection) => {
+        if (connection.client == null) {
+          reject('Failed to connect to database.');
+          return;
+        }
+
+        let messageId = -1;
+        connection.client.query(`
+          INSERT INTO messages (content, user_id, time_stamp, destination_id, conversation_id) values ('${content}', ${userId}, now(), ${destinationId == null ? 'default' : destinationId}, ${conversationId}) RETURNING id;
+        `)
+        .on('row', row => { messageId = row.id })
+        .on('error', error => { reject(error); return; })
+        .on('end', () => { resolve(messageId); });
+      });
+    });
+  }
+
+  deleteMessage(messageId) {
+    return new Promise((resolve, reject) => {
+      if (messageId == null) {
+        reject('Empty messageId.');
+        return;
+      }
+
+      this.options.connect(this.options.database, (connection) => {
+        if (connection.client == null) {
+          reject('Failed to connect to database.');
+          return;
+        }
+
+        let messageId = -1;
+        connection.client.query(`
+          UPDATE messages SET is_deleted = 1 where id = ${messageId} RETURNING id;
+        `)
+        .on('row', row => { messageId = row.id; })
+        .on('error', error => { reject(error); return; })
+        .on('end', () => { resolve(messageId); });
+      });
+    });
+  }
+
+  deleteConversation(conversationId) {
+    return new Promise((resolve, reject) => {
+      if (conversationId == null) {
+        reject('Empty conversationId.');
+        return;
+      }
+
+      this.options.connect(this.options.database, (connection) => {
+        if (connection.client == null) {
+          reject('Failed to connect to database.');
+          return;
+        }
+
+        const conversations = [];
+        connection.client.query(`
+          UPDATE messages SET is_deleted = 1 where conversation_id = ${conversationId} RETURNING id;
+        `)
+        .on('row', row => { conversations.push(row.id); })
+        .on('error', error => { reject(error); return; })
+        .on('end', () => { resolve(conversations.length); });
+      });
     });
   }
 }
