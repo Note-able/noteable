@@ -8,7 +8,7 @@
   },
   "scripts": {
     "clean": "rm -rf lib",
-    "dist": "rm -rf ./lib/* && mkdir ./lib/src && mkdir ./lib/src/server && ./node_modules/.bin/babel ./src/server --out-dir ./lib/src/server && ./node_modules/.bin/babel ./src/util --out-dir ./lib/src/util && ./node_modules/.bin/babel server.js -o ./lib/server.js && ./node_modules/.bin/babel ./src/config.js -o ./lib/src/config.js && cp -a ./views ./lib && cp -a ./public ./lib && cp package.dev.json ./lib && mv ./lib/package.dev.json ./lib/package.json",
+    "dist": "./node_modules/.bin/webpack && rm -rf ./lib/* && mkdir ./lib/src && mkdir ./lib/src/server && ./node_modules/.bin/babel ./src/server --out-dir ./lib/src/server && ./node_modules/.bin/babel ./src/util --out-dir ./lib/src/util && ./node_modules/.bin/babel server.js -o ./lib/server.js && ./node_modules/.bin/babel ./src/config.js -o ./lib/src/config.js && cp -a ./views ./lib && cp -a ./public ./lib && cp package.dev.json ./lib && mv ./lib/package.dev.json ./lib/package.json",
     "icons": "node civilize-svgs.js ./public/icons ./src/shared/components/icons",
     "lint": "./node_modules/.bin/eslint ./src",
     "server": "node lib/server/server",

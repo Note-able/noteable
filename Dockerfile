@@ -2,7 +2,6 @@
 # single application.
 FROM node:boron
 
-CMD npm run dist
 RUN mkdir -p /app
 WORKDIR /app
 RUN ls
