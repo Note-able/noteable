@@ -236,13 +236,13 @@ module.exports = function (app, options) {
     }
   });
   
-  app.get('/conversation', options.auth, (req, res) => {
+  app.get('/conversation/:conversationIds', options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
-    } else if (req.query.conversationId == null) {
+    } else if (req.params.conversationId == null) {
       res.status(400).send();
     } else {
-      m_messageService.getConversation(req.query.conversationId, req.user.id)
+      m_messageService.getConversation(req.params.conversationId, req.user.id)
         .then(conversation => {
           res.json(conversation);
           res.status(200).send();
@@ -254,18 +254,18 @@ module.exports = function (app, options) {
     }
   });
 
-  app.get('/message', options.auth, (req, res) => {
+  app.get('/message/:messageId', options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
       return;
     }
 
-    if (req.query.messageId == null) {
+    if (req.params.messageId == null) {
       res.status(400).send();
       return;
     }
 
-    m_messageService.getMessage(req.query.messageId, req.user.id)
+    m_messageService.getMessage(req.params.messageId, req.user.id)
       .then(message => {
         res.json(message);
         res.status(200).send();
@@ -276,14 +276,14 @@ module.exports = function (app, options) {
       })
   });
 
-  app.get('/messages', options.auth, (req,res) => {
+  app.get('/messages/:conversationId', options.auth, (req,res) => {
     console.log(req.query);
     if (req.user == null) {
       res.status(404).send();
-    } else if (req.query.conversationId == null) {
+    } else if (req.params.conversationId == null) {
       res.status(400).send();
     } else {
-      m_messageService.getMessages(req.user.id, req.query.conversationId, req.query.start, req.query.count)
+      m_messageService.getMessages(req.user.id, req.params.conversationId, req.query.start, req.query.count)
         .then(messages => {
           res.json(messages);
           res.status(200).send();
@@ -318,15 +318,15 @@ module.exports = function (app, options) {
       });
   });
 
-  app.delete('/message', options.auth, (req, res) => {
+  app.delete('/message/:messageId', options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
-    } else if (req.query.messageId == null) {
+    } else if (req.params.messageId == null) {
       res.status(400).send();
     }
 
-    m_messageService.deleteMessage(req.query.messageId)
+    m_messageService.deleteMessage(req.params.messageId)
       .then(count => {
         res.json(count);
         res.status(200).send();
@@ -337,15 +337,15 @@ module.exports = function (app, options) {
       });
   });
   
-  app.delete('/conversation', options.auth, (req, res) => {
+  app.delete('/conversation/:conversationId', options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
-    } else if (req.query.conversationId == null) {
+    } else if (req.params.conversationId == null) {
       res.status(400).send();
     }
 
-    m_messageService.deleteConversation(req.query.conversationId)
+    m_messageService.deleteConversation(req.params.conversationId)
       .then(count => {
         res.json(count);
         res.status(200).send();
