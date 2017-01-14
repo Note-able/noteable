@@ -211,12 +211,10 @@ module.exports = function (app, options) {
     const userIds = req.body.userIds.split(',');
     m_messageService.createConversation(userIds)
       .then(conversationId => {
-        res.json({ conversationId });
-        res.status(201).send();
+        res.status(201).json({ conversationId });
       })
       .catch(error => {
-        res.json(error);
-        res.status(500).send();
+        res.status(500).json(error);
       });
   });
 
@@ -226,12 +224,10 @@ module.exports = function (app, options) {
     } else {
       m_messageService.getConversationsByUserId(req.user.id)
         .then(conversations => {
-          res.json(conversations);
-          res.status(200).send();
+          res.status(200).json(conversations);
         })
         .catch(error => {
-          res.json(error)
-          res.status(500).send();
+          res.status(500).json(error);
         });
     }
   });
@@ -244,12 +240,10 @@ module.exports = function (app, options) {
     } else {
       m_messageService.getConversation(req.params.conversationId, req.user.id)
         .then(conversation => {
-          res.json(conversation);
-          res.status(200).send();
+          res.status(200).json(conversation);
         })
         .catch(error => {
-          res.json(error);
-          res.status(500).send();
+          res.status(500).json(error);
         });
     }
   });
@@ -267,12 +261,10 @@ module.exports = function (app, options) {
 
     m_messageService.getMessage(req.params.messageId, req.user.id)
       .then(message => {
-        res.json(message);
-        res.status(200).send();
+        res.status(200).json(message);
       })
       .catch(error => {
-        res.json(error);
-        res.status(500).send();
+        res.status(500).json(error);
       })
   });
 
@@ -285,12 +277,10 @@ module.exports = function (app, options) {
     } else {
       m_messageService.getMessages(req.user.id, req.params.conversationId, req.query.start, req.query.count)
         .then(messages => {
-          res.json(messages);
-          res.status(200).send();
+          res.status(200).json(messages);
         })
         .catch(error => {
-          res.json(error);
-          res.status(500).send();
+          res.status(500).json(error);
         });
     }
   });
@@ -308,13 +298,11 @@ module.exports = function (app, options) {
 
     m_messageService.createMessage(req.body.conversationId, req.body.userId, req.body.content, req.body.destinationId)
       .then(messageId => {
-        res.json({ messageId });
-        res.status(201).send();
+        res.status(201).json({ messageId });
         return;
       })
       .catch(error => {
-        res.json(error);
-        res.status(500).send();
+        res.status(500).json(error);
       });
   });
 
@@ -328,12 +316,10 @@ module.exports = function (app, options) {
 
     m_messageService.deleteMessage(req.params.messageId)
       .then(count => {
-        res.json(count);
-        res.status(200).send();
+        res.status(200).json(count);
       })
       .catch(error => {
-        res.json(error);
-        res.status(500).send();
+        res.status(500).json(error);
       });
   });
   
@@ -347,12 +333,10 @@ module.exports = function (app, options) {
 
     m_messageService.deleteConversation(req.params.conversationId)
       .then(count => {
-        res.json(count);
-        res.status(200).send();
+        res.status(200).json(count);
       })
       .catch(error => {
-        res.json(error);
-        res.status(500).send();
+        res.status(500).json(error);
       });
   });
 
