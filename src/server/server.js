@@ -3,11 +3,12 @@ import BodyParser from 'body-parser';
 import passport from 'passport';
 import FacebookStrategy from 'passport-facebook';
 import LocalStrategy from 'passport-local';
+import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import session from 'express-session';
 import Formidable from 'formidable';
 import { UserService } from './services';
 import fs from 'fs';
-import { connectToDb, ensureAuthenticated, validatePassword } from './server-util';
+import { connectToDb, ensureAuthenticated, validatePassword, generateToken, validateWithProvider } from './server-util';
 
 const MongoStore = require('connect-mongo')(session);
 
@@ -108,6 +109,34 @@ passport.use(new FacebookStrategy({
   }
 ));
 
+const jwtOptions = {  
+  jwtFromRequest: ExtractJwt.fromAuthHeader(),
+  secretOrKey: 'theAssyrianCameDownLikeAWolfOnTheFold',
+};
+
+passport.use(new JwtStrategy(jwtOptions, (profile, done) => {
+  console.log(profile);
+  connectToDb(config.connectionString, (connection) => {
+    if (connection.status === 'SUCCESS') {
+      let user;
+      connection.client
+      .query(`SELECT * FROM public.user WHERE facebook_id = '${profile.facebook_id}';`)
+      .on('row', (row) => {
+        user = row;
+        connection.fin();
+        return done(null, user);
+      })
+      .on('end', () => {
+        if (user === null) {
+          return done(null, false);
+        }
+
+        return null;
+      });
+    }
+  })
+}));
+
 app.get('/auth/facebook',
   passport.authenticate('facebook'));
 
@@ -115,6 +144,31 @@ app.post('/auth/local',
   passport.authenticate('local'),
   (req, res) => {
     res.status(200).send();
+  });
+
+app.post('/auth/jwt',
+  (req, res) => {
+    validateWithProvider('facebook', req.body.token)
+      .then((profile) => {
+        connectToDb(config.connectionString, (connection) => {
+          if (connection.status === 'SUCCESS') {
+            let user;
+            connection.client
+            .query(`SELECT * FROM public.user WHERE facebook_id = '${profile.id}';`)
+            .on('row', (row) => {
+              user = row;
+              connection.fin();
+              return res.status(200).json({
+                token: `JWT ${generateToken(user)}`,
+                user: user,
+              })
+            })
+            .on('end', () => {
+              return res.status(404).send();
+            });
+          }
+        });
+      });
   });
 
 app.get('/auth/facebook/callback',

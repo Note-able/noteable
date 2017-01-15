@@ -1,5 +1,8 @@
 import bcrypt from 'bcrypt-nodejs';
+import jwt from 'jsonwebtoken';
 import pg from 'pg';
+import request from 'request';
+import passport from 'passport';
 
 export function connectToDb(connectionString, callback) {
   pg.connect(connectionString, (err, client, done) => {
@@ -18,14 +21,48 @@ export function connectToDb(connectionString, callback) {
 }
 
 export function ensureAuthenticated (req, res, next) {
-  if (req.isAuthenticated()) {
-    next();
-    return;
-  }
+  passport.authenticate('jwt', { session: false }, function(err, user, info) {
+    if (err || !user) { 
+      if (req.isAuthenticated()) {
+        next();
+        return;
+      }
 
-  res.redirect('/');
+      return res.redirect('/');
+    }
+    req.user = user;
+    return next();
+  })(req, res, next);
 }
 
 export function validatePassword(password, userPassword) {
   return bcrypt.compareSync(password, userPassword);
+}
+
+export function generateToken(user) {
+  return jwt.sign(user, 'theAssyrianCameDownLikeAWolfOnTheFold', null);
+}
+
+const providers = {
+  facebook: {
+      url: 'https://graph.facebook.com/me'
+  }
+};
+
+export function validateWithProvider(network, socialToken) {
+  return new Promise(function (resolve, reject) {
+  // Send a GET request to Facebook with the token as query string
+    request({
+        url: providers[network].url,
+        qs: {access_token: socialToken}
+      },
+      function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          resolve(JSON.parse(body));
+        } else {
+          reject(err);
+        }
+      }
+    );
+  });
 }
