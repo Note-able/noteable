@@ -209,93 +209,81 @@ module.exports = function (app, options) {
     }
 
     const userIds = req.body.userIds.split(',');
-    m_messageService.createConversation(userIds, (conversationId, error) => {
-      if (error != null) {
-        res.status(500).send();
-      }
-
-      res.json({ conversationId });
-      res.status(201).send();
-      return;
-    })
+    m_messageService.createConversation(userIds)
+      .then(conversationId => {
+        res.status(201).json({ conversationId });
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
   });
 
   app.get('/conversations', options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
     } else {
-      m_messageService.getConversationsByUserId(req.user.id, (conversations, error) => {
-        if (error != null) {
-          res.json(error);
-          res.status(500).send();
-        } else {
-          res.json(conversations);
-          res.status(200).send();
-        }
-      })
+      m_messageService.getConversationsByUserId(req.user.id)
+        .then(conversations => {
+          res.status(200).json(conversations);
+        })
+        .catch(error => {
+          res.status(500).json(error);
+        });
     }
   });
   
-  app.get('/conversation', options.auth, (req, res) => {
+  app.get('/conversation/:conversationId', options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
-    } else if (req.query.conversationId == null) {
+    } else if (req.params.conversationId == null) {
       res.status(400).send();
     } else {
-      m_messageService.getConversation(req.query.conversationId, req.user.id, (conversation, error) => {
-        if (error != null) {
-          res.json({ error: error });
-          res.status(500).send();
-        } else {
-          res.json(conversation);
-          res.status(200).send();
-        }
-      });
+      m_messageService.getConversation(req.params.conversationId, req.user.id)
+        .then(conversation => {
+          res.status(200).json(conversation);
+        })
+        .catch(error => {
+          res.status(500).json(error);
+        });
     }
   });
 
-  app.get('/message', options.auth, (req, res) => {
+  app.get('/message/:messageId', options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
       return;
     }
 
-    if (req.query.messageId == null) {
+    if (req.params.messageId == null) {
       res.status(400).send();
       return;
     }
 
-    m_messageService.getMessage(req.query.messageId, req.user.id, (message, error) => {
-      if (error != null) {
-        res.json(error);
-        res.status(500).send();
-        return;
-      }
-
-      res.json(message);
-      res.status(200).send();
-      return;
-    })
+    m_messageService.getMessage(req.params.messageId, req.user.id)
+      .then(message => {
+        res.status(200).json(message);
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      })
   });
 
-  app.get('/messages', options.auth, (req,res) => {
+  app.get('/messages/:conversationId', options.auth, (req,res) => {
     console.log(req.query);
     if (req.user == null) {
       res.status(404).send();
-    } else if (req.query.conversationId == null) {
+    } else if (req.params.conversationId == null) {
       res.status(400).send();
     } else {
-      m_messageService.getMessages(req.user.id, req.query.conversationId, req.query.start, req.query.count, (messages, error) => {
-        if (error != null) {
-          res.json(error);
-          res.status(500).send();
-        } else {
-          res.json(messages);
-          res.status(200).send();
-        }
-      })
+      m_messageService.getMessages(req.user.id, req.params.conversationId, req.query.start, req.query.count)
+        .then(messages => {
+          res.status(200).json(messages);
+        })
+        .catch(error => {
+          res.status(500).json(error);
+        });
     }
-  })
+  });
 
   app.post('/messages', options.auth, (req, res) => {
     if (!req.user) {
@@ -308,59 +296,48 @@ module.exports = function (app, options) {
       return;
     }
 
-    m_messageService.createMessage(req.body.conversationId, req.body.userId, req.body.content, req.body.destinationId, (messageId, error) => {
-      if (error != null) {
-        res.json(error);
-        res.status(500).send();
+    m_messageService.createMessage(req.body.conversationId, req.body.userId, req.body.content, req.body.destinationId)
+      .then(messageId => {
+        res.status(201).json({ messageId });
         return;
-      }
-
-      res.json({ messageId });
-      res.status(201).send();
-      return;
-    })
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
   });
 
-  app.delete('/message', options.auth, (req, res) => {
+  app.delete('/message/:messageId', options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
-    } else if (req.query.messageId == null) {
+    } else if (req.params.messageId == null) {
       res.status(400).send();
     }
 
-    m_messageService.deleteMessage(req.query.messageId, (count, error) => {
-      if (error != null) {
-        res.json(error);
-        res.status(500).send();
-        return;
-      }
-
-      res.json(count);
-      res.status(200).send();
-      return;
-    })
+    m_messageService.deleteMessage(req.params.messageId)
+      .then(count => {
+        res.status(200).json(count);
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
   });
   
-  app.delete('/conversation', options.auth, (req, res) => {
+  app.delete('/conversation/:conversationId', options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
-    } else if (req.query.conversationId == null) {
+    } else if (req.params.conversationId == null) {
       res.status(400).send();
     }
 
-    m_messageService.deleteConversation(req.query.conversationId, (count, error) => {
-      if (error != null) {
-        res.json(error);
-        res.status(500).send();
-        return;
-      }
-
-      res.json(count);
-      res.status(200).send();
-      return;
-    })
+    m_messageService.deleteConversation(req.params.conversationId)
+      .then(count => {
+        res.status(200).json(count);
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
   });
 
   /**

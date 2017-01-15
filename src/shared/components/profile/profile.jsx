@@ -33,33 +33,6 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 class Profile extends Component {
-  static propTypes = {
-    children: PropTypes.object,
-    createEditorState: PropTypes.func,
-    currentUser: PropTypes.shape({
-      isAuthenticated: PropTypes.bool.isRequired,
-      userId: PropTypes.number.isRequired,
-    }),
-    location: PropTypes.shape({
-      hash: PropTypes.string,
-    }),
-    loadUser: PropTypes.func.isRequired,
-    params: PropTypes.object.isRequired,
-    profile: PropTypes.shape({
-      avatarUrl: PropTypes.string,
-      bio: PropTypes.string,
-      coverImage: PropTypes.string,
-      id: PropTypes.number.isRequired,
-    }),
-    saveProfile: PropTypes.func.isRequired,
-    updateBio: PropTypes.func.isRequired,
-    validation: PropTypes.shape({
-      isValidBio: PropTypes.bool.isRequired,
-    }),
-    validateBio: PropTypes.func.isRequired,
-
-  }
-
   state = {
     editorState: this.props.profile.bio == null ? EditorState.createEmpty() : EditorState.createWithContent(stateFromHTML(this.props.profile.bio)),
     isEditing: false,
@@ -184,7 +157,6 @@ class Profile extends Component {
               </div>
               <div className="isLooking">{this.props.profile.isLooking == null ? 'I\'m looking to start a band!' : ''}</div>
             </div>
-            <div className="profile-about__nav-bar"><a href="#about"><button>About</button></a><button href="#interests">Interests</button><button href="#demos">My demos</button></div>
             <div className="profile-about">
               <div className={`about-tab ${this.props.location.hash === 'about' || this.props.location.hash === '' ? 'about-tab--active' : ''}`}>
                 <div className="profile-about__title">About Me{<span className="profile-about__icon" onClick={() => this.setState({ isEditing: true })}><PencilIcon /></span>}{this.props.validation.isValidBio ? '' : <span className="error profile-about__error-message">Your about section is too long.</span>}</div>
@@ -209,7 +181,7 @@ class Profile extends Component {
             </div>
           </div>
         }
-        <NavigationSidebar activeTab={this.props.location.hash} navigate={(hashLocation) => this.navigate(hashLocation)} />
+        <NavigationSidebar activeTab={this.props.location.hash} currentUser={this.props.currentUser} navigate={(hashLocation) => this.navigate(hashLocation)} />
       </div>
     );
   }

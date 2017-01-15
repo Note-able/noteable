@@ -1,389 +1,11 @@
-.profile-one {
-  width: 100%;
-  
-  .navbar {
-    border-bottom: 1px solid #ccc;
-    height: 56px;
-    width: 100%;
-    -webkit-box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-    box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-  }
-
-  .profile-container {
-    display: flex;
-    height: 100%;
-    
-    .user-info-container {
-      flex: 1 1 280px;
-      font-family: 'Source Sans Pro Light';
-      text-align: left;
-      -webkit-flex: 1 1 280px;
-      /*background: rgba(242, 185, 56, 0.7);*/
-      /* background: rgba(67, 141, 156, 0.6); */
-      /* background-color: rgba(28, 155, 193, 0.4); */
-      background-color: #1EBBA6;
-      -webkit-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.75);
-      -moz-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.75);
-      box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.75);
-      
-      .action-container {
-        margin: 10px;
-        padding: 15px;
-        text-align: center;
-        
-        a {
-          text-decoration: none;
-        }
-        
-        .action {
-          border: 1px solid #ffffff;
-          border-radius: 4px;
-          color: white;
-          display: inline-block;
-          padding: 4px;
-          margin: 8px;
-          width: 70px;
-        }
-      }
-      
-      .user-info {
-        background: rgba(67, 141, 156, 0.6);
-        padding: 15px;
-        color: white;
-        
-        &__username {
-          font-size: 24px;
-          letter-spacing: .5;
-          padding: 10px;
-        }
-        
-        &__events {
-          padding: 10px 0 0;
-        }
-        
-        &__name {
-          display: inline;
-        }
-        
-        &__location {
-          display: inline;
-        }
-        
-        &__followers {
-          padding: 0 0 10px;
-        }
-        
-        &__avatar {
-          padding: 20px 0;
-          text-align: center;
-          
-          img {
-            border-radius: 4px;
-            height: 75px;
-            width: 75px;
-            border: 4px solid #fff;
-          }
-        }
-      }
-    }
-    
-    .user-display-container {
-      flex: 10 600px;
-      -webkit-flex: 10 600px;
-    }
-  }
-}
-
-.profile-two {
-  display: flex;
-  flex-direction: column;
-  overflow: scroll;
-  width: 100%;
-  
-  .navbar {
-    background: #f46b45; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #f46b45 , #eea849); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #f46b45 , #eea849); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    height: 56px;
-    width: 100%;
-    flex: 0 1 56px;
-    -webkit-box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-    box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-  }
-
-  .profile-container {
-    display: flex;
-    flex: 1 1 auto;
-    flex-wrap: wrap;
-    
-    .user-info-container {
-      flex: 1 0 280px;
-      font-family: 'Source Sans Pro Light';
-      text-align: center;
-      -webkit-flex: 1 0 280px;
-      -webkit-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.75);
-      -moz-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.75);
-      box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.75);
-      
-      .action-container {
-        text-align: center;
-        
-        a {
-          text-decoration: none;
-        }
-        
-        .action {
-          border: 1px solid #5C8CA7;
-          border-radius: 4px;
-          color: #5C8CA7;
-          display: inline-block;
-          padding: 4px;
-          margin: 8px;
-          width: 70px;
-          
-          &:hover {
-            background: #5C8CA7;
-            color:white;
-          }
-        }
-      }
-      
-      .user-info-actions {
-        border-bottom: 1px solid #F57A34;
-        display: flex;
-        position: relative;
-        
-        .after {
-          border-bottom: 10px solid #F57A34;
-          border-right: 10px solid transparent;
-          border-left: 10px solid transparent;
-          bottom: 0;
-          content: ' ';
-          height: 0;
-          position: absolute;
-          width: 0;
-        }
-        
-        &__followers, &__events, &__following {
-          display: inline-block;
-          flex: 1;
-          padding: 10px 0;
-          text-decoration: none;
-          color: #5C8CA7;
-          
-          &:hover {
-            background: #F57A34;
-            color:white;
-          }
-        }
-        
-        &__following {
-          border-right: none;
-        }
-      }
-      
-      .information-container {
-        list-style: none;
-        margin: 0;
-        max-height: 500px;
-        overflow: scroll;
-        padding: 0;
-        
-        li {
-          display: block;
-        }
-        
-        .user {
-          border-bottom: 1px solid #cccccc;
-          padding: 10px;
-          text-align: left;
-          
-          img {
-            background: black;
-            height: 40px;
-            width: 40px;
-          }
-          
-          .user-information {
-            display: inline-block;
-            font-size: 14px;
-            padding: 0 10px;
-            vertical-align: top;
-          }
-        }
-      }
-      
-      .user-info {
-        padding: 15px;
-        border-top: 1px solid #F57A34;
-        border-bottom: 1px solid #F57A34;
-        
-        &__username {
-          font-size: 20px;
-          letter-spacing: .5;
-        }
-        
-        &__events {
-          padding: 10px 0 0;
-        }
-        
-        &__name {
-          display: inline;
-        }
-        
-        &__location {
-          display: inline;
-        }
-        
-        &__followers {
-          padding: 0 0 10px;
-        }
-        
-        &__avatar {
-          padding: 20px 0;
-          
-          img {
-            border-radius: 4px;
-            height: 75px;
-            width: 75px;
-            border: 2px solid #AAAAAA;
-          }
-        }
-      }
-    }
-    
-    .user-display-container {
-      flex: 10 320px;
-      -webkit-flex: 10 320px;
-    }
-  }
-}
-  
-.profile-three {
-  width: 100%;
-  
-  .navbar {
-    background: #f46b45; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #f46b45 , #eea849); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #f46b45 , #eea849); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    height: 56px;
-    width: 100%;
-    -webkit-box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-    box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-  }
-
-  .profile-container {
-    display: flex;
-    height: 100%;
-    
-    .user-info-container {
-      flex: 1 1 280px;
-      font-family: 'Source Sans Pro';
-      text-align: center;
-      -webkit-flex: 1 1 280px;
-      background: #ffffff;
-      -webkit-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.75);
-      -moz-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.75);
-      box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.75);
-      
-      .action-container {
-        margin: 10px;
-        padding: 15px;
-        text-align: center;
-        
-        a {
-          text-decoration: none;
-        }
-        
-        .action {
-          border: 1px solid #ffffff;
-          border-radius: 4px;
-          color: white;
-          display: inline-block;
-          padding: 4px;
-          margin: 8px;
-          width: 70px;
-        }
-      }
-      
-      .user-info {
-        //background: rgba(67, 141, 156, 0.6);
-        //background: rgba(23, 19, 10, 0.91);
-        border-top: 1px solid #5C8CA7;
-        border-bottom: 1px solid #5C8CA7;
-        display: flex;
-        
-        &__followers, &__events, &__following {
-          display: inline-block;
-          border-right: 1px solid #5C8CA7;
-          flex: 1;
-          padding: 10px 0;
-          text-decoration: none;
-          color: #5C8CA7;
-        }
-        
-        &__username {
-          font-size: 20px;
-          letter-spacing: .5;
-          padding: 10px 0 0;
-        }
-        
-        &__following {
-          border-right: none;
-        }
-        
-        &__name, &__location {
-          font-family: 'Source Sans Pro Light';
-          font-size: 16px;
-        }
-        
-        &__avatar {
-          text-align: left;
-          
-          img {
-            height: 100px;
-            width: 100px;
-          }
-        }
-      }
-    }
-    
-    .user-display-container {
-      flex: 10 600px;
-      -webkit-flex: 10 600px;
-    }
-  }
-}
-
-.profile-four {
-  .navbar {
-    background: #f46b45; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #f46b45 , @orange); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #f46b45 , @orange); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    height: 56px;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 2;
-    -webkit-box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-    box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
-  }
-  
-  .profile-container {
-    margin: @navbar-height 0 0;
-  }
-}
-
 ul {
   list-style: none;
   padding: 0;
 }
 
 .app-container {
+  background-image: linear-gradient(to right, @dark-red-gradient, @dark-orange-gradient);
+
   button {
     background: none;
     border: none;
@@ -481,7 +103,6 @@ ul {
     &__avatar {
       background-position: center;
       background-size: cover;
-      border: 2px solid @grey-medium;
       border-radius: 50%;
       box-sizing: border-box;
       display: inline-block;
@@ -510,11 +131,14 @@ ul {
   }
   
   .profile-container {
-    margin: @navbar-height 0 0 200px;
+    margin: @navbar-height 0 0 250px;
     position: relative;
     
     .profile-header {
+      margin: 0 auto;
+      max-width: 1000px;
       position: relative;
+      z-index: 2;
 
       .filter {
         background: 
@@ -595,8 +219,8 @@ ul {
           background-image: url('/images/railroad.jpeg');
           background-position: center;
           background-size: cover;
-          border: 2px solid @white;
           border-radius: 50%;
+          box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
           height: 100px;
           margin: auto;
           width: 100px;
@@ -640,6 +264,10 @@ ul {
     }
     
     .profile-about {
+      background: @white;
+      box-sizing: border-box;
+      margin: 0 auto;
+      max-width: 1000px;
       padding: 24px;
 
       &__icon {
@@ -657,6 +285,7 @@ ul {
       &__title {
         font: @huge-thin-font;
         margin: 0 0 12px;
+        max-width: 400px;
       }
       
       &__content {
@@ -664,6 +293,8 @@ ul {
       }
 
       &__container {
+        max-width: 400px;
+
         &__actions {
           &--cancel, &--save {
             height: 36px;
@@ -686,6 +317,7 @@ ul {
 
       &__editor-container {
         font: @normal-font;
+        line-height: 22px;
         margin: 12px 0;
         max-width: 700px;
         min-height: 100px;
@@ -693,24 +325,6 @@ ul {
         &--is-editing {
           border: 1px solid @grey-light;
           padding: 12px;
-        }
-      }
-
-      &__nav-bar {
-        border-bottom: 1px solid @grey-light;
-        box-shadow: 0 -3px 8px 0 rgba(0, 0, 0, 0.2);
-        height: 44px;
-        width: 100%;
-        
-        button {
-          background: none;
-          border: none;
-          border-right: 1px solid @grey-light;
-          color: black;
-          font: @normal-font;
-          height: 44px;
-          line-height: 44px;
-          width: 100px;
         }
       }
     }
@@ -739,7 +353,7 @@ ul {
       position: fixed;
       left: 0;
       top: 44px;
-      width: 200px;
+      width: 250px;
       
       &__filter-bar {
         border: 1px solid @grey-light;

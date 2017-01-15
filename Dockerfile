@@ -1,6 +1,6 @@
 # Dockerfile extending the generic Node image with application files for a
 # single application.
-FROM node:argon
+FROM node:boron
 
 RUN mkdir -p /app
 WORKDIR /app

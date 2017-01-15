@@ -40,6 +40,7 @@ export default class UserService {
       .on('end', () => {
         if (user.length === 0) {
           callback({ id: -1 });
+          return;
         }
 
         // user[0].profileImage = image.getPublicUrl(user[0].filename);

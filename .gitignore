@@ -1,5 +1,4 @@
 /uploads/
-dist/
 /node_modules/
 /tmp*
 .vscode/
