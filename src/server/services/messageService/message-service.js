@@ -1,15 +1,5 @@
-const userMapper = (dbUser) => ({
-  avatarUrl: dbUser.avatar_url,
-  coverImage: dbUser.cover_url,
-  id: dbUser.id,
-  email: dbUser.email,
-  location: dbUser.location,
-  name: dbUser.name,
-  bio: dbUser.bio,
-  preferences: {
-    instruments: dbUser.instruments.split(','),
-  },
-});
+import { conversationMapper } from './model/conversationDto.js';
+import { UserService } from '../index.js';
 
 /** MESSAGES API ***/
 /**
@@ -54,6 +44,7 @@ const createConversationSql = (userIds, next) => {
 export default class MessageService {
   constructor(options) {
     this.options = options;
+    this.m_userService = new UserService(options);
   }
 
   createConversation(userIds) {
@@ -126,11 +117,22 @@ export default class MessageService {
 
         const conversation = [];
         connection.client.query(`
-          SELECT * FROM conversations AS c INNER JOIN messages AS m ON c.conversation_id = m.conversation_id WHERE c.is_deleted = 0 AND c.conversation_id = ${conversationId} AND c.user_id = ${userId} LIMIT 20;
+          SELECT *
+          FROM conversations
+          WHERE conversation_id = ${conversationId} AND is_deleted = 0 AND user_id = ${userId};
+          
+          SELECT *
+          FROM messages
+          WHERE is_deleted = 0 AND conversation_id = ${conversationId}
+          LIMIT 20;
         `)
         .on('row', row => { conversation.push(row); })
         .on('error', error => { reject(error); return; })
-        .on('end', () => { resolve(conversation); });
+        .on('end', () => { 
+          const messages = [  ...conversation ];
+          messages.splice(0,1);
+          resolve(conversation.length > 0 ? { conversation: conversation[0], messages } : null);
+        });
       })
     });
   }

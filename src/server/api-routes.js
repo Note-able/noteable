@@ -1,4 +1,6 @@
 import { MessageService, UserService } from './services';
+import { userMapper } from './services/UserService/model/userDto';
+import { conversationMapper } from './services/messageService/model/conversationDto';
 
 const Formidable = require('formidable');
 const config = require('../config');
@@ -240,7 +242,11 @@ module.exports = function (app, options) {
     } else {
       m_messageService.getConversation(req.params.conversationId, req.user.id)
         .then(conversation => {
-          res.status(200).json(conversation);
+          // TODO: support groups or multiple userIds
+          const userIds = [ conversation.conversation.user_id ];//.map(message => message.user_id).filter((arr, val, i) => arr.indexOf(val) === i);
+          m_userService.getUsers(userIds, (users) => {
+            res.status(200).json(conversationMapper(users, conversation));
+          });
         })
         .catch(error => {
           res.status(500).json(error);
