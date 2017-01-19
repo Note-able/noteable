@@ -1,6 +1,6 @@
 import { MessageService, UserService } from './services';
 import { userMapper } from './services/UserService/model/userDto';
-import { conversationMapper } from './services/messageService/model/conversationDto';
+import { conversationMapper, conversationsMapper } from './services/messageService/model/conversationDto';
 
 const Formidable = require('formidable');
 const config = require('../config');
@@ -226,7 +226,7 @@ module.exports = function (app, options) {
     } else {
       m_messageService.getConversationsByUserId(req.user.id)
         .then(conversations => {
-          res.status(200).json(conversations);
+          res.status(200).json(conversationsMapper(conversations));
         })
         .catch(error => {
           res.status(500).json(error);

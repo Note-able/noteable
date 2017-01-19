@@ -94,10 +94,26 @@ export default class MessageService {
         }
 
         const conversations = [];
-        connection.client.query(`SELECT * FROM conversations WHERE is_deleted = 0 AND user_id = ${userId};`)
+        connection.client.query(`
+          BEGIN;
+            SELECT conversation_id INTO conversations_temp
+            FROM conversations
+            WHERE is_deleted = 0 AND user_id = ${userId};
+            
+
+            SELECT c.conversation_id, p.id, p.email, p.location, p.cover_url, p.name, p.avatar_url, p.bio
+            FROM conversations_temp ct
+              INNER JOIN conversations c
+                ON ct.conversation_id = c.conversation_id
+              INNER JOIN profile p
+                ON p.id = c.user_id;
+            
+            DROP TABLE conversations_temp;
+          COMMIT;`)
           .on('row', row => { conversations.push(row); })
           .on('error', error => { reject(error); return; })
           .on('end', () => { resolve(conversations); });
+
       })
     });
   }
