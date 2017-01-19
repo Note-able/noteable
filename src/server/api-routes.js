@@ -1,5 +1,5 @@
 import { MessageService, UserService } from './services';
-import { userMapper } from './services/UserService/model/userDto';
+import { userMapper } from './services/userService/model/userDto';
 import { conversationMapper, conversationsMapper } from './services/messageService/model/conversationDto';
 
 const Formidable = require('formidable');
