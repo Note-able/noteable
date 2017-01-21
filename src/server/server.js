@@ -12,7 +12,7 @@ import { connectToDb, ensureAuthenticated, validatePassword, generateToken, vali
 
 const MongoStore = require('connect-mongo')(session);
 
-const env = 'production'; // process.env.NODE_ENV;
+const env = process.env.NODE_ENV;
 global.DEBUG = env !== 'production' && env !== 'internal';
 global.PRODUCTION = env === 'production';
 global.CLIENT = false;

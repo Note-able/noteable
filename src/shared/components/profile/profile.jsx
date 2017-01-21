@@ -128,7 +128,7 @@ class Profile extends Component {
   render() {
     if (this.props.location.pathname.indexOf('create') !== -1) {
       return (
-        <CreateProfile name={this.props.profile.name} profile={this.props.profile} savePreferences={this.props.savePreferences} updateInstruments={this.props.updateInstruments} />
+        <CreateProfile name={this.props.profile.name} profile={this.props.profile} saveProfile={this.props.saveProfile} updateInstruments={this.props.updateInstruments} />
       );
     }
 
@@ -136,7 +136,7 @@ class Profile extends Component {
       <div className={styles.appContainer}>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/draft-js/0.7.0/Draft.min.css" />
         <div className="navbar navbar__no-home">
-          <a href="/"><div className="home-button">Noteable</div></a>
+          <a href="/home"><div className="home-button">Noteable</div></a>
           <div className={styles.searchBarContainer}>
             <div className={styles.searchBarBox}>
               <input className={styles.searchBar} placeholder="Search people, events, or songs" />

@@ -115,7 +115,7 @@ module.exports = function (app, options) {
         .on(`row`, (row) => { user.push(row); })
         .on(`error`, (error) => { console.log(`error encountered ${error}`) })
         .on(`end`, () => {
-          connection.fin();
+          connection.done();
           res.status(200).send(gcloudResponse);
         });
       });
@@ -141,7 +141,7 @@ module.exports = function (app, options) {
           );
       `).on('error', error => { console.log(`error following user: ${error}`); })
       .on('end', () => {
-        connection.fin();
+        connection.done();
         res.status(200).send();
       });
     });
@@ -468,7 +468,7 @@ module.exports = function (app, options) {
           events.push(row);
         }).on(`end`, () => {
           res.send(events);
-          connection.fin();
+          connection.done();
         });
       });
     }
@@ -487,7 +487,7 @@ module.exports = function (app, options) {
           events.push(row);
         }).on(`end`, () => {
           res.send(events);
-          connection.fin();
+          connection.done();
         });
       });
     }
@@ -506,7 +506,7 @@ module.exports = function (app, options) {
         .on(`row`, (row) => { songs.push(row); })
         .on(`end`, () => {
           res.send(songs);
-          connection.fin();
+          connection.done();
         });
       });
     }
@@ -524,7 +524,7 @@ module.exports = function (app, options) {
       .on(`end`, () => {
         if(song.length > 0 ) {
           res.send(song[0]);
-          connection.fin();
+          connection.done();
         }
         res.status(404).send();
       });
@@ -548,7 +548,7 @@ module.exports = function (app, options) {
           .on(`row`, (row) => { song.push(row); })
           .on(`end`, () => {
             res.status(200).send();
-            connection.fin();
+            connection.done();
           });
         } else {
         // create the song
@@ -556,7 +556,7 @@ module.exports = function (app, options) {
           .on(`row`, (row) => { song.push(row); })
           .on(`end`, () => {
             res.status(200).send();
-            connection.fin();
+            connection.done();
           });
         }
       });

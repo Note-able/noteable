@@ -11,7 +11,7 @@ export function connectToDb(connectionString, callback) {
       error = err;
     }
     console.log(error);
-    const connection = err ? { status : 'ERROR', error : error } : { status : 'SUCCESS', client : client, fin: done };
+    const connection = err ? { status : 'ERROR', error : error } : { status : 'SUCCESS', client : client, done };
     if(callback){
       callback(connection);
       return null;

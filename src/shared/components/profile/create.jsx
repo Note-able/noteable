@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import instruments from './instruments.json';
 import styles from '../app-styles/create.less';
+import { CameraIcon } from '../icons/common-icons.g';
 
 module.exports = class ProfileCreate extends Component {
   static propTypes = {
@@ -8,15 +9,15 @@ module.exports = class ProfileCreate extends Component {
     profile: PropTypes.shape({
       id: PropTypes.number.isRequired,
       preferences: PropTypes.shape({
-        instruments: PropTypes.arrayOf(PropTypes.object),
+        instruments: PropTypes.arrayOf(PropTypes.string),
       }),
     }).isRequired,
-    savePreferences: PropTypes.func.isRequired,
+    saveProfile: PropTypes.func.isRequired,
     updateInstruments: PropTypes.func.isRequired,
   };
 
   componentWillUnmount() {
-    this.props.savePreferences(this.props.profile.id);
+    this.props.saveProfile(this.props.profile.id);
   }
 
   toggleInput(instrument) {
@@ -42,7 +43,7 @@ module.exports = class ProfileCreate extends Component {
             </form>
           </div>
           <div className="edit-profile-container__field__instruments--header">What instruments do you play?</div>
-          <div className="edit-profile-container__field__instruments--submit-button" onClick={() => this.props.savePreferences()}>Next</div>
+          <div className="edit-profile-container__field__instruments--submit-button">Next</div>
           <ul className="edit-profile-container__field__instruments">
             {instrumentKeys.map(key => {
               const instrument = instrumentList[key];
