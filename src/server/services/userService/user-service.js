@@ -92,6 +92,7 @@ export default class UserService {
       `).on('error', (error) => {
         console.log(error);
       }).on('end', () => {
+        connection.done();
         callback();
       });
     });
@@ -105,7 +106,10 @@ export default class UserService {
         .query(`INSERT INTO public.user (email, password) VALUES ('${email}', '${password}') RETURNING ID;`)
         .on('row', row => { id = row; })
         .on('error', error => reject(error))
-        .on('end', () => resolve(id));
+        .on('end', () => {
+          connection.done();
+          resolve(id);
+        });
       });
     });
   }

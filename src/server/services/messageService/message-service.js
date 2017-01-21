@@ -75,7 +75,10 @@ export default class MessageService {
         `)
         .on('row', (row) => { conversation.push(row); })
         .on('error', (error) => { reject(error); return; })
-        .on('end', () => { resolve(conversation[0].createconversation); })
+        .on('end', () => {
+          connection.done();
+          resolve(conversation[0].createconversation);
+        })
       });
     });
   }
@@ -129,7 +132,10 @@ export default class MessageService {
           COMMIT;`)
           .on('row', row => { conversations.push(row); })
           .on('error', error => { reject(error); return; })
-          .on('end', () => { resolve(conversations); });
+          .on('end', () => {
+            connection.done();
+            resolve(conversations);
+          });
 
       })
     });
@@ -162,6 +168,7 @@ export default class MessageService {
         .on('row', row => { conversation.push(row); })
         .on('error', error => { reject(error); return; })
         .on('end', () => { 
+          connection.done();
           const messages = [  ...conversation ];
           messages.splice(0,1);
           resolve(conversation.length > 0 ? { conversation: conversation[0], messages } : null);
@@ -190,7 +197,11 @@ export default class MessageService {
         `)
         .on('row', row => { message.push(row); })
         .on('error', error => { reject(error); return; })
-        .on('end', () => { resolve(message[0]); return; });
+        .on('end', () => {
+          connection.done();
+          resolve(message[0]);
+          return; 
+        });
       })
     });
   }
@@ -214,7 +225,10 @@ export default class MessageService {
           connection.client.query(query)
           .on('row', row => { messages.push(row); })
           .on('error', error => { reject({ error, query }); return; })
-          .on('end', end => { resolve(messages); });
+          .on('end', end => {
+            connection.done();
+            resolve(messages);
+          });
         });
       }
     });
@@ -239,7 +253,10 @@ export default class MessageService {
         `)
         .on('row', row => { messageId = row.id })
         .on('error', error => { reject(error); return; })
-        .on('end', () => { resolve(messageId); });
+        .on('end', () => {
+          connection.done();
+          resolve(messageId);
+        });
       });
     });
   }
@@ -263,7 +280,10 @@ export default class MessageService {
         `)
         .on('row', row => { messageId = row.id; })
         .on('error', error => { reject(error); return; })
-        .on('end', () => { resolve(messageId); });
+        .on('end', () => {
+          connection.done();
+          resolve(messageId);
+        });
       });
     });
   }
@@ -287,7 +307,10 @@ export default class MessageService {
         `)
         .on('row', row => { conversations.push(row.id); })
         .on('error', error => { reject(error); return; })
-        .on('end', () => { resolve(conversations.length); });
+        .on('end', () => {
+          connection.done();
+          resolve(conversations.length);
+        });
       });
     });
   }

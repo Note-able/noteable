@@ -58,7 +58,7 @@ passport.use(new LocalStrategy({ callbackURL: '/auth/local/callback' }, (usernam
       .query(`SELECT * FROM public.user WHERE email = '${username}';`)
       .on('row', (row) => {
         user = row;
-        connection.fin();
+        connection.done();
         if (!user) {
           return done(null, false);
         }
@@ -94,7 +94,7 @@ passport.use(new FacebookStrategy({
         .query(`SELECT * FROM public.user WHERE facebook_id = '${profile.id}';`)
         .on('row', (row) => {
           user = row;
-          connection.fin();
+          connection.done();
           return done(null, user);
         })
         .on('end', () => {
@@ -123,7 +123,7 @@ passport.use(new JwtStrategy(jwtOptions, (profile, done) => {
       .query(`SELECT * FROM public.user WHERE facebook_id = '${profile.facebook_id}';`)
       .on('row', (row) => {
         user = row;
-        connection.fin();
+        connection.done();
         return done(null, user);
       })
       .on('end', () => {
@@ -157,7 +157,7 @@ app.post('/auth/jwt',
             .query(`SELECT * FROM public.user WHERE facebook_id = '${profile.id}';`)
             .on('row', (row) => {
               user = row;
-              connection.fin();
+              connection.done();
               return res.status(200).json({
                 token: `JWT ${generateToken(user)}`,
                 user: user,
