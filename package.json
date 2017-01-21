@@ -58,7 +58,6 @@
     "extract-text-webpack-plugin": "^2.0.0-beta.4",
     "forever-monitor": "^1.7.0",
     "formidable": "1.0.17",
-    "gcloud": "^0.30.3",
     "google-maps": "^3.2.1",
     "history": "^1.17.0",
     "jade": "^1.11.0",
@@ -92,7 +91,7 @@
     "socket.io-client": "^1.4.5",
     "style-loader": "^0.13.1",
     "svgo": "^0.7.1",
-    "webpack": "^2.1.0-beta.25",
+    "webpack": "^2.2.0",
     "webpack-dev-server": "^2.1.0-beta.9"
   },
   "engines": {
@@ -101,8 +100,9 @@
   "dependencies": {
     "connect-mongo": "^1.3.2",
     "draft-js": "^0.9.1",
-    "draft-js-export-html": "^0.4.0",
-    "draft-js-import-html": "^0.2.0",
+    "draft-js-export-html": "^0.5.2",
+    "draft-js-import-html": "^0.3.2",
+    "google-cloud": "^0.45.2",
     "lodash": "^4.16.4",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",

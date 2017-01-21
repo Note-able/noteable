@@ -13,7 +13,7 @@
 
 'use strict';
 
-const gcloud = require('gcloud');
+const gcloud = require('google-cloud');
 const path = require('path');
 
 function guid() {

@@ -17,7 +17,7 @@ module.exports = {
   devtool: '#source-map',
 
   plugins: [
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new ExtractTextPlugin({
       filename: 'style.css',
       allChunks: true,
@@ -46,10 +46,6 @@ module.exports = {
           'postcss-loader',
           'less-loader',
         ]
-      },
-      {
-        test: /\.json$/,
-        loader: 'json-loader',
       },
     ],
   },

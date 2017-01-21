@@ -6848,7 +6848,7 @@ var validation = exports.validation = function validation() {
 
 'use strict';
 
-var gcloud = require('gcloud');
+var gcloud = require('google-cloud');
 var path = require('path');
 
 function guid() {
