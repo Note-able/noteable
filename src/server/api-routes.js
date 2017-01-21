@@ -54,7 +54,8 @@ module.exports = function (app, options) {
 
   app.post('/register', (req, res) => {
     if (req.body.email == null || req.body.password == null) {
-      res.status(400).send();
+      res.status(400).json({ badRequest: 'empty username or password' });
+      return;
     }
 
     bcrypt.hash(req.body.password, null, null, (err, password) => {
@@ -62,18 +63,10 @@ module.exports = function (app, options) {
         res.status(500).send();
         return;
       }
-      options.connect(options.database, (connection) => {
-        connection.client
-        .query(`INSERT INTO public.user (username, email, password) VALUES ('${req.body.username}','${req.body.email}', '${password}');`)
-        .on('error', (error) => {
-          console.log(error);
-          res.send(error);
-        }).on('end', (result) => {
-          console.log(result);
-          res.status(204).send();
-          connection.fin();
-        });
-      });
+      
+      m_userService.registerUser(req.body.email, password)
+        .then(user => res.json(user))
+        .catch(error => res.status(500).json(error));
     });
   });
 

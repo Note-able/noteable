@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ajax from '../../ajax';
+import { KeyCodes } from '../helpers/keyCodes';
 
 module.exports = class Login extends Component {
   static propTypes = {
@@ -12,12 +13,16 @@ module.exports = class Login extends Component {
     loginFailed: false,
   }
 
+  componentDidMount() {
+    this._email.focus();
+  }
+
   login() {
-    ajax.post(`auth/local?username=${this.state.email}&password=${this.state.password}`,
+    ajax.postOld(`auth/local?username=${this.state.email}&password=${this.state.password}`,
       null,
       (junk, response) => {
         if (response.status === 200) {
-          window.location = '/profile';
+          window.location = '/profile/create';
           return;
         }
 
@@ -25,6 +30,12 @@ module.exports = class Login extends Component {
           loginFailed: true,
         });
       });
+  }
+
+  keyDown(event) {
+    if (event.keyCode === KeyCodes.enter) {
+      this.login();
+    }
   }
 
   updateForm() {
@@ -40,8 +51,8 @@ module.exports = class Login extends Component {
         <div className="login-container__header">Sign In</div>
         <div className="signin-form">
           { this.state.loginFailed ? <div className="signin-form__error-message">Invalid username or password</div> : null }
-          <input className="signin-form__username" name="email" onChange={() => this.updateForm()} placeholder="Email" ref={ref => { this._email = ref; }} />
-          <input className="signin-form__password" name="password" onChange={() => this.updateForm()} type="password" placeholder="Password" ref={ref => { this._password = ref; }} />
+          <input className="signin-form__username" name="email" onKeyDown={(event) => this.keyDown(event)} onChange={() => this.updateForm()} placeholder="Email" ref={ref => { this._email = ref; }} />
+          <input className="signin-form__password" name="password" onKeyDown={(event) => this.keyDown(event)} onChange={() => this.updateForm()} type="password" placeholder="Password" ref={ref => { this._password = ref; }} />
           <button className="signin-form__submit-button" onClick={() => this.login()}>Submit</button>
         </div>
         <div className="button-container">

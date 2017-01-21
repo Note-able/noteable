@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { validateEmail, validatePassword } from '../../../util/util.js';
 
 const ajax = require('../../ajax');
 
@@ -19,8 +20,16 @@ module.exports = class Register extends Component {
     this.setState({
       email: this._email.value,
       password: this._password.value,
-      user: this._username.value,
       registerFailed: false,
+    });
+
+    this.validateFields();
+  }
+
+  validateFields() {
+    this.setState({
+      validEmail: validateEmail(this.state.email || ''),
+      validPassword: validatePassword(this.state.password || ''),
     });
   }
 
@@ -29,26 +38,30 @@ module.exports = class Register extends Component {
     const username = this.state.username;
     const email = this.state.email;
 
-    ajax.post('/register', JSON.stringify({ email, password, username }), (response) => {
-      if (response && JSON.parse(response).name === 'error') {
+    if (!this.state.validEmail || !this.state.validPassword) {
+      this.setState({
+        registerFailed: !this.state.validEmail ? 'Invalid email.' : 'Invalid password. Password must consist of',
+      });
+      return;
+    }
+
+    ajax.post('/register',{ email, password, username })
+      .then(() =>
+        ajax.postNoBody(`auth/local?username=${email}&password=${password}`)
+          .then(() => {
+            window.location = '/profile/setup';
+          })
+          .catch(error => {
+            this.props.switchToLogin();
+          })
+        )
+      .catch(error => {
         this.setState({
-          registerFailed: true,
-        });
-
-        return;
-      }
-
-      ajax.post(`auth/local?username=${email}&password=${password}`, null, (stuff, resp) => {
-        if (resp.status === 200) {
-          window.location = '/profile';
-          return;
-        }
-
-        this.setState({
-          registerFailed: true,
+          registerFailed: 'An account with that email already exists.',
         });
       });
-    });
+
+    
     return false;
   }
 
@@ -57,8 +70,7 @@ module.exports = class Register extends Component {
       <div className="register-container">
         <div className="register-container__header">Register</div>
         <div className="register-form">
-          {this.state.registerFailed ? <div className="register-form__error-message">Email already exists</div> : null}
-          <input className="register-form__username" name="name" onChange={() => this.updateForm()} type="text" placeholder="Name" ref={ref => { this._username = ref; }} />
+          { this.state.registerFailed != null && this.state.registerFailed !== '' ? <div className="register-form__error-message">{this.state.registerFailed}</div> : null}
           <input className="register-form__password__verify" name="email" onChange={() => this.updateForm()} placeholder="Email" ref={ref => { this._email = ref; }} />
           <input className="register-form__password" name="password" onChange={() => this.updateForm()} type="password" placeholder="Password" ref={ref => { this._password = ref; }} />
           <button className="signin-form__submit-button" onClick={() => this.registerUser()}>Submit</button>

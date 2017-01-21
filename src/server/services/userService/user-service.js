@@ -96,4 +96,17 @@ export default class UserService {
       });
     });
   }
+
+  registerUser(email, password) {
+    return new Promise((resolve, reject) => {
+      this.options.connect(this.options.database, (connection) => {
+        let id;
+        connection.client
+        .query(`INSERT INTO public.user (email, password) VALUES ('${email}', '${password}') RETURNING ID;`)
+        .on('row', row => { id = row; })
+        .on('error', error => reject(error))
+        .on('end', () => resolve(id));
+      });
+    });
+  }
 }

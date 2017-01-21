@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import instruments from './instruments.json';
+import styles from '../app-styles/create.less';
 
 module.exports = class ProfileCreate extends Component {
   static propTypes = {
