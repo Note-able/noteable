@@ -45,7 +45,7 @@ module.exports = {
           { loader: 'css-loader', options: { importLoaders: 1, camelCase: true } },
           'postcss-loader',
           'less-loader',
-        ]
+        ],
       },
     ],
   },
