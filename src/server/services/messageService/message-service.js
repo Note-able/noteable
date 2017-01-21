@@ -205,15 +205,15 @@ export default class MessageService {
             reject('Failed to connect to database.');
             return;
           }
-
-          const messages = [];
-          connection.client.query(`
+          const query = `
             SELECT m.id, m.user_id, m.content, m.conversation_id, m.time_stamp FROM messages AS m INNER JOIN conversations AS c
             ON c.conversation_id = m.conversation_id
             WHERE m.is_deleted = 0 AND c.is_deleted = 0 AND c.user_id = ${userId} AND m.conversation_id = ${conversationId} LIMIT ${count || 10} OFFSET ${start || 0};
-          `)
+          `;
+          const messages = [];
+          connection.client.query(query)
           .on('row', row => { messages.push(row); })
-          .on('error', error => { reject(error); return; })
+          .on('error', error => { reject({ error, query }); return; })
           .on('end', end => { resolve(messages); });
         });
       }

@@ -4,7 +4,35 @@ ul {
 }
 
 .app-container {
-  background-image: linear-gradient(to right, @dark-red-gradient, @dark-orange-gradient);
+  background-image: @red-orange-gradient;
+
+  .navbar {
+    .search-bar {
+      border: 1px solid @grey-light;
+      border-radius: 2px;
+      flex: 1;
+      font: @normal-font;
+      height: 32px;
+      line-height: 32px;
+      margin: 6px 0;
+      outline: none;
+      padding: 4px;
+      text-align: left;
+      text-indent: 4px;
+      width: 300px;
+    }
+
+    .search-bar-box {
+      margin: auto;
+      max-width: 1000px;
+    }
+    
+    .search-bar-container {
+      box-sizing: border-box;
+      padding: 0 0 0 250px;
+      width: 100%;
+    }
+}
 
   button {
     background: none;
@@ -354,23 +382,6 @@ ul {
       left: 0;
       top: 44px;
       width: 250px;
-      
-      &__filter-bar {
-        border: 1px solid @grey-light;
-        border-radius: 2px;
-        flex: 1;
-        font: @normal-font;
-        height: 32px;
-        line-height: 32px;
-        margin: 8px;
-        outline: none;
-        padding: 4px;
-        text-align: center;
-      }
-      
-      &__filter-bar-container {
-        display: flex;
-      }
       
       &__options {
         border-top: 1px solid @grey-light;

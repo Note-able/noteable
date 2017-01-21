@@ -1,0 +1,71 @@
+@import 'variables';
+
+:local {
+  .active-tab {
+    background: @green;
+    color: @white;
+  }
+
+  .active-tab:hover {
+    color: @white;
+  }
+
+  .current-user {
+    box-sizing: border-box;
+    padding: 8px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .current-avatar {
+    border-radius: 50%;
+    height: 40px;
+    margin: 0 0 4px;
+  }
+
+  .current-name {
+    font: @middle-font;
+  }
+
+  .navigation-content {
+    background: @white;
+    box-shadow: 1px 5px 3px -1px rgba(0, 0, 0, 0.4);
+    bottom: 0;
+    position: fixed;
+    left: 0;
+    top: 44px;
+    width: 250px;
+  }
+    
+  .navigation-options {
+    border-top: 1px solid @grey-light;
+    width: 100%;
+  }
+    
+  .navigation-option {
+    cursor: pointer;
+    flex: 1;
+    font: @medium-font;
+    font-variant-ligatures: no-common-ligatures;
+    height: 30px;
+    line-height: 24px;
+    padding: 8px 24px 0;
+    text-align: left;
+
+    &:hover {
+      color: @green;
+    }
+  }
+
+  .suboptions {
+    color: black;
+  }
+
+  .suboptions-option {
+    padding: 8px 12px 0;
+
+    &:hover {
+      color: @green;
+    }
+  }
+}

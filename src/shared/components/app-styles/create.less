@@ -1,0 +1,45 @@
+@import 'variables.less';
+
+:local {
+  .avatar {
+    background: @white;
+    background-position: center;
+    background-size: cover;
+    border-radius: 50%;
+    box-shadow: @box-shadow;
+    box-sizing: border-box;
+    display: inline-block;
+    height: 100px;
+    width: 100px;
+  }
+
+  .file-upload {
+    display: none;
+  }
+  
+  .upload-button {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    bottom: 0;
+    cursor: pointer;
+    height: 100px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    width: 100px;
+    z-index: 2;
+
+    svg {
+      bottom: 0;
+      fill: @white;
+      left: 0;
+      height: 36px;
+      margin: auto;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 36px;
+    }
+  }
+}

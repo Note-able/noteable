@@ -53,6 +53,7 @@ module.exports = function (app, options) {
   });
 
   app.post('/register', (req, res) => {
+    console.log(req.body);
     if (req.body.email == null || req.body.password == null) {
       res.status(400).json({ badRequest: 'empty username or password' });
       return;

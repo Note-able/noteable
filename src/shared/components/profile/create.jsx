@@ -33,7 +33,14 @@ module.exports = class ProfileCreate extends Component {
           <a href="/"><div className="home-button">Noteable</div></a>
         </div>
         <div className="edit-profile-container">
-          <h1 className="edit-profile-container__header">Hey {this.props.name}, tell us a little bit about yourself</h1>
+          <h1 className="edit-profile-container__header">Hey {this.props.name}, let's setup up your profile</h1>
+          <div className={styles.avatarContainer}>
+            <form className={styles.uploaders} encType="multipart/form-data" >
+              <div className={styles.avatar} style={{ backgroundImage: `url('${this.props.profile.avatarUrl}'` }} />
+              <div className={styles.uploadButton} onClick={() => { this._file.click(); }}><CameraIcon /></div>
+              <input className={styles.fileUpload} ref={ref => { this._file = ref; }} type="file" name="file" onChange={() => this.changeAvatar(this._file.files[0])} />
+            </form>
+          </div>
           <div className="edit-profile-container__field__instruments--header">What instruments do you play?</div>
           <div className="edit-profile-container__field__instruments--submit-button" onClick={() => this.props.savePreferences()}>Next</div>
           <ul className="edit-profile-container__field__instruments">
