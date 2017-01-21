@@ -237,7 +237,7 @@ module.exports = function (app, options) {
       m_messageService.getConversation(req.params.conversationId, req.user.id)
         .then(conversation => {
           // TODO: support groups or multiple userIds
-          const userIds = [ conversation.conversation.user_id ];//.map(message => message.user_id).filter((arr, val, i) => arr.indexOf(val) === i);
+          const userIds = [ ...new Set(conversation.messages.map(x => x.user_id)) ];
           m_userService.getUsers(userIds, (users) => {
             res.status(200).json(conversationMapper(users, conversation));
           });
