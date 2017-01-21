@@ -35,7 +35,7 @@ export default class UserService {
         }
         user[0].instruments = user[1] != null ? user[1].instruments : '';
         // user[0].profileImage = image.getPublicUrl(user[0].filename);
-        connection.fin();
+        connection.done();
         callback(userMapper(user[0]));
       });
     });
@@ -76,7 +76,7 @@ export default class UserService {
         }
 
         // user[0].profileImage = image.getPublicUrl(user[0].filename);
-        connection.fin();
+        connection.done();
         callback(Object.keys(users).map(id => userMapper(users[id])));
       });
     });
