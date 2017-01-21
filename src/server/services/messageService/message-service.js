@@ -101,12 +101,29 @@ export default class MessageService {
             WHERE is_deleted = 0 AND user_id = ${userId};
             
 
-            SELECT c.conversation_id, p.id, p.email, p.location, p.cover_url, p.name, p.avatar_url, p.bio
+            SELECT
+              c.conversation_id,
+              p.id,
+              p.email,
+              p.location,
+              p.cover_url,
+              p.name,
+              p.avatar_url,
+              p.bio,
+              m.id AS message_id,
+              m.content AS message_content,
+              m.user_id AS message_user_id
             FROM conversations_temp ct
               INNER JOIN conversations c
                 ON ct.conversation_id = c.conversation_id
               INNER JOIN profile p
-                ON p.id = c.user_id;
+                ON p.id = c.user_id
+              INNER JOIN (
+                SELECT DISTINCT ON (conversation_id) id, content, user_id, conversation_id
+                FROM messages
+                ORDER BY conversation_id, id DESC
+              ) as m
+                ON ct.conversation_id = m.conversation_id;
             
             DROP TABLE conversations_temp;
           COMMIT;`)
