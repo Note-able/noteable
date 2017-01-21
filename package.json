@@ -14,7 +14,7 @@
     "server": "node lib/server/server",
     "mongo": "sudo mongod --dbpath=/data",
     "start-dev": "rm -rf dist && ./node_modules/.bin/webpack && ./node_modules/.bin/webpack-dev-server --config ./webpack.dev.config.js --port 8081 --content-base dist & node start-dev.js",
-    "start": "npm run build && npm run webpack-bundle",
+    "start": "npm run start-dev",
     "styles": "lessc ./public/less/bundle.less ./public/css/bundle.css",
     "dash": "./node_modules/.bin/nodejs-dashboard npm run start-dev"
   },
@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/sportnak/jamsesh#readme",
   "devDependencies": {
+    "autoprefixer": "^6.6.1",
     "autoprefixer-loader": "^3.2.0",
     "babel-cli": "^6.14.0",
     "babel-core": "^6.14.0",
@@ -76,6 +77,11 @@
     "password-hash-and-salt": "^0.1.3",
     "path": "^0.12.7",
     "pg": "^4.4.3",
+    "postcss-less": "^0.15.0",
+    "postcss-less-vars": "^1.2.5",
+    "postcss-loader": "^1.2.2",
+    "postcss-smart-import": "^0.6.7",
+    "precss": "^1.4.0",
     "react-bootstrap-date-picker": "^3.1.0",
     "react-hot-loader": "^1.3.0",
     "react-router": "^1.0.3",

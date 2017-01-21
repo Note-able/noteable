@@ -39,12 +39,13 @@ module.exports = {
         exclude: /(node_modules)/,
       },
       {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader!autoprefixer-loader' }),
-      },
-      {
-        test: /.less$/,
-        loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader!autoprefixer-loader!less-loader' }),
+        test: /\.(less|css)$/,
+        use: [
+          'style-loader',
+          { loader: 'css-loader', options: { importLoaders: 1, camelCase: true } },
+          'postcss-loader',
+          'less-loader',
+        ]
       },
       {
         test: /\.json$/,
