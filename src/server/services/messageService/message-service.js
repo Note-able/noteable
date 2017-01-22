@@ -105,13 +105,14 @@ export default class MessageService {
             
 
             SELECT
-              c.conversation_id,
+              c.conversation_id as conversationId,
               p.id,
               p.email,
               p.location,
-              p.cover_url,
-              p.name,
-              p.avatar_url,
+              p.cover_url as coverUrl,
+              p.first_name as firstName,
+              p.last_name as lastName,
+              p.avatar_url as avatarUrl,
               p.bio,
               m.id AS message_id,
               m.content AS message_content,

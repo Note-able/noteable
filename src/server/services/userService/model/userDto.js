@@ -4,7 +4,8 @@ export const userMapper = (dbUser) => ({
   id: dbUser.id,
   email: dbUser.email,
   location: dbUser.location,
-  name: dbUser.name,
+  firstName: dbUser.first_name,
+  lastName: dbUser.last_name,
   bio: dbUser.bio,
   preferences: {
     instruments: dbUser.instruments.split(','),

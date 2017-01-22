@@ -18,7 +18,7 @@ export default class UserService {
 
       const user = [];
       connection.client.query(`
-        SELECT p.id, p.email, p.location, p.cover_url, p.name, p.avatar_url, p.bio FROM public.profile p
+        SELECT p.id, p.email, p.location, p.cover_url, p.first_name, p.last_name, p.avatar_url, p.bio FROM public.profile p
         WHERE p.id = ${userId};
         
         SELECT * FROM public.instruments i
@@ -54,13 +54,13 @@ export default class UserService {
 
       const users = {};
       connection.client.query(`
-        SELECT p.id, p.email, p.location, p.cover_url, p.name, p.avatar_url, p.bio FROM public.profile p
+        SELECT p.id, p.email, p.location, p.cover_url, p.first_name, p.last_name, p.avatar_url, p.bio FROM public.profile p
         WHERE p.id IN (${userIds.join(', ')});
         
         SELECT * FROM public.instruments i
         WHERE i.user_id IN (${userIds.join(', ')});`)
       .on('row', (row) => {
-        if (row.name)
+        if (row.first_name || row.last_name)
           users[row.id] = { ...row, instruments: '' };
         else
           users[row.user_id].instruments = row.instruments;
@@ -85,7 +85,7 @@ export default class UserService {
   updateProfile(profile, callback) {
     this.options.connect(this.options.database, (connection) => {
       connection.client.query(`
-        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, cover_url = '${profile.coverImage}', name = '${profile.name}', avatar_url = '${profile.avatarUrl}'
+        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, cover_url = '${profile.coverImage}', first_name = '${profile.first_name}', last_name = '${profile.last_name}', avatar_url = '${profile.avatarUrl}'
         WHERE id = ${profile.id};
         UPDATE public.instruments SET instruments = '${profile.preferences.instruments.toString()}'
         WHERE user_id = ${profile.id};
