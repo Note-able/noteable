@@ -106,22 +106,13 @@ export default class MessageService {
 
             SELECT
               c.conversation_id as conversationId,
-              p.id,
-              p.email,
-              p.location,
-              p.cover_url as coverUrl,
-              p.first_name as firstName,
-              p.last_name as lastName,
-              p.avatar_url as avatarUrl,
-              p.bio,
+              c.user_id,
               m.id AS message_id,
               m.content AS message_content,
               m.user_id AS message_user_id
             FROM conversations_temp ct
               INNER JOIN conversations c
                 ON ct.conversation_id = c.conversation_id
-              INNER JOIN profile p
-                ON p.id = c.user_id
               INNER JOIN (
                 SELECT DISTINCT ON (conversation_id) id, content, user_id, conversation_id
                 FROM messages
@@ -250,7 +241,9 @@ export default class MessageService {
 
         let messageId = -1;
         connection.client.query(`
-          INSERT INTO messages (content, user_id, time_stamp, destination_id, conversation_id) values ('${content}', ${userId}, now(), ${destinationId == null ? 'default' : destinationId}, ${conversationId}) RETURNING id;
+          INSERT INTO messages (content, user_id, time_stamp, destination_id, conversation_id) 
+          VALUES ('${content}', ${userId}, now(), ${destinationId == null ? 'default' : destinationId}, ${conversationId})
+          RETURNING id;
         `)
         .on('row', row => { messageId = row.id })
         .on('error', error => { reject(error); return; })

@@ -220,7 +220,10 @@ module.exports = function (app, options) {
     } else {
       m_messageService.getConversationsByUserId(req.user.id)
         .then(conversations => {
-          res.status(200).json(conversationsMapper(conversations));
+          const userIds = [ ...new Set(conversations.map(x => x.user_id)) ];
+          m_userService.getUsers(userIds, (users) => {
+            res.status(200).json(conversationsMapper(users, conversations));
+          });
         })
         .catch(error => {
           res.status(500).json(error);
