@@ -43,7 +43,7 @@ module.exports = function (app, options) {
 
   /**USER API**/
 
-  app.post(`/user/edit`, options.auth, (req, res) => {
+  app.post(`/user/edit`, options.auth, options.auth, (req, res) => {
     console.log(req.body) // <- standard for getting things out post.
 
     options.connect(options.database, (connection) => {
@@ -71,7 +71,7 @@ module.exports = function (app, options) {
     });
   });
 
-  app.post('/user/profile/:userId', (req, res) => {
+  app.post('/user/profile/:userId', options.auth, (req, res) => {
     if (req.user.id != req.params.userId) {
       res.status(400).send();
       return;
@@ -82,7 +82,7 @@ module.exports = function (app, options) {
     });
   });
 
-  app.get('/user/:id', (req, res) => {
+  app.get('/user/:id', options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
       return;
@@ -272,7 +272,6 @@ module.exports = function (app, options) {
   });
 
   app.get('/messages/:conversationId', options.auth, (req,res) => {
-    console.log(req.query);
     if (req.user == null) {
       res.status(404).send();
     } else if (req.params.conversationId == null) {
