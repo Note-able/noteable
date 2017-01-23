@@ -141,7 +141,15 @@
 .login-container .signin-form__password__verify,
 .register-container .signin-form__password__verify,
 .login-container .register-form__password__verify,
-.register-container .register-form__password__verify {
+.register-container .register-form__password__verify,
+.login-container .signin-form__lastname,
+.register-container .signin-form__lastname,
+.login-container .register-form__lastname,
+.register-container .register-form__lastname,
+.login-container .signin-form__firstname,
+.register-container .signin-form__firstname,
+.login-container .register-form__firstname,
+.register-container .register-form__firstname {
   border: 1px solid #b1b1b1;
   border-radius: 2px;
   font: 200 14px 'Roboto';

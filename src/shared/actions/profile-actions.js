@@ -7,6 +7,7 @@ const {
   saveProfileTypes,
   updateBioType,
   updateInstrumentsType,
+  updateProfileType,
 } = profileActionTypes;
 
 export const profileActions = {
@@ -93,5 +94,10 @@ export const profileActions = {
   updateInstruments: (instrument) => ({
     type: updateInstrumentsType,
     instrument,
+  }),
+
+  updateProfile: (profile) => ({
+    type: updateProfileType,
+    profile,
   }),
 };

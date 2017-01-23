@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { validateEmail, validatePassword } from '../../../util/util.js';
+import styles from '../app-styles/auth.less';
 
 const ajax = require('../../ajax');
 
@@ -67,19 +68,21 @@ module.exports = class Register extends Component {
 
   render() {
     return (
-      <div className="register-container">
-        <div className="register-container__header">Register</div>
-        <div className="register-form">
+      <div className={styles.registerContainer}>
+        <div className={styles.header}>Register</div>
+        <div className={styles.registerForm}>
           { this.state.registerFailed != null && this.state.registerFailed !== '' ? <div className="register-form__error-message">{this.state.registerFailed}</div> : null}
-          <input className="register-form__password__verify" name="email" onChange={() => this.updateForm()} placeholder="Email" ref={ref => { this._email = ref; }} />
-          <input className="register-form__password" name="password" onChange={() => this.updateForm()} type="password" placeholder="Password" ref={ref => { this._password = ref; }} />
-          <button className="signin-form__submit-button" onClick={() => this.registerUser()}>Submit</button>
+          <input className={styles.email} name="email" onChange={() => this.updateForm()} placeholder="Email" ref={ref => { this._email = ref; }} />
+          <input className={styles.password} name="password" onChange={() => this.updateForm()} type="password" placeholder="Password" ref={ref => { this._password = ref; }} />
+          <input className={styles.firstname} name="firstname" onChange={() => this.updateForm()} type="text" placeholder="First name" ref={ref => { this._firstName = ref; }} />
+          <input className={styles.lastname} name="lastname" onChange={() => this.updateForm()} type="text" placeholder="Last name" ref={ref => { this._lastName = ref; }} />
+          <button className={styles.submitButton} onClick={() => this.registerUser()}>Submit</button>
         </div>
-        <div className="button-container">
-          <button className="button-container__submit-button" onClick={() => this.facebookLogin()}>Sign up with Facebook</button>
+        <div className={styles.buttonContainer}>
+          <button className={styles.submitButtonContainer} onClick={() => this.facebookLogin()}>Sign up with Facebook</button>
         </div>
-        <div className="button-container">
-          <div className="button-container__open-register" onClick={() => this.props.switchToLogin()}>Sign in</div>
+        <div className={styles.buttonContainer}>
+          <div className={styles.openRegister} onClick={() => this.props.switchToLogin()}>Sign in</div>
         </div>
       </div>
     );

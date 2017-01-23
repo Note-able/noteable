@@ -13,3 +13,24 @@ export function validatePassword(password) {
 
   return password.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/);
 }
+
+export function validateProfile(profile) {
+  let invalidState = {};
+  if (profile == null) {
+    return { profile: 'null profile' };
+  }
+
+  if (profile.firstName == null || profile.firstName.length === 0) {
+    invalidState = { ...invalidState, firstName: 'Required field'};
+  }
+
+  if (profile.lastName == null || profile.lastName.length === 0) {
+    invalidState = { ...invalidState, lastName: 'Required field'};
+  }
+
+if (profile.zipCode.length != 0 && profile.zipCode.match(/^\d{5}$/) == null) {
+    invalidState = { ...invalidState, zipCode: 'Invalid zip'};
+  }
+
+  return invalidState;
+}

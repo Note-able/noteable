@@ -6,6 +6,7 @@ export const profileActionTypes = {
   saveProfileTypes: createAsyncActionTypes('PROFILE/SAVE_PROFILE'),
   updateBioType: 'PROFILE/UPDATE_BIO',
   updateInstrumentsType: 'PROFILE/UPDATE_INSTRUMENTS',
+  updateProfileType: 'PROFILE/UPDATE_PROFILE',
 };
 
 export const editorActionTypes = {

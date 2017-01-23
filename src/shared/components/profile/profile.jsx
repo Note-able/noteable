@@ -17,6 +17,7 @@ const {
   saveProfile,
   updateBio,
   updateInstruments,
+  updateProfile,
   validateBio,
 } = profileActions;
 
@@ -34,6 +35,7 @@ const mapDispatchToProps = (dispatch) => ({
   saveProfile: (profile) => dispatch(saveProfile(profile)),
   updateBio: (bio) => dispatch(updateBio(bio)),
   updateInstruments: (instrument) => dispatch(updateInstruments(instrument)),
+  updateProfile: (profile) => dispatch(updateProfile(profile)),
   validateBio: (bio) => dispatch(validateBio(bio)),
 });
 
@@ -128,7 +130,15 @@ class Profile extends Component {
   render() {
     if (this.props.location.pathname.indexOf('create') !== -1) {
       return (
-        <CreateProfile name={this.props.profile.name} profile={this.props.profile} saveProfile={this.props.saveProfile} updateInstruments={this.props.updateInstruments} />
+        <CreateProfile
+          bio={this.state.editorState}
+          name={this.props.profile.name}
+          onBioChange={(editorState) => this.onBioChange(editorState)}
+          profile={this.props.profile}
+          saveProfile={this.props.saveProfile}
+          updateProfile={this.props.updateProfile}
+          updateInstruments={this.props.updateInstruments}
+        />
       );
     }
 
