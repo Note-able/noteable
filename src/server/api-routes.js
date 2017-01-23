@@ -30,7 +30,7 @@ module.exports = function (app, options) {
   });
 
   app.get(`/user/me`, options.auth, (req, res) => {
-    res.redirect(`/user/${req.user.id}/profile`);
+    res.redirect(`/user/${req.user.id}`);
   });
 
   app.get(`/user/search/{text}`, options.auth, (req, res) => {
