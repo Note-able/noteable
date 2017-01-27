@@ -2,7 +2,6 @@
 
 :local {
   .uploaders {
-    display: inline-block;
     position: relative;
     width: 100px;
   }
@@ -178,6 +177,7 @@
 
   .public-info {
     border-bottom: 3px solid @orange;
+    display: flex;
     margin: 0 0 24px;
   }
   
@@ -188,6 +188,7 @@
 
   .public-info-input {
     display: inline-block;
+    flex: 1;
     margin: 0 0 0 24px;
     vertical-align: top;
     width: 200px;
@@ -235,8 +236,9 @@
   }
 
   .about-editor-container {
+    flex: 4;
     font: @normal-font;
-    margin: 0 24px 24px 124px;
+    margin: 0 24px 24px 24px;
   }
 
   .editor-container {

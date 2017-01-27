@@ -46,6 +46,7 @@ module.exports = class ProfileCreate extends Component {
   }
 
   updateProfile = () => {
+    console.log(this._isLooking);
     this.props.updateProfile({
       ...this.props.profile,
       firstName: this._firstName.value,
@@ -53,8 +54,8 @@ module.exports = class ProfileCreate extends Component {
       zipCode: this._zipCode.value,
       preferences: {
         ...this.props.profile.preferences,
-        isLooking: this._isLooking.value,
-        shareLocation: this._shareLocation.value,
+        isLooking: this._isLooking.checked,
+        displayLocation: this._shareLocation.checked,
       }
     });
   }
@@ -88,12 +89,12 @@ module.exports = class ProfileCreate extends Component {
           <div className={styles.submitButton} onClick={this.saveProfile}>Finish</div>
           <h1 className={styles.header}>Hey {this.props.profile.firstName}, let's create your first impression<div className={styles.subheader}>(You can change this later.)</div></h1>
           <div className={styles.publicInfo}>
-            <form className={styles.uploaders} encType="multipart/form-data" >
-              <div className={styles.avatar} style={{ backgroundImage: `url('${this.props.profile.avatarUrl}'` }} />
-              <div className={styles.uploadButton} onClick={() => { this._file.click(); }}><CameraIcon /></div>
-              <input className={styles.fileUpload} ref={ref => { this._file = ref; }} type="file" name="file" onChange={() => this.changeAvatar(this._file.files[0])} />
-            </form>
             <div className={styles.publicInfoInput}>
+              <form className={styles.uploaders} encType="multipart/form-data" >
+                <div className={styles.avatar} style={{ backgroundImage: `url('${this.props.profile.avatarUrl}'` }} />
+                <div className={styles.uploadButton} onClick={() => { this._file.click(); }}><CameraIcon /></div>
+                <input className={styles.fileUpload} ref={ref => { this._file = ref; }} type="file" name="file" onChange={() => this.changeAvatar(this._file.files[0])} />
+              </form>
               <div className={styles.input}>
                 <div className={styles.inputLabel}>First name <div className={styles.error}>{this.state.invalidState.firstName}</div></div>
                 <input className={`${styles.inputName}`} onChange={this.updateProfile} type="text" name="firstName" value={this.props.profile.firstName} ref={ref => { this._firstName = ref; }} />
@@ -108,11 +109,11 @@ module.exports = class ProfileCreate extends Component {
               </div>
               <div className={styles.input}>
                 <div className={styles.checkboxLabel}>Looking for a band?<div className={styles.error}>{this.state.invalidState.firstName}</div></div>
-                <input className={`${styles.isLooking}`} onChange={this.updateProfile} type="checkbox" name="isLooking" value={this.props.profile.preferences.isLooking} ref={ref => { this._isLooking = ref; }} />
+                <input className={`${styles.isLooking}`} onChange={this.updateProfile} type="checkbox" name="isLooking" checked={this.props.profile.preferences.isLooking} ref={ref => { this._isLooking = ref; }} />
               </div>
               <div className={styles.input}>
-                <div className={styles.checkboxLabel}>Share my location <div className={styles.error}>{this.state.invalidState.firstName}</div></div>
-                <input className={`${styles.isLooking}`} onChange={this.updateProfile} type="checkbox" name="shareLocation" value={this.props.profile.preferences.shareLocation} ref={ref => { this._shareLocation = ref; }} />
+                <div className={styles.checkboxLabel}>Display my location <div className={styles.error}>{this.state.invalidState.firstName}</div></div>
+                <input className={`${styles.isLooking}`} onChange={this.updateProfile} type="checkbox" name="shareLocation" checked={this.props.profile.preferences.displayLocation} ref={ref => { this._shareLocation = ref; }} />
               </div>
             </div>
             <div className={styles.aboutEditorContainer}>
