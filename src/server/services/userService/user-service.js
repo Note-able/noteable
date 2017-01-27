@@ -16,14 +16,29 @@ export default class UserService {
         return callback({ id: -1 });
       }
 
-      const user = [];
+      let user = {};
       connection.client.query(`
         SELECT p.id, p.email, p.location, p.cover_url, p.first_name, p.last_name, p.avatar_url, p.bio FROM public.profile p
         WHERE p.id = ${userId};
         
         SELECT * FROM public.instruments i
-        WHERE i.user_id = ${userId};`)
-      .on('row', (row) => { user.push(row); })
+        WHERE i.user_id = ${userId};
+        
+        SELECT * FROM public.preferences pr
+        WHERE pr.profile_id = ${userId};
+      `)
+      .on('row', (row) => {
+        if (row.first_name || row.last_name) {
+          user = { ...user, ...row };
+        }
+        else if (row.instruments) {
+          user.instruments = row.instruments;
+        }
+        else {
+          user.is_looking = row.is_looking;
+          user.display_location = row.display_location;
+        }
+      })
       .on('error', (error) => {
         console.log(`error encountered ${error}`);
         callback({ id: -1 });
@@ -33,10 +48,9 @@ export default class UserService {
           callback({ id: -1 });
           return;
         }
-        user[0].instruments = user[1] != null ? user[1].instruments : '';
         // user[0].profileImage = image.getPublicUrl(user[0].filename);
         connection.done();
-        callback(userMapper(user[0]));
+        callback(userMapper(user));
       });
     });
   }
@@ -52,18 +66,28 @@ export default class UserService {
         return callback({ id: -1 });
       }
 
-      const users = {};
+      const users = [];
       connection.client.query(`
         SELECT p.id, p.email, p.location, p.cover_url, p.first_name, p.last_name, p.avatar_url, p.bio FROM public.profile p
         WHERE p.id IN (${userIds.join(', ')});
         
         SELECT * FROM public.instruments i
-        WHERE i.user_id IN (${userIds.join(', ')});`)
+        WHERE i.user_id IN (${userIds.join(', ')});
+
+        SELECT * FROM public.preferences pr
+        WHERE pr.profile_id IN(${userIds.join(', ')});
+      `)
       .on('row', (row) => {
-        if (row.first_name || row.last_name)
-          users[row.id] = { ...row, instruments: '' };
-        else
+        if (row.first_name || row.last_name) {
+          users[row.id] = { ...users[row.id], ...row };
+        }
+        else if (row.instruments) {
           users[row.user_id].instruments = row.instruments;
+        }
+        else {
+          users[row.user_id].is_looking = row.is_looking;
+          users[row.user_id].display_location = row.display_location;
+        }
       })
       .on('error', (error) => {
         console.log(`error encountered ${error}`);
@@ -85,10 +109,14 @@ export default class UserService {
   updateProfile(profile, callback) {
     this.options.connect(this.options.database, (connection) => {
       connection.client.query(`
-        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, cover_url = '${profile.coverImage}', first_name = '${profile.first_name}', last_name = '${profile.last_name}', avatar_url = '${profile.avatarUrl}'
+        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, cover_url = '${profile.coverImage}', first_name = '${profile.firstName}', last_name = '${profile.lastName}', avatar_url = '${profile.avatarUrl}', zip_code = ${profile.zipCode}
         WHERE id = ${profile.id};
         UPDATE public.instruments SET instruments = '${profile.preferences.instruments.toString()}'
         WHERE user_id = ${profile.id};
+        UPDATE public.preferences SET is_looking = ${profile.preferences.isLooking}, display_location = ${profile.preferences.displayLocation}
+        WHERE profile_id = ${profile.id};
+        INSERT INTO public.preferences (is_looking, display_location, profile_id) SELECT ${profile.preferences.isLooking}, ${profile.preferences.displayLocation}, ${profile.id}
+          WHERE NOT EXISTS (SELECT * FROM public.preferences WHERE profile_id = ${profile.id});
       `).on('error', (error) => {
         console.log(error);
       }).on('end', () => {

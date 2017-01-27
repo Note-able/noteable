@@ -1,4 +1,4 @@
-export const userMapper = (dbUser) => ({
+export const userMapper = (dbUser) => (dbUser == null ? null : {
   avatarUrl: dbUser.avatar_url,
   coverImage: dbUser.cover_url,
   id: dbUser.id,
@@ -9,5 +9,8 @@ export const userMapper = (dbUser) => ({
   bio: dbUser.bio,
   preferences: {
     instruments: dbUser.instruments.split(','),
+    isLooking: dbUser.is_looking,
+    displayLocation: dbUser.display_location,
   },
+  zipCode: dbUser.zip_code,
 });
