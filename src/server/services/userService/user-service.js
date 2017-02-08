@@ -84,8 +84,8 @@ export default class UserService {
           users[row.user_id].instruments = row.instruments;
         }
         else {
-          users[row.user_id].is_looking = row.is_looking;
-          users[row.user_id].display_location = row.display_location;
+          users[row.profile_id].is_looking = row.is_looking;
+          users[row.profile_id].display_location = row.display_location;
         }
       })
       .on('error', (error) => {
