@@ -18,7 +18,7 @@ export default class UserService {
 
       let user = {};
       connection.client.query(`
-        SELECT p.id, p.email, p.location, p.cover_url, p.first_name, p.last_name, p.avatar_url, p.bio FROM public.profile p
+        SELECT p.id, p.email, p.location, p.cover_url, p.first_name, p.last_name, p.avatar_url, p.bio, p.zip_code, p.profession FROM public.profile p
         WHERE p.id = ${userId};
         
         SELECT * FROM public.instruments i
@@ -35,8 +35,7 @@ export default class UserService {
           user.instruments = row.instruments;
         }
         else {
-          user.is_looking = row.is_looking;
-          user.display_location = row.display_location;
+          user = { ...user, ...row };
         }
       })
       .on('error', (error) => {
@@ -68,7 +67,7 @@ export default class UserService {
 
       const users = [];
       connection.client.query(`
-        SELECT p.id, p.email, p.location, p.cover_url, p.first_name, p.last_name, p.avatar_url, p.bio FROM public.profile p
+        SELECT p.id, p.email, p.location, p.cover_url, p.first_name, p.last_name, p.avatar_url, p.bio, p.zip_code, p.profession FROM public.profile p
         WHERE p.id IN (${userIds.join(', ')});
         
         SELECT * FROM public.instruments i
@@ -109,13 +108,13 @@ export default class UserService {
   updateProfile(profile, callback) {
     this.options.connect(this.options.database, (connection) => {
       connection.client.query(`
-        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, cover_url = '${profile.coverImage}', first_name = '${profile.firstName}', last_name = '${profile.lastName}', avatar_url = '${profile.avatarUrl}', zip_code = ${profile.zipCode}
+        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, cover_url = '${profile.coverImage}', first_name = '${profile.firstName}', last_name = '${profile.lastName}', avatar_url = '${profile.avatarUrl}', zip_code = ${profile.zipCode || 'NULL'}, profession = '${profile.profession}'
         WHERE id = ${profile.id};
         UPDATE public.instruments SET instruments = '${profile.preferences.instruments.toString()}'
         WHERE user_id = ${profile.id};
-        UPDATE public.preferences SET is_looking = ${profile.preferences.isLooking}, display_location = ${profile.preferences.displayLocation}
+        UPDATE public.preferences SET is_looking = ${profile.preferences.isLooking || 'DEFAULT'}, display_location = ${profile.preferences.displayLocation || 'DEFAULT'}
         WHERE profile_id = ${profile.id};
-        INSERT INTO public.preferences (is_looking, display_location, profile_id) SELECT ${profile.preferences.isLooking}, ${profile.preferences.displayLocation}, ${profile.id}
+        INSERT INTO public.preferences (is_looking, display_location, profile_id) SELECT ${profile.preferences.isLooking || 'false'}, ${profile.preferences.displayLocation || 'false'}, ${profile.id}
           WHERE NOT EXISTS (SELECT * FROM public.preferences WHERE profile_id = ${profile.id});
       `).on('error', (error) => {
         console.log(error);
@@ -126,12 +125,22 @@ export default class UserService {
     });
   }
 
-  registerUser(email, password) {
+  registerUser(email, password, firstName, lastName) {
     return new Promise((resolve, reject) => {
       this.options.connect(this.options.database, (connection) => {
         let id;
         connection.client
-        .query(`INSERT INTO public.user (email, password) VALUES ('${email}', '${password}') RETURNING ID;`)
+        .query(`
+          BEGIN;
+          INSERT INTO public.user (email, password) VALUES ('${email}', '${password}');
+          INSERT INTO public.profile (email, user_id, first_name, last_name) VALUES (
+            '${email}',
+            currval('user_id_seq'),
+            '${firstName}',
+            '${lastName}'
+          ) RETURNING id;
+          COMMIT;
+        `)
         .on('row', row => { id = row; })
         .on('error', error => reject(error))
         .on('end', () => {

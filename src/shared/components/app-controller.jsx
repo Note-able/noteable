@@ -18,6 +18,11 @@ class AppController extends Component {
   }
 
   renderHome() {
+    if (window.location.pathname.indexOf('/profile') !== -1) {
+      window.location.pathname = '/';
+      return;
+    }
+
     if (this.props.isAuthenticated && this.props.location.pathname !== '/home') {
       window.location.pathname = '/profile';
       return;
@@ -42,7 +47,7 @@ class AppController extends Component {
       <div>
         <link href="/css/bundle.css" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" />
-        { this.props.location.pathname === '/' || this.props.location.pathname === '/home' ? this.renderHome() : this.props.children}
+        { this.props.location.pathname === '/' || this.props.location.pathname === '/home' || this.props.userId === -1 ? this.renderHome() : this.props.children}
       </div>
     );
   }

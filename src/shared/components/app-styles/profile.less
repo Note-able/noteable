@@ -6,6 +6,27 @@
     padding: 0;
   }
 
+  .record {
+    background: @pink;
+    border: 1px solid @pink;
+    border-radius: 2px;
+    color: @white;
+    font: @normal-font;
+    line-height: 28px;
+    margin: 7px 32px;
+    padding: 0 12px;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    &:hover {
+      background: @white;
+      border: 1px solid @white;
+      color: @pink;
+      cursor: pointer;
+    }
+  }
+
   button {
     background: none;
     border: none;
@@ -184,17 +205,22 @@
   .profile-about {
     background: @white;
     box-sizing: border-box;
+    display: flex;
     margin: 0 auto;
     max-width: 1000px;
     padding: 24px;
   }
 
+  .about-section {
+    flex: 1;
+  }
+
   .about-icon {
     cursor: pointer;
     display: inline-block;
-    height: 40px;
-    padding: 0 12px;
-    width: 40px;
+    height: 28px;
+    padding: 0 4px;
+    width: 28px;
   }
 
   .about-error-message {
@@ -202,8 +228,8 @@
   }
   
   .about-title {
-    font: @huge-thin-font;
-    margin: 0 0 12px;
+    font: @large-heavy-font;
+    margin: 0 0 4px;
     max-width: 400px;
   }
   

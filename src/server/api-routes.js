@@ -59,13 +59,18 @@ module.exports = function (app, options) {
       return;
     }
 
+    if (req.body.firstName == null || req.body.lastName == null) {
+      res.status(400).json({ badRequest: 'empty firstname or lastname' });
+      return;
+    }
+
     bcrypt.hash(req.body.password, null, null, (err, password) => {
       if (err) {
         res.status(500).send();
         return;
       }
       
-      m_userService.registerUser(req.body.email, password)
+      m_userService.registerUser(req.body.email, password, req.body.firstName, req.body.lastName)
         .then(user => res.json(user))
         .catch(error => res.status(500).json(error));
     });

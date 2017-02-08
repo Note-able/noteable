@@ -12,7 +12,6 @@ class ProfileSettings extends Component {
       profession: PropTypes.string,
     }),
     profileChange: PropTypes.func.isRequired,
-    sendImageToServer: PropTypes.func.isRequired,
   };
 
   state = {
@@ -61,17 +60,6 @@ class ProfileSettings extends Component {
     });
   }
 
-  changeAvatar = (file) => {
-    this.props.sendImageToServer(file, (url) => {
-      this.setState({
-        profile: {
-          ...this.state.profile,
-          avatarUrl: url,
-        },
-      });
-    });
-  }
-
   render() {
     return (
       <div className={styles.profileSettings}>
@@ -82,7 +70,7 @@ class ProfileSettings extends Component {
           <form className={styles.uploaders} encType="multipart/form-data" >
             <div className={styles.avatar} style={{ backgroundImage: `url('${this.state.profile.avatarUrl}'` }} />
             <div className={styles.uploadButton} onClick={() => { this._file.click(); }}><CameraIcon /></div>
-            <input className={styles.fileUpload} ref={ref => { this._file = ref; }} type="file" name="file" onChange={() => this.changeAvatar(this._file.files[0])} />
+            <input className={styles.fileUpload} ref={ref => { this._file = ref; }} type="file" name="file" onChange={() => this.props.changeAvatar(this._file.files[0])} />
           </form>
           <div className={styles.inputSettings}>
             <label htmlFor="name">Name: </label>

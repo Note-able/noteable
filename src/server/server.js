@@ -55,7 +55,7 @@ passport.use(new LocalStrategy({ callbackURL: '/auth/local/callback' }, (usernam
     if (connection.status === 'SUCCESS') {
       let user = null;
       connection.client
-      .query(`SELECT * FROM public.user WHERE email = '${username}';`)
+      .query(`SELECT pr.id, p.password, pr.email FROM public.user p INNER JOIN public.profile pr ON p.id = pr.user_id WHERE pr.email = '${username}';`)
       .on('row', (row) => {
         user = row;
         connection.done();

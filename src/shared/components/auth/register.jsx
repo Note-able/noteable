@@ -21,6 +21,8 @@ module.exports = class Register extends Component {
     this.setState({
       email: this._email.value,
       password: this._password.value,
+      firstName: this._firstName.value,
+      lastName: this._lastName.value,
       registerFailed: false,
     });
 
@@ -37,6 +39,8 @@ module.exports = class Register extends Component {
   registerUser() {
     const password = this.state.password;
     const username = this.state.username;
+    const firstName = this.state.firstName;
+    const lastName = this.state.lastName
     const email = this.state.email;
 
     if (!this.state.validEmail || !this.state.validPassword) {
@@ -46,16 +50,16 @@ module.exports = class Register extends Component {
       return;
     }
 
-    ajax.post('/register',{ email, password, username })
+    ajax.post('/register', { email, password, firstName, lastName })
       .then(() =>
-        ajax.postNoBody(`auth/local?username=${email}&password=${password}`)
-          .then(() => {
-            window.location = '/profile/setup';
-          })
-          .catch(error => {
-            this.props.switchToLogin();
-          })
-        )
+        ajax.postOld(`auth/local?username=${this.state.email}&password=${this.state.password}`,
+          null,
+          (junk, response) => {
+            if (response.status === 200) {
+              window.location = '/profile/create';
+              return;
+            }
+      }))
       .catch(error => {
         this.setState({
           registerFailed: 'An account with that email already exists.',

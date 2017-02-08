@@ -22,7 +22,7 @@ module.exports = class Login extends Component {
       null,
       (junk, response) => {
         if (response.status === 200) {
-          window.location = '/profile/create';
+          window.location = '/profile';
           return;
         }
 

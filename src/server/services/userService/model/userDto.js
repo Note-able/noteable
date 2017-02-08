@@ -7,10 +7,12 @@ export const userMapper = (dbUser) => (dbUser == null ? null : {
   firstName: dbUser.first_name,
   lastName: dbUser.last_name,
   bio: dbUser.bio,
+  profession: dbUser.profession,
   preferences: {
-    instruments: dbUser.instruments.split(','),
+    instruments: dbUser.instruments == null ? [] : dbUser.instruments.split(','),
     isLooking: dbUser.is_looking,
     displayLocation: dbUser.display_location,
+    preferredGenres: dbUser.preferred_genres,
   },
   zipCode: dbUser.zip_code,
 });

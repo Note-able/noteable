@@ -54,7 +54,8 @@ module.exports = class AudioComponent extends React.Component {
           audioUrl: audioURL,
           dataUrl: dataURL,
           blob: recordedBlob,
-          isRecording: false
+          isRecording: false, 
+          duration: recordedBlob.size / (176000),
         });
       });
 
@@ -92,7 +93,7 @@ module.exports = class AudioComponent extends React.Component {
         <div>
           <div onClick={ this.state.isRecording ? () => { this.stopRecording() } : () => { this.startRecording() } } className="record-button"></div>
           <div onClick={ () => { this.stopRecording() } } className="stop-button"></div>
-          <audio src={ this.state.audioUrl } className="audio-player" controls/>
+          <audio src={ this.state.audioUrl } ref={ref => { this._thing = ref; }} className="audio-player" controls/>
           <button onClick= { () => { this.sendAudioToServer() } } >Send</button>
         </div>
       </div>

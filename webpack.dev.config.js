@@ -42,7 +42,7 @@ module.exports = {
         test: /\.(less|css)$/,
         use: [
           'style-loader',
-          { loader: 'css-loader', options: { importLoaders: 1, camelCase: true } },
+          { loader: 'css-loader', options: { importLoaders: 1, camelCase: true, localIdentName: '[local]--[name]--[hash:base64:5]' } },
           'postcss-loader',
           'less-loader',
         ]

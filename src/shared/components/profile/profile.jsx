@@ -11,6 +11,7 @@ import { CameraIcon, CogIcon, PencilIcon } from '../icons/common-icons.g';
 import { profileActions } from '../../actions';
 import styles from '../app-styles/profile.less';
 import CreateProfile from './create.jsx';
+import AudioComponent from '../record-audio-component.js';
 
 const {
   loadUser,
@@ -61,6 +62,15 @@ class Profile extends Component {
 
     this.props.validateBio(editorState.getCurrentContent().getPlainText());
     this.props.updateBio(stateToHTML(editorState.getCurrentContent()));
+  }
+
+  changeAvatar = (file) => {
+    this.sendImageToServer(file, (url) => {
+      this.props.updateProfile({
+        ...this.props.profile,
+        avatarUrl: url,
+      });
+    });
   }
 
   sendImageToServer(file, callback) {
@@ -130,15 +140,21 @@ class Profile extends Component {
   render() {
     if (this.props.location.pathname.indexOf('create') !== -1) {
       return (
-        <CreateProfile
-          bio={this.state.editorState}
-          name={this.props.profile.name}
-          onBioChange={(editorState) => this.onBioChange(editorState)}
-          profile={this.props.profile}
-          saveProfile={this.props.saveProfile}
-          updateProfile={this.props.updateProfile}
-          updateInstruments={this.props.updateInstruments}
-        />
+        <div className={styles.appContainer}>
+          <div className="navbar navbar__no-home">
+            <a href="#"><div className="home-button">Noteable</div></a>
+          </div>
+          <CreateProfile
+            bio={this.state.editorState}
+            changeAvatar={(file) => this.changeAvatar(file)}
+            name={this.props.profile.name}
+            onBioChange={(editorState) => this.onBioChange(editorState)}
+            profile={this.props.profile}
+            saveProfile={this.props.saveProfile}
+            updateProfile={this.props.updateProfile}
+            updateInstruments={this.props.updateInstruments}
+          />
+        </div>
       );
     }
 
@@ -152,14 +168,22 @@ class Profile extends Component {
               <input className={styles.searchBar} placeholder="Search people, events, or songs" />
             </div>
           </div>
-          <a href="/logout"><div className="logout">Logout</div></a>
+          {this.state.isRecording ? 
+            <div className={styles.recordContainer}>
+              <AudioComponent />
+            </div>
+            : <div className={styles.record} onClick={() => this.setState({ isRecording: true })}>Record</div>}
         </div>
         {this.state.settingsView ?
-          <ProfileSettings
-            closeSettings={() => this.navigate('profile')}
-            profile={this.state.profile}
-            profileChange={(profile) => this.profileChange(profile)}
-            sendImageToServer={(event, callback) => this.sendImageToServer(event, callback)}
+          <CreateProfile
+            bio={this.state.editorState}
+            changeAvatar={(file) => this.changeAvatar(file)}
+            name={this.props.profile.name}
+            onBioChange={(editorState) => this.onBioChange(editorState)}
+            profile={this.props.profile}
+            saveProfile={this.props.saveProfile}
+            updateProfile={this.props.updateProfile}
+            updateInstruments={this.props.updateInstruments}
           /> :
           <div className={styles.profileContainer}>
             <div className={styles.profileHeader}>
@@ -171,33 +195,38 @@ class Profile extends Component {
                 </form>
                 <span className={styles.cameraIcon} alt="Change cover image" onClick={() => this._coverImage.click()}><CameraIcon /></span>
                 <div className={styles.image} style={{ backgroundImage: `url('${this.props.profile.avatarUrl}'` }} />
-                <div className={styles.name}>{ this.props.profile.name == null ? 'Michael Nakayama' : this.props.profile.name }</div>
-                <div className={styles.title}>Studying songwriting &bull; Belmont University</div>
-                <div className={styles.title}>1 year experience</div>
-                <div className={styles.location}>{ this.props.profile.location == null ? 'Bellingham, WA' : this.props.profile.location }</div>
+                <div className={styles.name}>{`${this.props.profile.firstName} ${this.props.profile.lastName}`}</div>
+                <div className={styles.title}>{this.props.profile.profession}</div>
+                <div className={styles.location}>{this.props.profile.location}</div>
                 <button className={styles.follow} onClick={() => this.followUser(this.props.profile.id)}>Follow</button>
                 <button className={styles.message}>Message</button>
               </div>
               <div className={styles.isLooking}>{this.props.profile.isLooking == null ? 'I\'m looking to start a band!' : ''}</div>
             </div>
             <div className={styles.profileAbout}>
-              <div className={styles.aboutTitle}>About Me{<span className={styles.aboutIcon} onClick={() => this.setState({ isEditing: true })}><PencilIcon /></span>}{this.props.validation.isValidBio ? '' : <span className={`error ${styles.aboutErrorMessage}`}>Your about section is too long.</span>}</div>
-              <div className={styles.aboutContainer}>
-                {this.state.isEditing ?
-                  <div>
-                    <button className={styles.aboutSave} onClick={() => this.saveBio()}>Save</button>
-                    <button className={styles.aboutCancel} onClick={() => this.closeEditor()}>Cancel</button>
-                  </div> :
-                  null
-                }
-                <div className={`${styles.aboutEditorContainer} ${this.state.isEditing ? styles.isEditing : ''}`}>
-                  <Editor
-                    editorState={this.state.editorState}
-                    onChange={(editorState) => this.onBioChange(editorState)}
-                    placeholder={this.state.isEditing ? 'Tell the world who you are.' : ' '}
-                    readOnly={!this.state.isEditing}
-                  />
+              <div className={styles.aboutSection}>
+                <div className={styles.aboutTitle}>About Me{<span className={styles.aboutIcon} onClick={() => this.setState({ isEditing: true })}><PencilIcon /></span>}{this.props.validation.isValidBio ? '' : <span className={`error ${styles.aboutErrorMessage}`}>Your about section is too long.</span>}</div>
+                <div className={styles.aboutContainer}>
+                  {this.state.isEditing ?
+                    <div>
+                      <button className={styles.aboutSave} onClick={() => this.saveBio()}>Save</button>
+                      <button className={styles.aboutCancel} onClick={() => this.closeEditor()}>Cancel</button>
+                    </div> :
+                    null
+                  }
+                  <div className={`${styles.aboutEditorContainer} ${this.state.isEditing ? styles.isEditing : ''}`}>
+                    <Editor
+                      editorState={this.state.editorState}
+                      onChange={(editorState) => this.onBioChange(editorState)}
+                      placeholder={this.state.isEditing ? 'Tell the world who you are.' : ' '}
+                      readOnly={!this.state.isEditing}
+                    />
+                  </div>
                 </div>
+              </div>
+              <div className={styles.interestSection}>
+                {this.props.profile.preferences.instruments}
+                {this.props.profile.preferences.preferredGenres}
               </div>
             </div>
           </div>
