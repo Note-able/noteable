@@ -1,4 +1,4 @@
-import { MessageService, UserService } from './services';
+import { MessageService, UserService, EventService } from './services';
 import { userMapper } from './services/userService/model/userDto';
 import { conversationMapper, conversationsMapper } from './services/messageService/model/conversationDto';
 
@@ -18,6 +18,7 @@ function escaper(char){
 module.exports = function (app, options) {
   const m_userService = new UserService(options);
   const m_messageService = new MessageService(options);
+  const m_eventService = new EventService(options);
 
   app.get(`/database`, (req, res) => {
     options.connect(options.database, (connection) => {
@@ -352,18 +353,13 @@ module.exports = function (app, options) {
   **/
 
   app.get('/api/events', (req, res) => {
-    options.connect(options.database, (connection) => {
-      let item;
-      connection.client
-      .query(`SELECT * FROM events WHERE id = ${req.query.eventId};`)
-      .on('error', (error) => {
-        res.status(404).send();
-      }).on('row', (event) => {
-        item = event;
-      }).on('end', () => {
-        res.status(200).send(item);
+    m_eventService.getEventsByLocation()
+      .then((events) => {
+        res.status(200).json(events);
+      })
+      .catch((error) => {
+        res.status(500).send(error);
       });
-    });
   });
 
   app.get('/api/events/nearby', (req, res) => {
