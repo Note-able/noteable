@@ -193,28 +193,6 @@ app.get('/me', (req, res) => {
   // track here
 });
 
-app.post('/post-blob', (req, res) => {
-  const form = new Formidable.IncomingForm();
-  form.uploadDir = '/uploads';
-
-  form.onPart = part => {
-    form.handlePart(part);
-  };
-
-  form.parse(req, (err, fields) => {
-    const buffer = new Buffer(fields.file, 'base64');
-    fs.writeFileSync(fields.name, buffer);
-    audio.sendUploadToGCS(`${fields.name}.wav`, buffer, response => {
-      if (response.error) {
-        console.log(response.error);
-        return;
-      }
-    });
-  });
-
-  res.status(200).send();
-});
-
 app.post('/add-image', ensureAuthenticated, (req, res) => {
   const form = new Formidable.IncomingForm();
   form.uploadDir = '/uploads';

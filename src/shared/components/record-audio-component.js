@@ -15,23 +15,22 @@ module.exports = class AudioComponent extends React.Component {
   componentDidMount () {
     const mediaConstraints = {
       audio: {
-        mandatory: {
-          echoCancellation: true,
-          googAutoGainControl: true,
-          googNoiseSuppression: true,
-          googHighpassFilter: true
-        }
+        frameRate: 44100,
+        channelCount: 1,
+        sampleRate: 44100,
+        sampleSize: 8
       }
     };
     RecordRTC = require('recordrtc');
 
-    navigator.webkitGetUserMedia(mediaConstraints, this.successCallback, this.errorCallback);
+    navigator.mediaDevices.getUserMedia(mediaConstraints).then(this.successCallback).catch(this.errorCallback);
   }
   successCallback (stream) {
     const options = {
       bufferSize: 16384,
-      type: 'audio',
-      audioBitsPerSecond: 128000,
+      type: 'audio/mpeg',
+      sampleRate: 44100,
+      numberOfAudioChannels: 1,
     };
 
     recorder = RecordRTC(stream, options);
@@ -55,7 +54,7 @@ module.exports = class AudioComponent extends React.Component {
           dataUrl: dataURL,
           blob: recordedBlob,
           isRecording: false, 
-          duration: recordedBlob.size / (176000),
+          size: recordedBlob.size / 1000,
         });
       });
 
@@ -69,7 +68,9 @@ module.exports = class AudioComponent extends React.Component {
       const dataUrl = reader.result;
       const base64 = dataUrl.split(',')[1];
       const formData = new FormData();
-      formData.append('name', 'testing.wav');
+      formData.append('duration', this.state.duration);
+      formData.append('name', 'testing.mp3');
+      formData.append('size', `${this.state.size}kb`);
       formData.append('file', base64);
 
       const request = new XMLHttpRequest();

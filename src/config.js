@@ -8,7 +8,7 @@ const config = module.exports = {
     projectId: process.env.GCLOUD_PROJECT || 'jovial-welder-128202',
     keyFilename: path.resolve(__dirname, '../Noteable-e4d2cea40c15.json'),
   },
-  cloudAudioStorageBucket: 'user-audio-files-staging',
+  cloudAudioStorageBucket: 'noteable-audio-storage',
   cloudImageStorageBucket: 'user-image-files-staging',
   connectionString: process.env.DATABASE_URL || `postgres://bxujcozubyosgb:m1rgVoS1lEpdCZVRos6uWZVouU@ec2-54-235-146-58.compute-1.amazonaws.com:5432/d42dnjskegivlt?ssl=true`
 };

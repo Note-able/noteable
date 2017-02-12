@@ -1,10 +1,11 @@
-import { MessageService, UserService, EventService } from './services';
+import { MediaService, MessageService, UserService, EventService } from './services';
 import { userMapper } from './services/userService/model/userDto';
 import { conversationMapper, conversationsMapper } from './services/messageService/model/conversationDto';
 
 const Formidable = require('formidable');
 const config = require('../config');
 const image = require('../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
+const audio = require('../util/gcloud-util')(config.gcloud, config.cloudAudioStorageBucket);
 const bcrypt = require('bcrypt-nodejs');
 const fs = require('fs');
 
@@ -19,6 +20,7 @@ module.exports = function (app, options) {
   const m_userService = new UserService(options);
   const m_messageService = new MessageService(options);
   const m_eventService = new EventService(options);
+  const m_mediaSerivce = new MediaService(options);
 
   app.get(`/database`, (req, res) => {
     options.connect(options.database, (connection) => {
@@ -167,16 +169,43 @@ module.exports = function (app, options) {
 
     form.parse(req, (err, fields) => {
       const buffer = new Buffer(fields[Object.keys(fields)[0]], 'base64');
+      const splits = Object.keys(fields)[0].split('.');
 
-      image.sendUploadToGCS(Object.keys(fields)[0], buffer, (response) => {
-        if (response && response.error) {
-          return null;
-        }
-
-        next(response);
+      image.sendUploadToGCS(splits[splits.length - 1], buffer)
+      .then(response => {})
+      .catch(error => {
+        console.log(error);
       });
     });
   };
+
+  /** MUSIC API */
+  /**
+   * audioUrl, author, coverUrl, createdDate, description, durations, id, name, size
+   */
+
+  app.post('/post-blob', (req, res) => {
+    const form = new Formidable.IncomingForm();
+    form.uploadDir = '/uploads';
+
+    form.onPart = part => {
+      form.handlePart(part);
+    };
+
+    form.parse(req, (err, fields) => {
+      const buffer = new Buffer(fields.file, 'base64');
+      audio.sendUploadToGCS(`.mp3`, buffer)
+        .then(result => {
+          m_mediaSerivce.createMusic({ audioUrl: result.cloudStoragePublicUrl, author: req.user.id, createdDate: new Date().toISOString(), name: fields.name, size: fields.size });
+        })
+        .catch(response => {
+          console.log(response.error);
+          return;
+        });
+    });
+
+    res.status(200).send();
+  });
 
   /** MESSAGES API ***/
   /**
