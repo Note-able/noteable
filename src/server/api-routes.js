@@ -212,8 +212,12 @@ module.exports = function (app, options) {
 
     const userIds = req.body.userIds.split(',');
     m_messageService.createConversation(userIds)
-      .then(conversationId => {
-        res.status(201).json({ conversationId });
+      .then(result => {
+        if (typeof(result) === 'object') {
+          res.status(200).json(result);
+        } else {
+          res.status(201).json({ conversationId: result });
+        }
       })
       .catch(error => {
         res.status(500).json(error);

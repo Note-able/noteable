@@ -60,25 +60,32 @@ export default class MessageService {
           return;
         }
 
-        const conversation = [];
-        connection.client.query(`
-          BEGIN;
-            CREATE OR REPLACE FUNCTION createConversation() RETURNS int LANGUAGE plpgsql AS $$
-            DECLARE conversationId integer;
-            BEGIN
-            SELECT nextval('conversation_ids') INTO conversationId;
-            ${createConversationSql(userIds, 'conversationId')}
-            RETURN conversationId;
-            END $$;
-            SELECT createConversation();
-          COMMIT;
-        `)
-        .on('row', (row) => { conversation.push(row); })
-        .on('error', (error) => { reject(error); return; })
-        .on('end', () => {
-          connection.done();
-          resolve(conversation[0].createconversation);
-        })
+        this.getConversationByUserIds(userIds[0], userIds[1]).then(result => {
+          if (result) {
+            resolve(result);
+            return;
+          }
+
+          const conversation = [];
+          connection.client.query(`
+            BEGIN;
+              CREATE OR REPLACE FUNCTION createConversation() RETURNS int LANGUAGE plpgsql AS $$
+              DECLARE conversationId integer;
+              BEGIN
+              SELECT nextval('conversation_ids') INTO conversationId;
+              ${createConversationSql(userIds, 'conversationId')}
+              RETURN conversationId;
+              END $$;
+              SELECT createConversation();
+            COMMIT;
+          `)
+          .on('row', (row) => { conversation.push(row); })
+          .on('error', (error) => { reject(error); return; })
+          .on('end', () => {
+            connection.done();
+            resolve(conversation[0].createconversation);
+          });
+        });
       });
     });
   }
@@ -164,6 +171,42 @@ export default class MessageService {
           const messages = [  ...conversation ];
           messages.splice(0,1);
           resolve(conversation.length > 0 ? { conversation: conversation[0], messages } : null);
+        });
+      })
+    });
+  }
+
+  getConversationByUserIds(userId, otherUserId) {
+    return new Promise((resolve, reject) => {
+      if (userId == null || otherUserId == null) {
+        reject('Empty conversation or user id.');
+        return;
+      }
+
+      this.options.connect(this.options.database, (connection) => {
+        if (connection.client == null) {
+          reject('Failed to connect to database.');
+          return;
+        }
+
+        const conversation = [];
+        connection.client.query(`
+          SELECT c1.user_id, c1.last_read_message, c1.conversation_id, c1.id, c1.is_deleted, c2.user_id as other_user_id
+          FROM conversations c1
+          INNER JOIN conversations c2
+          ON c2.conversation_id = c1.conversation_id
+          WHERE c1.user_id = ${userId} and c2.user_id = ${otherUserId};
+        `)
+        .on('row', row => { conversation.push(row); })
+        .on('error', error => { reject(error); return; })
+        .on('end', () => { 
+          connection.done();
+          if (conversation.length !== 0) {
+            return this.getConversation(conversation[0].conversation_id, userId)
+              .then((result) => { resolve(result); });
+          }
+
+          resolve(null);
         });
       })
     });
