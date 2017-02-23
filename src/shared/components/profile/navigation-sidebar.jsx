@@ -22,8 +22,8 @@ class NavigationSidebar extends Component {
             <div className={styles.currentName}>{`${this.props.currentUser.firstName} ${this.props.currentUser.lastName}`}</div>
           </div>
           <div className={styles.navigationOptions}>
-            <div className={`${styles.navigationOption} ${activeTab.indexOf('profile') !== -1 || activeTab.length === 0 ? styles.activeTab : ''}`} onClick={(event) => { event.stopPropagation(); this.props.navigate('profile'); }}>Home</div>
-            <div className={`${styles.navigationOption} ${activeTab === 'documents' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('documents')}>Editor</div>
+            <div className={`${styles.navigationOption} ${activeTab.indexOf('profile') !== -1 || activeTab.length === 0 ? styles.activeTab : ''}`} onClick={(event) => { event.stopPropagation(); this.props.navigate(''); }}>Home</div>
+            <div className={`${styles.navigationOption} ${activeTab === 'documents' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('editor')}>Editor</div>
             <div className={`${styles.navigationOption} ${activeTab === 'messages' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('messages')}>Music</div>
             <div className={`${styles.navigationOption} ${activeTab === 'events' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('events')}>Events</div>
             <div className={`${styles.navigationOption} ${activeTab === 'events' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('nearby')}>Nearby</div>

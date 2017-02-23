@@ -184,6 +184,21 @@ module.exports = function (app, options) {
    * audioUrl, author, coverUrl, createdDate, description, durations, id, name, size
    */
 
+  app.get('/music/user', (req, res) => {
+    if (!req.user) {
+      return res.status(404).send();
+    }
+
+    const options = { limit: req.query.limit, offset: req.query.offset  }
+    
+    m_mediaSerivce.getMusicByUser(req.user.id, options)
+      .then(result => res.json(result))
+      .catch(error => {
+        console.log(error);
+        res.json(error);
+      });
+  });
+
   app.post('/post-blob', (req, res) => {
     const form = new Formidable.IncomingForm();
     form.uploadDir = '/uploads';

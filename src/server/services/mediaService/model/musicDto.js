@@ -15,9 +15,9 @@ export const columns = (t, kind) => {
   switch(kind) {
     case 'INSERT':
     case 'UPDATE':
-      return `public.music${pre === '' ? t : ''} (${pre + 'audio_url'}, ${pre + 'author'}, ${pre + 'cover_url'}, ${pre + 'created_date'}, ${pre + 'description'}, ${pre + 'duration'}, ${pre + 'name'}, ${pre + 'size'})`;
+      return `public.music ${pre === '' ? t : ''} (${pre + 'audio_url'}, ${pre + 'author'}, ${pre + 'cover_url'}, ${pre + 'created_date'}, ${pre + 'description'}, ${pre + 'duration'}, ${pre + 'name'}, ${pre + 'size'})`;
     case 'SELECT':
-      return `public.music${pre === '' ? t : ''} (${pre + 'audio_url'}, ${pre + 'author'}, ${pre + 'cover_url'}, ${pre + 'created_date'}, ${pre + 'description'}, ${pre + 'duration'}, ${pre + 'name'}, ${pre + 'size'}, ${pre + 'id'})`;
+      return `audio_url, author, cover_url, created_date, description, duration, name, size, id FROM public.music ${t === '' ? '' : ' AS ' + t}`;
     default:
       return '*';
   }

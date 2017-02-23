@@ -92,12 +92,8 @@ class Profile extends Component {
     event.preventDefault();
   }
 
-  navigate(hashLocation) {
-    if (window.location.hash === `#${hashLocation}`) {
-      window.location.hash = '';
-    } else {
-      window.location.hash = hashLocation;
-    }
+  navigate(location) {
+    window.location.pathname = location;
   }
 
   saveBio() {
