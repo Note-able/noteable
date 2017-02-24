@@ -39,7 +39,7 @@ export default class MusicService {
         let id;
         connection.client.query(
           `INSERT INTO ${columns('', 'INSERT')} VALUES ${values('', musicDto, 'INSERT')} RETURNING ID;`
-        ).on('row', row => { id = row; })
+        ).on('row', row => id = row)
         .on('error', error => reject(error))
         .on('end', () => resolve(id));
       })
