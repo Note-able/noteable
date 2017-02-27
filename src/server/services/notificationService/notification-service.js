@@ -6,7 +6,7 @@ const Notifications = DbNotificationHelper();
     this.options = options;
   }
 
-  createNotification({ createdDate, kind, isDeleted, recipientId, sourceId })
+  createNotification({ createdDate, kind, isDeleted, recipientId, sourceId, status  })
   updateNotification({ createdDate, kind, isDeleted, recipientId, sourceId })
   getNotification(id)
   getNotifications(ids, limit, notificationId)
@@ -20,6 +20,14 @@ export default class NotificationService {
   }
 
   createNotification(notificationDto) {
+    if (notificationDto.createdDate == null) {
+      notificationDto.createdDate = Date.now();
+    }
+
+    if (notificationDto.status == null) {
+      Notifications.Status[notificationDto.status.toLower()] = Notifications.Status.unread;
+    }
+
     return new Promise((resolve, reject) => {
       let id;
       this.options.connect(this.options.database, (connection) => {
@@ -43,6 +51,16 @@ export default class NotificationService {
     });
   }
 
+  markNotificationsAsRead(userId) {
+    return new Promise((resolve, reject) => {
+      this.options.connect(this.options.database, (connection) => {
+        connection.client.query(
+          `${Notifications.markRead('')} WHERE recipient_id = ${userId};`
+        )
+      })
+    })
+  }
+
   getNotification(id) {
     return new Promise((resolve, reject) => {
       this.options.connect(this.options.database, (connection) => {
@@ -57,13 +75,19 @@ export default class NotificationService {
   }
 
   getNotifications(ids, limit, status) {
+    if (typeof status == 'undefined') {
+      status = Notifications.Status.any;
+    }
+    
+    status = Notifications.Status[status.toLower()];
+
     return new Promise((resolve, reject) => {
       this.options.connect(this.options.database, (connection) => {
         const notifications = [];
         connection.client.query(
           `SELECT ${Notifications.columns('', 'SELECT')}
             WHERE id in (${ids.toString()})
-            ${status === Notifications.Status.Any ? '' : 'AND status = ' + status}
+            ${status === Notifications.Status.any ? '' : 'AND status = ' + status}
             LIMIT ${limit};`
         ).on('row', row => notifications.push(Notifications.dbNotificationMapper(row)))
         .on('error', error => reject(error))
@@ -78,6 +102,8 @@ export default class NotificationService {
       offset = offsetId
     }
 
+    const status = Notifications.Status[status.toLower()];
+
     return new Promise((resolve, reject) => {
       this.options.connect(this.options.database, (connection) => {
         const notifications = [];
@@ -85,7 +111,7 @@ export default class NotificationService {
           `SELECT ${Notifications.columns('', 'SELECT')} 
             WHERE recipient_id = ${userId} 
             AND id > ${offset}
-            ${status === Notifications.Status.Any ? '' : 'AND status = ' + status}
+            ${status === Notifications.Status.any ? '' : 'AND status = ' + status}
             LIMIT ${limit};`
         ).on('row', row => notifications.push(Notifications.dbNotificationMapper(row)))
         .on('error', error => reject(error))

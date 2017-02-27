@@ -1,4 +1,4 @@
-import { MediaService, MessageService, UserService, EventService } from './services';
+import { MediaService, MessageService, NotificationService, UserService, EventService } from './services';
 import { userMapper } from './services/userService/model/userDto';
 import { conversationMapper, conversationsMapper } from './services/messageService/model/conversationDto';
 
@@ -16,11 +16,14 @@ function escaper(char){
   return r[m.indexOf(char)];
 };
 
+const DEFAULT_QUERY_SIZE = 30;
+
 module.exports = function (app, options) {
   const m_userService = new UserService(options);
   const m_messageService = new MessageService(options);
   const m_eventService = new EventService(options);
   const m_mediaSerivce = new MediaService(options);
+  const m_notificationService = new NotificationService(options);
 
   app.get(`/database`, (req, res) => {
     options.connect(options.database, (connection) => {
@@ -211,15 +214,107 @@ module.exports = function (app, options) {
       const buffer = new Buffer(fields.file, 'base64');
       audio.sendUploadToGCS(`.mp3`, buffer)
         .then(result => {
-          m_mediaSerivce.createMusic({ audioUrl: result.cloudStoragePublicUrl, author: req.user.id, createdDate: new Date().toISOString(), name: fields.name, size: fields.size });
+          m_mediaSerivce.createMusic({ audioUrl: result.cloudStoragePublicUrl, author: req.user.id, createdDate: new Date().toISOString(), name: fields.name, size: fields.size })
+            .then(() => {
+              res.status(204).send();
+            })
+            .catch(error => {
+              res.json(error);
+            });
         })
         .catch(response => {
           console.log(response.error);
+          res.status(403).send();
           return;
         });
     });
+  });
 
-    res.status(200).send();
+  /** Notifications API **/
+  // app.post('/notifications', options.auth, (req, res) => {});
+  /** queryParams: ids(optional) */
+  // app.get('/notifications', options.auth, (req, res) => {});
+  // app.get('/notifications/:notificationId', options.auth, (req, res) => {});
+  /** queryParams: ids(optional) */
+  // app.post('/notifications/markread', options.auth, (req, res) => {});
+  // app.post('/notifications/delete/{notificationId}', options.auth, (req, res) => {});
+
+  /** body: { createdDate, kind, recipientId, sourceId, status  } */
+  app.post('/notifications', options.auth, (req, res) => {
+    if (req.user == null) {
+      res.status(404).send();
+      return;
+    }
+
+    if (req.body.kind == null || req.body.recipientId == null || req.body.sourceId == null) {
+      req.status(403).send();
+    }
+
+    m_notificationService.createNotification({
+      kind: req.body.kind,
+      recipientId: req.body.recipientId,
+      sourceId: req.body.sourceId,
+      status: req.body.status
+    })
+      .then(() => {
+        res.status(201).send();
+      })
+      .catch(error => {
+        res.json(error);
+      });
+  });
+
+  /** queryParams(optional): ids, limit, offsetId, status */
+  app.get('/notifications', options.auth, (req, res) => {
+    if (req.user == null) {
+      res.status(404).send();
+    }
+
+    if (req.query != null && req.query.ids == null) {
+      m_notificationService.getNotificationsByUser(req.user.id, req.query.limit || DEFAULT_QUERY_SIZE, req.query.offsetId || 0, req.query.status || 0)
+       .then(notifications => res.json(notifications))
+       .catch(error => res.json(error));
+    } else {
+      m_notificationService.getNotifications(req.query.ids, req.query.limit || DEFAULT_QUERY_SIZE, req.query.status || 0)
+        .then(notifications => res.json(notifications))
+        .catch(error => res.json(errors));
+    }
+  });
+
+  /** routeParams: notificationId */
+  app.get('/notifications/:notificationId', options.auth, (req, res) => {
+    if (req.user == null) {
+      res.status(404).send();
+      return;
+    }
+
+    m_notificationService.getNotification(req.params.notificationId)
+      .then(notification => res.json(notification))
+      .catch(error => res.json(error));
+  });
+
+  /** queryParams: ids(optional) */
+  app.post('/notifications/markread', options.auth, (req, res) => {
+    if (req.user == null) {
+      res.status(404).send();
+      return;
+    }
+
+    m_notificationService.markNotificationsAsRead(req.user.id, req.query.ids)
+      .then(() => res.status(204).send())
+      .catch(error => res.json(error));
+  });
+
+  /** routeParams: notificationId */
+  app.post('/notifications/delete/{notificationId}', options.auth, (req, res) => {
+    if (req.user == null) {
+      res.status(404).send();
+      return;
+    }
+
+    m_notificationService.deleteNotification(req.params.notificationId)
+      .then(() => res.status(204).send())
+      .catch(error => res.json(error));
   });
 
   /** MESSAGES API ***/
@@ -396,9 +491,7 @@ module.exports = function (app, options) {
       });
   });
 
-  /**
-  Events API - consider moving the queries to elasticsearch to order by popularity of events and user ratings
-  **/
+  /** Events API - consider moving the queries to elasticsearch to order by popularity of events and user ratings **/
 
   app.get('/api/events', (req, res) => {
     m_eventService.getEventsByLocation()
@@ -543,6 +636,7 @@ module.exports = function (app, options) {
       });
     }
   });
+/** **/
 
 /** DOCUMENTS API **/
 
