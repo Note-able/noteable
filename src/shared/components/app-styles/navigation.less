@@ -1,13 +1,33 @@
 @import 'variables';
 
 :local {
+  .material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    margin: 0 6px 0 0;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    vertical-align: top;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
   .active-tab {
     background: @green;
     color: @white;
+
+    svg {
+      fill: @white;
+    }
   }
 
   .active-tab:hover {
-    color: @white;
+    color: @white !important;
   }
 
   .current-user {
@@ -48,13 +68,24 @@
     flex: 1;
     font: @medium-font;
     font-variant-ligatures: no-common-ligatures;
-    height: 30px;
-    line-height: 24px;
-    padding: 8px 24px 0;
+    line-height: @medium-font-size;
+    padding: 12px 24px;
     text-align: left;
+
+    svg {
+      height: 18px;
+      margin: 0 6px 0 0;
+      vertical-align: top;
+      width: 18px;
+    }
 
     &:hover {
       color: @green;
+      cursor: pointer;
+
+      svg {
+        color: @green;
+      }
     }
   }
 

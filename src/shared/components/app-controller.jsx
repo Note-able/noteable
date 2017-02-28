@@ -47,6 +47,7 @@ class AppController extends Component {
       <div>
         <link href="/css/bundle.css" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
         { this.props.location.pathname === '/' || this.props.location.pathname === '/home' || this.props.userId === -1 ? this.renderHome() : this.props.children}
       </div>
     );

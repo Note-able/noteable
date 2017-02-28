@@ -22,12 +22,12 @@ class NavigationSidebar extends Component {
             <div className={styles.currentName}>{`${this.props.currentUser.firstName} ${this.props.currentUser.lastName}`}</div>
           </div>
           <div className={styles.navigationOptions}>
-            <div className={`${styles.navigationOption} ${activeTab.indexOf('profile') !== -1 || activeTab.length === 0 ? styles.activeTab : ''}`} onClick={(event) => { event.stopPropagation(); this.props.navigate(''); }}>Home</div>
-            <div className={`${styles.navigationOption} ${activeTab === 'documents' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('editor')}>Editor</div>
-            <div className={`${styles.navigationOption} ${activeTab === 'messages' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('messages')}>Music</div>
-            <div className={`${styles.navigationOption} ${activeTab === 'events' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('events')}>Events</div>
-            <div className={`${styles.navigationOption} ${activeTab === 'events' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('nearby')}>Nearby</div>
-            <div className={`${styles.navigationOption}`} onClick={() => this.logout()}>Logout</div>            
+            <div className={`${styles.navigationOption} ${activeTab.indexOf('profile') !== -1 || activeTab.length === 0 ? styles.activeTab : ''}`} onClick={(event) => { event.stopPropagation(); this.props.navigate(''); }}><i className={styles.materialIcons}>home</i>Home</div>
+            <div className={`${styles.navigationOption} ${activeTab === 'documents' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('editor')}><i className={styles.materialIcons}>insert_drive_file</i>Editor</div>
+            <div className={`${styles.navigationOption} ${activeTab === 'messages' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('messages')}><i className={styles.materialIcons}>headset</i>Music</div>
+            <div className={`${styles.navigationOption} ${activeTab === 'events' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('events')}><i className={styles.materialIcons}>event</i>Events</div>
+            <div className={`${styles.navigationOption} ${activeTab === 'events' ? styles.activeTab : ''}`} onClick={() => this.props.navigate('nearby')}><i className={styles.materialIcons}>my_location</i>Nearby</div>
+            <div className={`${styles.navigationOption}`} onClick={() => this.logout()}><i className={styles.materialIcons}>exit_to_app</i>Logout</div>            
           </div>
         </div>
       </div>

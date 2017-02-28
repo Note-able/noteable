@@ -1,4 +1,4 @@
-import DbNotificationHelper from './model/notificationDto.js';
+import { DbNotificationHelper } from './model/notificationDto.js';
 const Notifications = DbNotificationHelper();
 
 /**
@@ -102,7 +102,7 @@ export default class NotificationService {
       offset = offsetId
     }
 
-    const status = Notifications.Status[status.toLower()];
+    status = Notifications.Status[status.toLower()];
 
     return new Promise((resolve, reject) => {
       this.options.connect(this.options.database, (connection) => {

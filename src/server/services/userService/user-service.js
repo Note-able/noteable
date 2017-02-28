@@ -1,4 +1,5 @@
-import { userMapper } from './model/userDto.js';
+import { UserDbHelper } from './model/userDto.js';
+const Users = UserDbHelper();
 
 export default class UserService {
   constructor(options) {
@@ -18,7 +19,7 @@ export default class UserService {
 
       let user = {};
       connection.client.query(`
-        SELECT p.id, p.email, p.location, p.cover_url, p.first_name, p.last_name, p.avatar_url, p.bio, p.zip_code, p.profession FROM public.profile p
+        SELECT ${Users.columns('p', 'SELECT')} FROM public.profile p
         WHERE p.id = ${userId};
         
         SELECT * FROM public.instruments i
@@ -49,7 +50,7 @@ export default class UserService {
         }
         // user[0].profileImage = image.getPublicUrl(user[0].filename);
         connection.done();
-        callback(userMapper(user));
+        callback(Users.userMapper(user));
       });
     });
   }
@@ -100,7 +101,7 @@ export default class UserService {
 
         // user[0].profileImage = image.getPublicUrl(user[0].filename);
         connection.done();
-        callback(Object.keys(users).map(id => userMapper(users[id])));
+        callback(Object.keys(users).map(id => Users.userMapper(users[id])));
       });
     });
   }

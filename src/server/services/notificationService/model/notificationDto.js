@@ -48,9 +48,9 @@ export const DbNotificationHelper = () => ({
     }
   },
 
-  values: (t, { createdDate, kind, isDeleted, recipientId, sourceId, status }, kind) => {
+  values: (t, { createdDate, kind, isDeleted, recipientId, sourceId, status }, query) => {
     const pre = t == null || t === '' ? '' : `${t}.`;
-    switch(kind) {
+    switch(query) {
       case 'INSERT':
         return `('${pre + (createdDate || '')}', '${pre + (kind || '')}', '${pre + recipientId || ''}', '${pre + sourceId || ''}', ${pre + isDeleted}, ${pre + status})`;
       default:
