@@ -16,7 +16,7 @@ const notificationKindMap = {
 };
 
 export const DbNotificationHelper = () => ({
-  dbNotificationMapper: (dbNotification) => (dbNotification == null ? null : {
+  map: (dbNotification) => (dbNotification == null ? null : {
     createdDate: dbNotification.created_date,
     kind: notificationKindMap[dbNotification.kind],
     id: dbNotification.id,
@@ -24,6 +24,11 @@ export const DbNotificationHelper = () => ({
     recipientId: dbNotification.recipient_id,
     sourceId: dbNotification.source_id,
     status: dbNotification.status,
+  }),
+
+  mapToDB: (notification) => (notification == null ? null : {
+    ...notification,
+    kind: notificationKindMap[notification.kind],
   }),
 
   updateQuery: (t, { createdDate, kind, isDeleted, recipientId, sourceId, id, status }) => {
@@ -52,7 +57,7 @@ export const DbNotificationHelper = () => ({
     const pre = t == null || t === '' ? '' : `${t}.`;
     switch(query) {
       case 'INSERT':
-        return `('${pre + (createdDate || '')}', '${pre + (kind || '')}', '${pre + recipientId || ''}', '${pre + sourceId || ''}', ${pre + isDeleted}, ${pre + status})`;
+        return `(${createdDate || ''}, ${kind || ''}, ${recipientId || ''}, ${sourceId || ''}, ${isDeleted}, ${status})`;
       default:
         return '';
     }

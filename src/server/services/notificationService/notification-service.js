@@ -32,7 +32,7 @@ export default class NotificationService {
       let id;
       this.options.connect(this.options.database, (connection) => {
         connection.client.query(
-          `INSERT INTO ${Notifications.columns('', 'INSERT')} VALUES ${values('', notificationDto, 'INSERT')} RETURNING id;`
+          `INSERT INTO ${Notifications.columns('', 'INSERT')} VALUES ${Notifications.values('', notificationDto, 'INSERT')} RETURNING id;`
         ).on('row', row => id = row)
         .on('error', error => reject(error))
         .on('end', () => resolve(id));

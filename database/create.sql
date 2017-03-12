@@ -123,3 +123,49 @@ CREATE TABLE IF NOT EXISTS preferred_generes (
   FOREIGN KEY (preferences_id) REFERENCES preferences(id),
   FOREIGN KEY (genre_id) REFERENCES genres(id)
 ) ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS notification_status_kind(
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  kind VARCHAR(16)
+) ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS notifications(
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  kind INT,
+  is_deleted INT DEFAULT 0,
+  recipient_id INT,
+  source_id INT,
+  status INT,
+  FOREIGN KEY (recipient_id) REFERENCES profile(id),
+  FOREIGN KEY (status) REFERENCES notification_status_kind(id)
+) ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS content_metadata (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  url VARCHAR(1000),
+  music_id INT,
+  event_id INT,
+  FOREIGN KEY (music_id) REFERENCES music(id),
+  FOREIGN KEY (event_id) REFERENCES events(id)
+) ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS news_item_kind (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  kind VARCHAR(50)
+) ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS newsfeed (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  kind INT,
+  text VARCHAR(10000),
+  content_metadata INT,
+  author INT NOT NULL,
+  created_date DATE NOT NULL,
+  modified_date DATE,
+  source_id INT,
+  recipient_id INT,
+  FOREIGN KEY (content_metadata) REFERENCES content_metadata(id),
+  FOREIGN KEY (author) REFERENCES profile(id),
+  FOREIGN KEY (kind) REFERENCES news_item_kind(id)
+  FOREIGN KEY (recipient_id) REFERENCES profile(id)
+) ENGINE InnoDB;
