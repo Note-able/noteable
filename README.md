@@ -19,4 +19,22 @@ You should be on the staging branch, pull the existing staging branch and resolv
 
 Eventually we will have two separate droplets running each one, but for now we can just use separate containers.
 
+##Tips and tricks
+If the hot reloading is requiring you to update a bunch of things you can save the state in local storage. Just change the key here.
+
+```
+componentDidMount() {
+    window.onbeforeunload = () => this.saveState();
+    this.setState(JSON.parse(window.localStorage.getItem('events') || '{}'))
+  }
+
+  componentWillUnmount() {
+    this.saveState();
+  }
+
+  saveState() {
+    window.localStorage.setItem('events', JSON.stringify(this.state));
+  }
+```
+
 https://3.basecamp.com/3163131/buckets/179912/messages/63519103
