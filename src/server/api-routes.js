@@ -212,8 +212,8 @@ module.exports = function (app, options) {
       audio.sendUploadToGCS(fields.extension ? fields.extension : `.mp3`, buffer)
         .then(result => {
           m_mediaSerivce.createMusic({ audioUrl: result.cloudStoragePublicUrl, author: req.user.id, createdDate: new Date().toISOString(), name: fields.name, size: fields.size })
-            .then(() => {
-              res.status(204).send();
+            .then((id) => {
+              res.status(201).json({ id });
             })
             .catch(error => {
               res.json(error);
