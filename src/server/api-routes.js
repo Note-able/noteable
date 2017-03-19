@@ -203,17 +203,13 @@ module.exports = function (app, options) {
       });
   });
 
-  app.post('/post-blob', (req, res) => {
+  app.post('/post-blob', options.auth, (req, res) => {
     const form = new Formidable.IncomingForm();
     form.uploadDir = '/uploads';
 
-    form.onPart = part => {
-      form.handlePart(part);
-    };
-
-    form.parse(req, (err, fields) => {
+    form.parse(req, (err, fields, files) => {
       const buffer = new Buffer(fields.file, 'base64');
-      audio.sendUploadToGCS(`.mp3`, buffer)
+      audio.sendUploadToGCS(fields.extension ? fields.extension : `.mp3`, buffer)
         .then(result => {
           m_mediaSerivce.createMusic({ audioUrl: result.cloudStoragePublicUrl, author: req.user.id, createdDate: new Date().toISOString(), name: fields.name, size: fields.size })
             .then(() => {
@@ -225,7 +221,7 @@ module.exports = function (app, options) {
         })
         .catch(response => {
           console.log(response.error);
-          res.status(403).send();
+          res.status(500).send();
           return;
         });
     });

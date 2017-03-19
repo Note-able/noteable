@@ -1,4 +1,5 @@
 import express from 'express';
+import https from 'https';
 import BodyParser from 'body-parser';
 import passport from 'passport';
 import FacebookStrategy from 'passport-facebook';
@@ -229,11 +230,29 @@ app.get('/*', (req, res) => {
   });
 });
 
-const server = app.listen(config.port, () => {
-  const host = server.address().address;
-  const port = server.address().port;
+if (fs.existsSync('./src/server/keys/server.key')) {
+  const options = {
+    key: fs.readFileSync('./src/server/keys/server.key'),
+    cert: fs.readFileSync('./src/server/keys/server.crt'),
+    requestCert: false,
+    rejectUnauthorized: false
+  };
+
+  const httpsServer = https.createServer(options, app).listen(443, () => {
+    const host = httpsServer.address().address;
+    const port = httpsServer.address().port;
+
+    console.log('JamSesh is listening at https://%s:%s', host, port);
+  });
+
+  require('./sockets')(httpsServer, { auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
+}
+
+const httpServer = app.listen(config.port, () => {
+  const host = httpServer.address().address;
+  const port = httpServer.address().port;
 
   console.log('JamSesh is listening at http://%s:%s', host, port);
 });
 
-require('./sockets')(server, { auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
+require('./sockets')(httpServer, { auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
