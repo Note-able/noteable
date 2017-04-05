@@ -1,4 +1,4 @@
-import { MediaService, MessageService, NotificationService, UserService, EventService } from './services';
+import { MediaService, MessageService, NewsfeedService, NotificationService, UserService, EventService } from './services';
 import { userMapper } from './services/userService/model/userDto';
 import { conversationMapper, conversationsMapper } from './services/messageService/model/conversationDto';
 
@@ -24,6 +24,7 @@ module.exports = function (app, options) {
   const m_eventService = new EventService(options);
   const m_mediaSerivce = new MediaService(options);
   const m_notificationService = new NotificationService(options);
+  const m_newsfeedService = new NewsfeedService(options);
 
   app.get(`/database`, (req, res) => {
     options.connect(options.database, (connection) => {
@@ -175,7 +176,10 @@ module.exports = function (app, options) {
       const splits = Object.keys(fields)[0].split('.');
 
       image.sendUploadToGCS(splits[splits.length - 1], buffer)
-      .then(response => {})
+      .then(response => {
+        console.log(response);
+        next(response);
+      })
       .catch(error => {
         console.log(error);
       });
@@ -226,6 +230,65 @@ module.exports = function (app, options) {
         });
     });
   });
+  
+  /** Newsfeed API **/
+  // app.post('/newsfeed', options.auth, (req, res) => {});
+  /** queryParams: ids(optional) */
+  // app.get('/newsfeed', options.auth, (req, res) => {});
+  // app.get('/newsfeed/:itemId', options.auth, (req, res) => {});
+  /** queryParams: ids(optional) */
+  // app.post('/newsfeed/markread', options.auth, (req, res) => {});
+  // app.post('/newsfeed/delete/{itemId}', options.auth, (req, res) => {});
+/*
+    newsfeedDto {
+      createdDate,
+      modifiedDate,
+      isDeleted,
+      kind,
+      id,
+      text,
+      authorId,
+      recipientId,
+      contentMetadata {
+        id,
+        url,
+        musicId,
+        eventId,
+        createdDate
+      }
+    }
+  */
+  app.post('/newsfeed', options.auth, (req, res) => {
+    if (req.user == null) {
+      return res.status(404).send();
+    }
+
+    m_newsfeedService.createNewsfeedItem({
+      createdDate: req.body.createdDate,
+      modifiedDate: req.body.modifiedDate,
+      kind: req.body.kind,
+      text: req.body.text,
+      authorId: req.body.authorId,
+      destinationId: req.body.destinationId || 0,
+      contentMetadata: {
+        url: req.body.contentMetadata.url,
+        musicId: req.body.contentMetadata.musicId,
+        eventId: req.body.contentMetadata.eventId
+      }
+    })
+    .then(() => res.status(201).send())
+    .catch(error => res.json(error));
+  });
+
+  app.get('/newsfeed/:destinationId', options.auth, (req, res) => {
+    if (req.user == null) {
+      return res.status(404).send();
+    }
+
+    m_newsfeedService.getNewsfeed(req.params.destinationId, req.query.limit, req.query.offsetId)
+      .then(items => res.json(items))
+      .catch(error => res.json(error));
+  })
 
   /** Notifications API **/
   // app.post('/notifications', options.auth, (req, res) => {});
@@ -303,7 +366,7 @@ module.exports = function (app, options) {
   });
 
   /** routeParams: notificationId */
-  app.post('/notifications/delete/{notificationId}', options.auth, (req, res) => {
+  app.post('/notifications/delete/:notificationId', options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;

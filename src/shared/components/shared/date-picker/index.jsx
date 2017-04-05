@@ -3,6 +3,7 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 const Moment = require('moment');
+import styles from './styles.less';
 
 const minute = new Array(4).fill(0).map((value, index) => {
   if (index === 0) {
@@ -13,7 +14,7 @@ const minute = new Array(4).fill(0).map((value, index) => {
 const hour = new Array(12).fill(0).map((value, index) => {
   return (index + 1).toString();
 });
-const styles = `
+const styleSheet = `
             .left-selector {
               cursor: pointer;
               float: left;
@@ -23,6 +24,11 @@ const styles = `
 
             .selector:hover {
               color: #9ad2ff;
+            }
+
+            .calendar-date {
+              font-size: 14px;
+              outline: none;
             }
 
             .right-selector {
@@ -37,6 +43,7 @@ const styles = `
               -moz-box-shadow: 0px 6px 15px -2px rgba(0,0,0,0.75);
               box-shadow: 0px 6px 15px -2px rgba(0,0,0,0.75);
               width: 200px;
+              z-index: 10;
             }
 
             table {
@@ -77,7 +84,7 @@ const styles = `
             }
           `;
 
-class Calendar extends React.Component {
+export default class DatePicker extends React.Component {
   constructor(props) {
     super(props);
     const date = this.props.date ? this.props.date : Moment();
@@ -90,6 +97,15 @@ class Calendar extends React.Component {
       showTooltipEndDate: false,
       activeDate: Moment().format('MM/DD/YYYY'),
       startDate: Moment().format('MM/DD/YYYY'),
+      start: {
+        actualDate: Moment(),
+        actualTime: Moment().format('6:00 a'),
+        date: Moment().format('MM/DD/YYYY'),
+        label: 'Start date',
+        time: Moment().format('6:00 a'),
+        validTime: true,
+        validDate: true,
+      },
       endDate: Moment().format('MM/DD/YYYY'),
       endHour: 7,
       startHour: 6,
@@ -101,6 +117,7 @@ class Calendar extends React.Component {
     });
 
     this.onDateChange = this._onDateChange.bind(this);
+    this.onKeyDown = this._onKeyDown.bind(this);
     this.onFocusStart = this._onFocusStart.bind(this);
     this.onFocusEnd = this._onFocusEnd.bind(this);
     this.closeTooltips = this._closeTooltips.bind(this);
@@ -208,7 +225,7 @@ class Calendar extends React.Component {
   }
 
   _backMonth() {
-    const activeDate = Moment(this.state.activeDate);
+    const activeDate = Moment(this.state.activeDate !== '' ? this.state.activeDate : Moment().format('MM/DD/YYYY'));
     activeDate.subtract(1, 'months');
     this.setState({
       activeDate: activeDate.toString(),
@@ -218,7 +235,7 @@ class Calendar extends React.Component {
   }
 
   _forwardMonth() {
-    const activeDate = Moment(this.state.activeDate);
+    const activeDate = Moment(this.state.activeDate !== '' ? this.state.activeDate : Moment().format('MM/DD/YYYY'));
     activeDate.add(1, 'months');
     this.setState({
       activeDate: activeDate.toString(),
@@ -237,11 +254,17 @@ class Calendar extends React.Component {
     });
   }
 
+  _onKeyDown(event) {
+    if (event.keyCode === 47 || event.keyCode === 92 || event.keyCode === 45 || event.keyCode === 189 || event.keyCode === 191 || event.keyCode === 220) {
+      event.preventDefault();
+    }
+  }
+
   _onFocusStart(event) {
+    this.props.onFocus();
     this.setState({
       activeDate: this.state.startDate,
       tooltipTop: event.target.offsetTop + 30,
-      tooltipLeft: event.target.offsetLeft + 30,
       showTooltipStartDate: true
     });
     return;
@@ -251,7 +274,6 @@ class Calendar extends React.Component {
     this.setState({
       activeDate: this.state.endDate,
       tooltipTop: event.target.offsetTop + 30,
-      tooltipLeft: event.target.offsetLeft + 30,
       showTooltipEndDate: true
     });
     return;
@@ -261,56 +283,6 @@ class Calendar extends React.Component {
     let value = event.target.value;
     let date = Moment();
     const prevValue = this.state.activeDate;
-
-    if (prevValue.length > value.length) {
-      if (event.target.classList.contains('start')) {
-        this.setState({
-          startDate: value
-        });
-      } else {
-        this.setState({
-          endDate: value
-        });
-      }
-
-      return;
-    }
-
-    if (value.match(/[A-Za-z]/)) {
-      value = value.replace(value.match(/[A-Za-z]/)[0], '');
-    }
-
-    if (value.length === 1) {
-      if (parseInt(value[0]) > 1) {
-        value = `0${value}/`;
-      }
-    }
-
-    if (value.length === 2) {
-      if (parseInt(value[0]) > 2) {
-        value = `0${value[0]}/${value[1]}`;
-      } else {
-        value = `${value}/`;
-      }
-    }
-
-    if (value.length === 4) {
-      if (parseInt(value[3]) > 3) {
-        value = `${value.substring(0, 3)}0${value[3]}`;
-      }
-    }
-
-    if (value.length === 5) {
-      value = `${value}/`;
-    }
-
-    if (value.length === 10) {
-      date = Moment(value, 'MM/DD/YYYY');// +-HH:mm A
-    }
-
-    if (value.length === 11) {
-      value = value.substring(0, 10);
-    }
 
     if (event.target.classList.contains('start')) {
       this.setState({
@@ -325,19 +297,182 @@ class Calendar extends React.Component {
     }
   }
 
-  renderTimeError() {
+  validateTime = (value) => {
+    const time = value.toLowerCase();
+    const split = (time.indexOf('am') + 1 || time.indexOf('pm') + 1) -1;
+    time = time.substring(0, split);
+
+    return new Promise((resolve, reject) => {
+      if (split === -1)
+    })
+    if (split === -1) {
+      this.setState({
+        start: {
+          ...this.state.start,
+          validTime: false,
+          label: 'Invalid start time',
+        }
+      });
+
+      return;
+    }
+
+    if (time.indexOf(':') === -1) {
+      this.setState({
+        start: {
+          ...this.state.start,
+          validTime: parseInt(time) < 12,
+          label: parseInt(time) < 12 ? 'Start date' : 'Invalid start time',
+        },
+      });
+
+      return;
+    }
+
+    if (time.substring(0, split).split(':').filter(x => parseInt(x) < 12 && parseInt(x) > 0).length === 2) {
+      this.setState({
+        start: {
+          ...this.state.start,
+          validTime: true,
+          label: 'Invalid start time',
+        },
+      });
+    }
+  }
+
+  onStartTimeChange = (event) => this.setState({ start: { ...this.state.start, time: event.target.value } });
+  onBlurStartTime = (event) => {
+    let time = event.target.value.toLowerCase();
+    const split = (time.indexOf('am') + 1 || time.indexOf('pm') + 1) -1;
+    time = time.substring(0, split);
+
+    if (split === -1) {
+      this.setState({
+        start: {
+          ...this.state.start,
+          validTime: false,
+          label: 'Invalid start time',
+        }
+      });
+
+      return;
+    }
+
+    if (time.indexOf(':') === -1) {
+      this.setState({
+        start: {
+          ...this.state.start,
+          validTime: parseInt(time) < 12,
+          label: parseInt(time) < 12 ? 'Start date' : 'Invalid start time',
+        },
+      });
+
+      return;
+    }
+
+    if (time.substring(0, split).split(':').filter(x => parseInt(x) < 12 && parseInt(x) > 0).length === 2) {
+      this.setState({
+        start: {
+          ...this.state.start,
+          validTime: true,
+          label: 'Invalid start time',
+        },
+      });
+    }
+  }
+
+  onStartDateChange = (event) => this.setState({ start: { ...this.state.start, date: event.target.value }});
+  onBlurStartDate = (event) => {
+    const date = event.target.value;
+    if (date.indexOf('/') !== -1) {
+      const dateColumns = date.split('/');
+      if (dateColumns.filter(x => isNaN(parseInt(x))).length !== 0 || dateColumns.length !== 3) {
+        this.setState({
+          start: {
+            ...this.state.start,
+            validDate: false,
+            label: 'Invalid start date',
+          },
+        });
+
+        return;
+      }
+
+      const dates = dateColumns.map(x => parseInt(x));
+      if (dates[0] > 12 || dates[0] < 0 || !this.validDay(dates[0], dates[1], dates[2]) || dateColumns[2].length !== 4) {
+        this.setState({
+          start: {
+            ...this.state.start,
+            validDate: false,
+            label: 'Invalid start date',
+          },
+        });
+
+        return;
+      }
+
+      this.setState({
+        start: {
+          ...this.state.start,
+          validDate: true,
+          label: 'Start date',
+        }
+      });
+
+      return;
+    }
+
+    if (!Moment(date.replace('th', '').replace('st', '')).isValid()) {
+      this.setState({
+        start: {
+          ...this.state.start,
+          validDate: false,
+          label: 'Invalid start date',
+        },
+      });
+    }
+
+    this.setState({
+      start: {
+        ...this.state.start,
+        actualDate: date.replace('th', '').replace('st', ''),
+        validDate: true,
+        label: 'Start date',
+      }
+    });
+  }
+
+  validDay = (month, day, year) => {
+    if (month % 2 === 1) {
+      return day <= 31 && day > 0;
+    }
+
+    if (month === 2) {
+      if (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)) {
+        return day <= 29 && day > 0;
+      }
+
+      return day <= 28 && day > 0;
+    }
+
+    return day <= 30 && day > 0;
+  }
+
+  renderTimeError(error) {
     return (
-      <div className="time-error">{this.state.errorMessage}</div>
+      <div className="time-error">{error}</div>
     );
   }
 
   renderMonth() {
-    const date = Moment(this.state.activeDate);
+    const date = Moment(this.state.activeDate !== '' ? this.state.activeDate : Moment().format('MM/DD/YYYY'));
     date.date(1);
     const month = date.month();
     const weekday = date.day();
     date.subtract(weekday, 'days');
     const rowNum = (weekday > 4 && Moment(this.state.activeDate).daysInMonth() === 31) || (weekday === 6 && Moment(this.state.activeDate).daysInMonth() === 30) ? 6 : 5;
+
+
     const rows = new Array(rowNum).fill(0).map((zero, index) => {
       return (
         <tr key={`${index}week`} className="calendar-week">
@@ -372,13 +507,14 @@ class Calendar extends React.Component {
       );
     });
 
+    date.subtract(1, 'month');
     return(
       <table>
           <tbody>
             <tr>
               <th colSpan="7">
                 <span className="left-selector selector" onClick={this.backMonth}>{'<'}</span>
-                <span>{`${Moment(this.state.activeDate).format('MMMM')} ${Moment(this.state.activeDate).format('YYYY')}`}</span>
+                <span>{`${date.format('MMMM')} ${date.format('YYYY')}`}</span>
                 <span className="right-selector selector" onClick={this.forwardMonth}>{'>'}</span>
               </th>
             </tr>
@@ -408,61 +544,38 @@ class Calendar extends React.Component {
   render() {
     return (
       <div className="calendar-date-picker-container" ref="parent" onClick={this.closeTooltips} >
-        {this.state.invalidTime ? this.renderTimeError() : null}
-        <input className="calendar-date start" style={this.state.parentWidth < 300 ? {width: '100%'} : {width: '50%'}} value={this.state.startDate} onChange={this.onDateChange} onFocus={this.onFocusStart} onKeyDown={this.onKeyDown} placeholder="MM/DD/YYYY" ref="startDate"/>
+        {this.state.invalidTime ? this.renderTimeError('Invalid date') : null}
+        <div className={`${styles.inputLabel} ${!this.state.start.validDate || !this.state.start.validTime ? styles.error : ''} ${this.state.showTooltipStartDate || this.state.start.date !== '' ? styles.activeLabel : ''}`}>{this.state.start.label}</div>
+        <input
+          className={`calendar-date start ${this.props.className} ${styles.date}`}
+          value={this.state.start.date}
+          onBlur={this.onBlurStartDate}
+          onChange={this.onStartDateChange}
+          onFocus={this.onFocusStart}
+          ref="startDate"
+        />
+        <input
+          className={`${styles.startTime} start ${styles.date}`}
+          value={this.state.start.time}
+          onBlur={this.onBlurStartTime}
+          onChange={this.onStartTimeChange}
+          onKeyDown={this.onKeyDown}
+        />
         {this.state.showTooltipStartDate ? this.renderCalendarPopup() : null}
-        <div className="picker-container" onClick={this.closeTooltips} style={this.state.parentWidth < 300 ? {display: 'flex', width: '100%'} : {display: 'inline-flex', width: '50%'}}>
-          <select value={this.state.startHour} onChange={this.selectDate} className="start-hour-picker select">
-            {hour.map((time) => {
-              return (
-                <option key={`${time}-hour-start`} value={time}>{time}</option>
-              );
-            })}
-          </select>
-          <select value={this.state.startMinute} onChange={this.selectDate} className="start-minute-picker select">
-            {minute.map((time) => {
-              return (
-                <option key={`${time}-minute-start`} value={time}>{time}</option>
-              );
-            })}
-          </select>
-          <select value={this.state.startKind} onChange={this.selectDate} className="start-kind-picker select">
-            <option value={'AM'}>{'AM'}</option>
-            <option value={'PM'}>{'PM'}</option>
-          </select>
-        </div>
-        <input className="calendar-date" style={this.state.parentWidth < 300 ? { width: '100%'} : { width: '50%'}} value={this.state.endDate} onChange={this.onDateChange} onFocus={this.onFocusEnd} onKeyDown={this.onKeyDown} placeholder="MM/DD/YYYY" ref="startDate"/>
+        <div className={`${styles.inputLabel} ${this.state.showTooltipEndDate || this.state.endDate !== '' ? styles.activeLabel : ''}`}>End Date</div>
+        <input
+          className={`calendar-date ${this.props.className}`}
+          value={this.state.endDate}
+          onChange={this.onDateChange}
+          onFocus={this.onFocusEnd}
+          onKeyDown={this.onKeyDown}
+          ref="startDate"
+        />
         {this.state.showTooltipEndDate ? this.renderCalendarPopup() : null}
-        <div className="picker-container" onClick={this.closeTooltips} style={this.state.parentWidth < 300 ? {display: 'flex', width: '100%'} : {display: 'inline-flex', width: '50%'}}>
-          <select value={this.state.endHour} onChange={this.selectDate} className="end-hour-picker select">
-            {hour.map((time) => {
-              return (
-                <option key={`${time}-hour-end`} value={time}>{time}</option>
-              );
-            })}
-          </select>
-          <select value={this.state.endMinute} onChange={this.selectDate} className="end-minute-picker select">
-            {minute.map((time) => {
-              return (
-                <option key={`${time}-minute-end`} value={time}>{time}</option>
-              );
-            })}
-          </select>
-          <select value={this.state.endKind} onChange={this.selectDate} className="end-kind-picker select">
-            <option value={'AM'}>{'AM'}</option>
-            <option value={'PM'}>{'PM'}</option>
-          </select>
-        </div>
         <style>
-          {styles}
+          {styleSheet}
         </style>
       </div>
     );
   }
 }
-
-Calendar.propTypes = {
-  onChange: React.PropTypes.func.isRequired
-};
-
-module.exports = Calendar;

@@ -1,4 +1,4 @@
-import { DbNewsfeedHelper, DbMetadataHelper } from './model/newsfeedDto.js';
+import { DbNewsfeedHelper, DbMetadataHelper } from './model';
 const Newsfeed = DbNewsfeedHelper();
 const Metadata = DbMetadataHelper();
 
@@ -50,7 +50,7 @@ export default class NewsfeedService {
       this.options.connect(this.options.database, (connection) => {
         connection.client.query(
           `INSERT INTO ${Metadata.columns('', 'INSERT')}
-            VALUES ${Metadata.values('', metadataDto, 'INSERT')} RETURNING id;`
+            VALUES ${Metadata.values(metadataDto, 'INSERT')} RETURNING id;`
         ).on('row', row => id = row)
         .on('error', error => reject(error))
         .on('end', () => resolve(id));
@@ -74,7 +74,7 @@ export default class NewsfeedService {
           newsfeedDto.contentMetadataId = metadataId;
           this.options.connect(this.options.database, (connection) => {
             connection.client.query(
-              `INSERT INTO ${Newsfeed.columns('', 'INSERT')} VALUES ${values('', newsfeedDto, 'INSERT')} RETURNING id;`
+              `INSERT INTO ${Newsfeed.columns('INSERT')} VALUES ${values(newsfeedDto, 'INSERT')} RETURNING id;`
             ).on('row', row => id = row)
             .on('error', error => reject(error))
             .on('end', () => resolve(id));
@@ -83,6 +83,48 @@ export default class NewsfeedService {
         .catch(error => {
           return reject(error);
         });
+    });
+  }
+
+  getNewsfeedItem(newsfeedItemId) {
+    return new Promise((resolve, reject) => {
+      if (newsfeedItemId == null) {
+        reject('requires id');
+      }
+
+      let newsitem;
+      this.options.connect(this.options.database, (connection) => {
+        connection.client.query(
+          `SELECT ${Newsfeed.columns('SELECT')} WHERE n.id = ${newsfeedItemId};`
+        ).on('row', row => newsitem = row)
+        .on('error', error => reject(error))
+        .on('end', () => resolve(newsitem));
+      });
+    });
+  }
+
+  getNewsfeed(destinationId, limit, offsetId) {
+    return new Promise((resolve, reject) => {
+      if (destinationId == null) {
+        reject('requires destinationId');
+      }
+
+      offsetId = offsetId || 0;
+      limit = limit || 0;
+
+      const newsfeedItems = [];
+      console.log(`SELECT ${Newsfeed.columns('SELECT')}
+          WHERE n.destination_id = ${destinationId} AND n.id > ${offsetId}
+          LIMIT ${limit};`);
+      this.options.connect(this.options.database, (connection) => {
+        connection.client.query(
+          `SELECT ${Newsfeed.columns('SELECT')}
+          WHERE n.destination_id = ${destinationId} AND n.id > ${offsetId}
+          LIMIT ${limit};`
+        ).on('row', row => newsfeedItems.push(row))
+        .on('error', error => reject(error))
+        .on('end', () => resolve(newsfeedItems));
+      });
     });
   }
 }

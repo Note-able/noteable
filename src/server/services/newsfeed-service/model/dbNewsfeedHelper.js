@@ -1,5 +1,5 @@
-import { dbMetadataHelper } from '../';
-const DbMetadataHelper = dbMetadataHelper();
+import { DbMetadataHelper } from './dbMetadataHelper.js';
+const MetadataHelper = DbMetadataHelper();
 
 export const DbNewsfeedHelper = () => ({
   map: (dbNewsfeed, contentMetadata) => (dbNewsfeed == null ? null : {
@@ -7,9 +7,9 @@ export const DbNewsfeedHelper = () => ({
     kind: NewsItemKind[dbNewsfeed.kind],
     id: dbNewsfeed.id,
     isDeleted: dbNewsfeed.is_deleted,
-    recipientId: dbNewsfeed.recipient_id,
+    destinationId: dbNewsfeed.destination_id,
     status: dbNewsfeed.status,
-    contentMetadata: DbMetadataHelper.map(contentMetadata),
+    contentMetadata: MetadataHelper.map(contentMetadata),
     text: dbNewsfeed.text
   }),
 
@@ -18,7 +18,7 @@ export const DbNewsfeedHelper = () => ({
     created_date: newsfeed.createdDate,
     is_deleted: newsfeed.isDeleted,
     kind: NewsItemKind[newsfeed.kind],
-    recipient_id: newsfeed.recipientId,
+    destination_id: newsfeed.destinationId,
     status: newsfeed.status,
     content_metadata: newsfeed.contentMetadata.id,
     text: newsfeed.text
@@ -28,13 +28,12 @@ export const DbNewsfeedHelper = () => ({
     return true;
   },
 
-  updateQuery: (t, { createdDate, kind, isDeleted, authorId, contentMetadataId, text, modifiedDate, id }) => {
-    const pre = t == null || t === '' ? '' : `${t}.`;
+  updateQuery: ({ createdDate, kind, isDeleted, authorId, contentMetadataId, text, modifiedDate, id , destinationId}) => {
     return `UPDATE public.newsfeed SET
       created_date = ${createdDate},
       kind = '${kind},
       is_deleted = ${isDeleted},
-      recipient_id = ${recipientId},
+      destination_id = ${destinationId},
       author_id = ${authorId},
       content_metadata = ${contentMetadataId},
       text = ${text},
@@ -42,40 +41,41 @@ export const DbNewsfeedHelper = () => ({
       WHERE id = ${id};`;
   },
 
-  columns: (t, kind) => {
-    const pre = t == null || t === '' ? '' : `${t}.`;
+  columns: (kind, id) => {
     switch(kind) {
       case 'INSERT':
-        return `public.ewsfeed ${pre === '' ? t : 'AS ' + t}(
-          ${pre}kind,
-          ${pre}created_date,
-          ${pre}is_deleted,
-          ${pre}recipient_id,
-          ${pre}author_id,
-          ${pre}content_metadata,
-          ${pre}text,
-          ${pre}modified_date);
+        return `public.newsfeed (
+          kind,
+          created_date,
+          is_deleted,
+          destination_id,
+          author_id,
+          content_metadata,
+          text,
+          modified_date);
         `;
       case 'SELECT':
-        return `kind, created_date, is_deleted, recipient_id, author_id, content_metadata, text, modified_date FROM public.newsfeed ${t === '' ? '' : ' AS ' + t}`;
+        return `n.kind, n.created_date, n.is_deleted, n.destination_id, n.author, n.content_metadata, n.text, n.modified_date, m.event_id, m.music_id, m.url, m.id as metadata_id, n.id
+        FROM public.newsfeed n 
+        INNER JOIN public.content_metadata m 
+        ON m.id = n.content_metadata`;
       default:
         return '*';
     }
   },
 
-  values: (t, { createdDate, kind, isDeleted, authorId, recipientId, contentMetadataId, text, modifiedDate, id }, query) => {
-    const pre = t == null || t === '' ? '' : `${t}.`;
+  values: ({ createdDate, kind, isDeleted, authorId, destinationId, contentMetadataId, text, modifiedDate, id }, query) => {
     switch(query) {
       case 'INSERT':
         return `(
           ${createdDate},
           ${kind},
-          ${isDeleted},
+          ${isDeleted || '0'},
           ${authorId},
           ${contentMetadataId},
           '${text},
           ${modifiedDate},
-          ${recipientId}
+          ${destinationId}
         )`;
       default:
         return '';

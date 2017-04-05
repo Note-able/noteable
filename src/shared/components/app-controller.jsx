@@ -1,11 +1,14 @@
 import { connect } from 'react-redux';
 import React, { Component, PropTypes } from 'react';
 import Home from './home.jsx';
-import './app-styles/app-controller.less';
+import { Newsfeed } from './newsfeed';
+import { NavigationSidebar } from './shared';
+import AudioComponent from './record-audio-component.js';
+import styles from './app-styles/app-controller.less';
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.profile.id !== -1,
-  userId: state.profile.id,
+  profile: state.profile,
 });
 
 
@@ -17,27 +20,75 @@ class AppController extends Component {
     children: PropTypes.object,
   }
 
-  renderHome() {
-    if (window.location.pathname.indexOf('/profile') !== -1) {
-      window.location.pathname = '/';
-      return;
+  state = {
+    activeTab: this.props.location.pathname,
+    isRecording: false,
+  }
+
+  componentDidMount() {
+    window.onbeforeunload = () => this.saveState();
+    this.setState(JSON.parse(window.localStorage.getItem('state') || '{}'))
+  }
+
+  componentWillUnmount() {
+    this.saveState();
+  }
+
+  saveState() {
+    window.localStorage.setItem('state', JSON.stringify({ ...this.state, isRecording: false }));
+  }
+
+  renderChildren() {
+    if (this.props.isAuthenticated && this.props.location.pathname === '/') {
+      return (
+        <Newsfeed activeTab={this.state.activeTab}>
+          {this.renderSidebar()}
+        </Newsfeed>
+      );
     }
 
-    if (this.props.isAuthenticated && this.props.location.pathname !== '/home') {
-      window.location.pathname = '/profile';
-      return;
+    if (this.props.isAuthenticated) {
+      return this.props.children;
     }
 
-    return (
-      <Home />
-    );
+    return <Home />;
   }
 
   renderGrid() {
     return (
       <div>
-        <div className="testing-verticals" />
-        <div className="testing-horizontal" />
+        <div className={styles.testingVertical} />
+        <div className={styles.testingVertical1} />
+        <div className={styles.testingHorizontal} />
+        <div className={styles.testingHorizontal1} />
+      </div>
+    );
+  }
+
+  renderSidebar() {
+    return (
+      <NavigationSidebar
+        activeTab={this.state.activeTab}
+        currentUser={this.props.profile}
+        navigateToPath={url => this.setState({ activeTab: url})}
+      />
+    );
+  }
+
+  renderNavbar() {
+    return (
+      <div className="navbar navbar__no-home">
+        <a href="/home"><div className="home-button">Noteable</div></a>
+        <div className={styles.searchBarContainer}>
+          <div className={styles.searchBarBox}>
+            <input className={styles.searchBar} placeholder="Search people, events, or songs" />
+          </div>
+        </div>
+        {this.state.isRecording ? 
+          <div className={styles.recordContainer}>
+            <AudioComponent />
+          </div>
+          : <div className={styles.record} onClick={() => this.setState({ isRecording: true })}>Record</div>}
       </div>
     );
   }
@@ -48,7 +99,9 @@ class AppController extends Component {
         <link href="/css/bundle.css" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-        { this.props.location.pathname === '/' || this.props.location.pathname === '/home' || this.props.userId === -1 ? this.renderHome() : this.props.children}
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/draft-js/0.7.0/Draft.min.css" />
+        {this.renderNavbar()}
+        {this.renderChildren()}
       </div>
     );
   }

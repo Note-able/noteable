@@ -5,7 +5,7 @@ import React, { Component, PropTypes, cloneElement } from 'react';
 import { connect } from 'react-redux';
 
 import AJAX from '../../ajax';
-import NavigationSidebar from './navigation-sidebar.jsx';
+import { NavigationSidebar } from '../shared';
 import ProfileSettings from './profile-settings.jsx';
 import { CameraIcon, CogIcon, PencilIcon } from '../icons/common-icons.g';
 import { profileActions } from '../../actions';
@@ -156,20 +156,6 @@ class Profile extends Component {
 
     return (
       <div className={styles.appContainer}>
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/draft-js/0.7.0/Draft.min.css" />
-        <div className="navbar navbar__no-home">
-          <a href="/home"><div className="home-button">Noteable</div></a>
-          <div className={styles.searchBarContainer}>
-            <div className={styles.searchBarBox}>
-              <input className={styles.searchBar} placeholder="Search people, events, or songs" />
-            </div>
-          </div>
-          {this.state.isRecording ? 
-            <div className={styles.recordContainer}>
-              <AudioComponent />
-            </div>
-            : <div className={styles.record} onClick={() => this.setState({ isRecording: true })}>Record</div>}
-        </div>
         {this.state.settingsView ?
           <CreateProfile
             bio={this.state.editorState}

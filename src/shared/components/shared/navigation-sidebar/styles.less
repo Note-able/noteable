@@ -1,22 +1,6 @@
-@import 'variables';
+@import '../../app-styles/variables';
 
 :local {
-  .material-icons {
-    font-family: 'Material Icons';
-    font-weight: normal;
-    font-style: normal;
-    letter-spacing: normal;
-    margin: 0 6px 0 0;
-    text-transform: none;
-    display: inline-block;
-    white-space: nowrap;
-    word-wrap: normal;
-    vertical-align: top;
-    direction: ltr;
-    -webkit-font-feature-settings: 'liga';
-    -webkit-font-smoothing: antialiased;
-  }
-
   .active-tab {
     background: @green;
     color: @white;
@@ -39,23 +23,24 @@
 
   .current-avatar {
     border-radius: 50%;
-    height: 40px;
+    height: 32px;
     margin: 0 0 4px;
-    width: 40px;
+    width: 32px;
   }
 
   .current-name {
-    font: @middle-font;
+    font: @normal-font;
   }
 
   .navigation-content {
     background: @white;
-    box-shadow: 1px 5px 3px -1px rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 1px 6px -2px rgba(0, 0, 0, 0.4);
     bottom: 0;
+    height: 300px;
     position: fixed;
-    left: 0;
-    top: 44px;
-    width: 250px;
+    left: 50px;
+    top: 60px;
+    width: 200px;
   }
     
   .navigation-options {
@@ -66,10 +51,10 @@
   .navigation-option {
     cursor: pointer;
     flex: 1;
-    font: @medium-font;
+    font: @middle-font;
     font-variant-ligatures: no-common-ligatures;
-    line-height: @medium-font-size;
-    padding: 12px 24px;
+    line-height: @middle-font-size;
+    padding: 8px 24px;
     text-align: left;
 
     svg {
