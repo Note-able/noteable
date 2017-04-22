@@ -5,7 +5,7 @@ FROM node:boron
 WORKDIR /app
 
 # Since docker has an image cache, installing dependencies early speeds up most builds.
-COPY package.json .npmrc /app/
+COPY package.json /app/
 
 # This will only run when there is a change to package.json.
 RUN npm install
