@@ -26,9 +26,9 @@
   "author": "Michael Nakayama && Ian Mundy",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sportnak/jamsesh/issues"
+    "url": "https://github.com/note-able/noteable/issues"
   },
-  "homepage": "https://github.com/sportnak/jamsesh#readme",
+  "homepage": "https://github.com/note-able/noteable#readme",
   "devDependencies": {
     "autoprefixer": "^6.6.1",
     "autoprefixer-loader": "^3.2.0",

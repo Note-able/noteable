@@ -4754,15 +4754,8 @@ module.exports = reactProdInvariant;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-
 
 /* eslint-disable no-unused-vars */
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
@@ -4783,7 +4776,7 @@ function shouldUseNative() {
 		// Detect buggy property enumeration order in older V8 versions.
 
 		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		var test1 = new String('abc');  // eslint-disable-line
 		test1[5] = 'de';
 		if (Object.getOwnPropertyNames(test1)[0] === '5') {
 			return false;
@@ -4812,7 +4805,7 @@ function shouldUseNative() {
 		}
 
 		return true;
-	} catch (err) {
+	} catch (e) {
 		// We don't expect any of the above to throw, but better to be safe.
 		return false;
 	}
@@ -4832,8 +4825,8 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 			}
 		}
 
-		if (getOwnPropertySymbols) {
-			symbols = getOwnPropertySymbols(from);
+		if (Object.getOwnPropertySymbols) {
+			symbols = Object.getOwnPropertySymbols(from);
 			for (var i = 0; i < symbols.length; i++) {
 				if (propIsEnumerable.call(from, symbols[i])) {
 					to[symbols[i]] = from[symbols[i]];
@@ -46113,8 +46106,8 @@ module.exports = exports['default'];
 exports.__esModule = true;
 function createThunkMiddleware(extraArgument) {
   return function (_ref) {
-    var dispatch = _ref.dispatch,
-        getState = _ref.getState;
+    var dispatch = _ref.dispatch;
+    var getState = _ref.getState;
     return function (next) {
       return function (action) {
         if (typeof action === 'function') {
@@ -48739,6 +48732,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _styles = __webpack_require__(641);
@@ -48777,12 +48772,7 @@ var DatePicker = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (DatePicker.__proto__ || Object.getPrototypeOf(DatePicker)).call(this, props));
 
-    _this.onBlur = function (event) {
-      _this.props.onBlur();
-      var str = event.target.value;
-      var slashes = str.substring(0, 2) + '/' + str.substring(2, 4) + '/' + str.substring(4, 8);
-      console.log(Moment(slashes));
-    };
+    _initialiseProps.call(_this);
 
     var date = _this.props.date ? _this.props.date : Moment();
 
@@ -48794,6 +48784,15 @@ var DatePicker = function (_React$Component) {
       showTooltipEndDate: false,
       activeDate: Moment().format('MM/DD/YYYY'),
       startDate: Moment().format('MM/DD/YYYY'),
+      start: {
+        actualDate: Moment(),
+        actualTime: Moment().format('6:00 a'),
+        date: Moment().format('MM/DD/YYYY'),
+        label: 'Start date',
+        time: Moment().format('6:00 a'),
+        validTime: true,
+        validDate: true
+      },
       endDate: Moment().format('MM/DD/YYYY'),
       endHour: 7,
       startHour: 6,
@@ -48999,11 +48998,11 @@ var DatePicker = function (_React$Component) {
     }
   }, {
     key: 'renderTimeError',
-    value: function renderTimeError() {
+    value: function renderTimeError(error) {
       return React.createElement(
         'div',
         { className: 'time-error' },
-        this.state.errorMessage
+        error
       );
     }
   }, {
@@ -49017,6 +49016,7 @@ var DatePicker = function (_React$Component) {
       var weekday = date.day();
       date.subtract(weekday, 'days');
       var rowNum = weekday > 4 && Moment(this.state.activeDate).daysInMonth() === 31 || weekday === 6 && Moment(this.state.activeDate).daysInMonth() === 30 ? 6 : 5;
+
       var rows = new Array(rowNum).fill(0).map(function (zero, index) {
         return React.createElement(
           'tr',
@@ -49139,26 +49139,25 @@ var DatePicker = function (_React$Component) {
       return React.createElement(
         'div',
         { className: 'calendar-date-picker-container', ref: 'parent', onClick: this.closeTooltips },
-        this.state.invalidTime ? this.renderTimeError() : null,
+        this.state.invalidTime ? this.renderTimeError('Invalid date') : null,
         React.createElement(
           'div',
-          { className: _styles2.default.inputLabel + ' ' + (this.state.showTooltipStartDate || this.state.startDate !== '' ? _styles2.default.activeLabel : '') },
-          'Start Date'
+          { className: _styles2.default.inputLabel + ' ' + (!this.state.start.validDate || !this.state.start.validTime ? _styles2.default.error : '') + ' ' + (this.state.showTooltipStartDate || this.state.start.date !== '' ? _styles2.default.activeLabel : '') },
+          this.state.start.label
         ),
         React.createElement('input', {
           className: 'calendar-date start ' + this.props.className + ' ' + _styles2.default.date,
-          value: this.state.startDate,
-          onBlur: this.onBlur,
-          onChange: this.onDateChange,
+          value: this.state.start.date,
+          onBlur: this.onBlurStartDate,
+          onChange: this.onStartDateChange,
           onFocus: this.onFocusStart,
-          onKeyDown: this.onKeyDown,
           ref: 'startDate'
         }),
         React.createElement('input', {
-          className: _styles2.default.date,
-          value: this.state.startTime,
-          onBlur: this.props.onBlur,
-          onChange: this.onTimeChange,
+          className: _styles2.default.startTime + ' start ' + _styles2.default.date,
+          value: this.state.start.time,
+          onBlur: this.onBlurStartTime,
+          onChange: this.onStartTimeChange,
           onKeyDown: this.onKeyDown
         }),
         this.state.showTooltipStartDate ? this.renderCalendarPopup() : null,
@@ -49187,6 +49186,171 @@ var DatePicker = function (_React$Component) {
 
   return DatePicker;
 }(React.Component);
+
+var _initialiseProps = function _initialiseProps() {
+  var _this3 = this;
+
+  this.validateTime = function (value) {
+    var time = value.toLowerCase();
+    var split = (time.indexOf('am') + 1 || time.indexOf('pm') + 1) - 1;
+    time = time.substring(0, split);
+
+    if (split === -1) {
+      _this3.setState({
+        start: _extends({}, _this3.state.start, {
+          validTime: false,
+          label: 'Invalid start time'
+        })
+      });
+
+      return;
+    }
+
+    if (time.indexOf(':') === -1) {
+      _this3.setState({
+        start: _extends({}, _this3.state.start, {
+          validTime: parseInt(time) < 12,
+          label: parseInt(time) < 12 ? 'Start date' : 'Invalid start time'
+        })
+      });
+
+      return;
+    }
+
+    if (time.substring(0, split).split(':').filter(function (x) {
+      return parseInt(x) < 12 && parseInt(x) > 0;
+    }).length === 2) {
+      _this3.setState({
+        start: _extends({}, _this3.state.start, {
+          validTime: true,
+          label: 'Invalid start time'
+        })
+      });
+    }
+  };
+
+  this.onStartTimeChange = function (event) {
+    return _this3.setState({ start: _extends({}, _this3.state.start, { time: event.target.value }) });
+  };
+
+  this.onBlurStartTime = function (event) {
+    var time = event.target.value.toLowerCase();
+    var split = (time.indexOf('am') + 1 || time.indexOf('pm') + 1) - 1;
+    time = time.substring(0, split);
+
+    if (split === -1) {
+      _this3.setState({
+        start: _extends({}, _this3.state.start, {
+          validTime: false,
+          label: 'Invalid start time'
+        })
+      });
+
+      return;
+    }
+
+    if (time.indexOf(':') === -1) {
+      _this3.setState({
+        start: _extends({}, _this3.state.start, {
+          validTime: parseInt(time) < 12,
+          label: parseInt(time) < 12 ? 'Start date' : 'Invalid start time'
+        })
+      });
+
+      return;
+    }
+
+    if (time.substring(0, split).split(':').filter(function (x) {
+      return parseInt(x) < 12 && parseInt(x) > 0;
+    }).length === 2) {
+      _this3.setState({
+        start: _extends({}, _this3.state.start, {
+          validTime: true,
+          label: 'Invalid start time'
+        })
+      });
+    }
+  };
+
+  this.onStartDateChange = function (event) {
+    return _this3.setState({ start: _extends({}, _this3.state.start, { date: event.target.value }) });
+  };
+
+  this.onBlurStartDate = function (event) {
+    var date = event.target.value;
+    if (date.indexOf('/') !== -1) {
+      var dateColumns = date.split('/');
+      if (dateColumns.filter(function (x) {
+        return isNaN(parseInt(x));
+      }).length !== 0 || dateColumns.length !== 3) {
+        _this3.setState({
+          start: _extends({}, _this3.state.start, {
+            validDate: false,
+            label: 'Invalid start date'
+          })
+        });
+
+        return;
+      }
+
+      var dates = dateColumns.map(function (x) {
+        return parseInt(x);
+      });
+      if (dates[0] > 12 || dates[0] < 0 || !_this3.validDay(dates[0], dates[1], dates[2]) || dateColumns[2].length !== 4) {
+        _this3.setState({
+          start: _extends({}, _this3.state.start, {
+            validDate: false,
+            label: 'Invalid start date'
+          })
+        });
+
+        return;
+      }
+
+      _this3.setState({
+        start: _extends({}, _this3.state.start, {
+          validDate: true,
+          label: 'Start date'
+        })
+      });
+
+      return;
+    }
+
+    if (!Moment(date.replace('th', '').replace('st', '')).isValid()) {
+      _this3.setState({
+        start: _extends({}, _this3.state.start, {
+          validDate: false,
+          label: 'Invalid start date'
+        })
+      });
+    }
+
+    _this3.setState({
+      start: _extends({}, _this3.state.start, {
+        actualDate: date.replace('th', '').replace('st', ''),
+        validDate: true,
+        label: 'Start date'
+      })
+    });
+  };
+
+  this.validDay = function (month, day, year) {
+    if (month % 2 === 1) {
+      return day <= 31 && day > 0;
+    }
+
+    if (month === 2) {
+      if (year % 400 === 0 || year % 100 !== 0 && year % 4 === 0) {
+        return day <= 29 && day > 0;
+      }
+
+      return day <= 28 && day > 0;
+    }
+
+    return day <= 30 && day > 0;
+  };
+};
 
 exports.default = DatePicker;
 
@@ -50557,7 +50721,7 @@ exports = module.exports = __webpack_require__(22)();
 
 
 // module
-exports.push([module.i, "/** same as light-normal **/\n.material-icons {\n  font-family: 'Material Icons';\n  font-weight: normal;\n  font-size: inherit !important;\n  font-style: normal;\n  letter-spacing: normal;\n  line-height: inherit !important;\n  margin: 0 6px 0 0;\n  text-transform: none;\n  display: inline-block;\n  white-space: nowrap;\n  word-wrap: normal;\n  vertical-align: top !important;\n  direction: ltr;\n  -webkit-font-feature-settings: 'liga';\n  -webkit-font-smoothing: antialiased;\n}\n.p2hLb_J1CEBSOgizPV4dv {\n  color: #b1b1b1;\n  font: 400 14px 'Roboto';\n  margin: 16px 0 0 4px;\n  position: absolute;\n  -webkit-transition: margin 0.2s, font-size 0.2s, color 0.5s;\n  transition: margin 0.2s, font-size 0.2s, color 0.5s;\n  z-index: -1;\n}\n.V7RlXmXvFXngcyWv3A7Xb {\n  color: #0A5CFF;\n  font-size: 12px;\n  margin-top: -2px;\n}\n.dgCXsI0wogVX66kT7JBvv {\n  border: 1px solid #b1b1b1;\n  border-radius: 2px;\n  height: 28px;\n  line-height: 28px;\n  margin: 12px 8px 12px 0;\n  width: 100px;\n}\n", ""]);
+exports.push([module.i, "/** same as light-normal **/\n.material-icons {\n  font-family: 'Material Icons';\n  font-weight: normal;\n  font-size: inherit !important;\n  font-style: normal;\n  letter-spacing: normal;\n  line-height: inherit !important;\n  margin: 0 6px 0 0;\n  text-transform: none;\n  display: inline-block;\n  white-space: nowrap;\n  word-wrap: normal;\n  vertical-align: top !important;\n  direction: ltr;\n  -webkit-font-feature-settings: 'liga';\n  -webkit-font-smoothing: antialiased;\n}\n.p2hLb_J1CEBSOgizPV4dv {\n  color: #b1b1b1;\n  font: 400 14px 'Roboto';\n  margin: 16px 0 0 4px;\n  position: absolute;\n  -webkit-transition: margin 0.2s, font-size 0.2s, color 0.5s;\n  transition: margin 0.2s, font-size 0.2s, color 0.5s;\n  z-index: -1;\n}\n.V7RlXmXvFXngcyWv3A7Xb {\n  color: #0A5CFF;\n  font-size: 12px;\n  margin-top: -2px;\n}\n.dgCXsI0wogVX66kT7JBvv {\n  border: 1px solid #b1b1b1;\n  border-radius: 2px;\n  height: 28px;\n  line-height: 28px;\n  margin: 12px 8px 12px 0;\n  width: 120px;\n}\n._1Qk9DdxS7Ca2GivhwTdaHY {\n  font-size: 14px;\n  outline: none;\n  width: 75px;\n}\n._134Ej2eoFtvViIHtTuvoTK {\n  color: #f46b45;\n}\n", ""]);
 
 // exports
 exports.locals = {
@@ -50566,7 +50730,11 @@ exports.locals = {
 	"active-label": "V7RlXmXvFXngcyWv3A7Xb",
 	"activeLabel": "V7RlXmXvFXngcyWv3A7Xb",
 	"date": "dgCXsI0wogVX66kT7JBvv",
-	"date": "dgCXsI0wogVX66kT7JBvv"
+	"date": "dgCXsI0wogVX66kT7JBvv",
+	"start-time": "_1Qk9DdxS7Ca2GivhwTdaHY",
+	"startTime": "_1Qk9DdxS7Ca2GivhwTdaHY",
+	"error": "_134Ej2eoFtvViIHtTuvoTK",
+	"error": "_134Ej2eoFtvViIHtTuvoTK"
 };
 
 /***/ }),

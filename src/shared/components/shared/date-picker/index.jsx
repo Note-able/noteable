@@ -298,13 +298,10 @@ export default class DatePicker extends React.Component {
   }
 
   validateTime = (value) => {
-    const time = value.toLowerCase();
+    let time = value.toLowerCase();
     const split = (time.indexOf('am') + 1 || time.indexOf('pm') + 1) -1;
     time = time.substring(0, split);
 
-    return new Promise((resolve, reject) => {
-      if (split === -1)
-    })
     if (split === -1) {
       this.setState({
         start: {

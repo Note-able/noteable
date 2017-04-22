@@ -192,28 +192,14 @@ module.exports = function (app, options) {
    */
 
   /** queryParams: limit, offset */
-  app.get('/music/user', (req, res) => {
-    if (!req.user) {
-      return res.status(404).send();
-    }
 
-    const options = { limit: req.query.limit, offset: req.query.offset  }
-    
-    m_mediaSerivce.getMusicByUser(req.user.id, options)
-      .then(result => res.json(result))
-      .catch(error => {
-        console.log(error);
-        res.json(error);
-      });
-  });
-
-  app.post('/post-blob', options.auth, (req, res) => {
+  app.post('/recordings', options.auth, (req, res) => {
     const form = new Formidable.IncomingForm();
     form.uploadDir = '/uploads';
 
-    form.parse(req, (err, fields, files) => {
+    form.parse(req, (err, fields) => {
       const buffer = new Buffer(fields.file, 'base64');
-      audio.sendUploadToGCS(fields.extension ? fields.extension : `.mp3`, buffer)
+      audio.sendUploadToGCS(fields.extension ? fields.extension : '.mp3', buffer)
         .then(result => {
           m_mediaSerivce.createMusic({ audioUrl: result.cloudStoragePublicUrl, author: req.user.id, createdDate: new Date().toISOString(), name: fields.name, size: fields.size })
             .then((id) => {
@@ -230,7 +216,51 @@ module.exports = function (app, options) {
         });
     });
   });
-  
+
+  app.get('/recordings', options.auth, (req, res) => {
+    if (!req.user) {
+      return res.status(404).send();
+    }
+
+    const options = { limit: req.query.limit, offset: req.query.offset  };
+
+    m_mediaSerivce.getMusicByUser(req.user.id, options)
+      .then(result => res.json(result))
+      .catch(error => {
+        console.log(error);
+        res.json(error);
+      });
+  });
+
+  app.get('/recordings/:recordingId', options.auth, (req, res) => {
+    if (!req.user) {
+      return res.status(404).send();
+    }
+
+    m_mediaSerivce.getMusic(req.params.recordingId)
+      .then((result) => res.json(result))
+      .catch(error => {
+        console.log(error);
+        res.error(error);
+      });
+  });
+
+  app.patch('/recordings/:id', options.auth, (req, res) => {
+    if (!req.user) {
+      return res.status(404).send();
+    }
+
+    // TODO: Add recoridng update
+  });
+
+  app.delete('/recordings/:id', options.auth, (req, res) => {
+    if (!req.user) {
+      return res.status(404).send();
+    }
+
+    // TODO: Add Delete recording
+  });
+
   /** Newsfeed API **/
   // app.post('/newsfeed', options.auth, (req, res) => {});
   /** queryParams: ids(optional) */

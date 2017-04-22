@@ -235,7 +235,7 @@ if (fs.existsSync('./src/server/keys/server.key')) {
     key: fs.readFileSync('./src/server/keys/server.key'),
     cert: fs.readFileSync('./src/server/keys/server.crt'),
     requestCert: false,
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
   };
 
   const httpsServer = https.createServer(options, app).listen(443, () => {
