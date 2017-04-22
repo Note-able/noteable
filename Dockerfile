@@ -2,21 +2,20 @@
 # single application.
 FROM node:boron
 
-RUN mkdir -p /app
 WORKDIR /app
-RUN ls
 
-COPY ./lib /app
+# Since docker has an image cache, installing dependencies early speeds up most builds.
+COPY package.json .npmrc /app/
 
-RUN npm install --silent
-# You have to specify "--unsafe-perm" with npm install
-# when running as root.  Failing to do this can cause
-# install to appear to succeed even if a preinstall
-# script fails, and may have other adverse consequences
-# as well.
-# This command will also cat the npm-debug.log file after the
-# build, if it exists.
+# This will only run when there is a change to package.json.
+RUN npm install
+
+# Copy the entire application
+COPY . /app
+
+# Create the lib directory
+RUN npm run dist
 
 EXPOSE 8080
-CMD cd ./app/lib
+
 CMD node server.js
