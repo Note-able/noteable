@@ -14,9 +14,11 @@ import { connectToDb, ensureAuthenticated, validatePassword, generateToken, vali
 const MongoStore = require('connect-mongo')(session);
 
 const env = process.env.NODE_ENV;
+console.log(env);
 global.DEBUG = env !== 'production' && env !== 'internal';
 global.PRODUCTION = env === 'production';
 global.CLIENT = false;
+console.log(global.PRODUCTION);
 
 const app = express();
 app.use(express.static(`${__dirname}/../../public`));
