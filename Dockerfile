@@ -4,6 +4,10 @@ FROM node:boron
 
 WORKDIR /app
 
+# Use NODE as a cmd line arg - default is production
+ARG NODE=production
+ENV NODE_ENV ${NODE}
+
 # Since docker has an image cache, installing dependencies early speeds up most builds.
 COPY package.json /app/
 
