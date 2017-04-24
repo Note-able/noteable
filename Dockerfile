@@ -18,4 +18,8 @@ RUN npm run dist
 
 EXPOSE 8080
 
+# Move into compiled js folder
+WORKDIR /app/lib
+
+# Run the server
 CMD node server.js
