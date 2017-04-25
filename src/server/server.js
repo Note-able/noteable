@@ -23,9 +23,9 @@ console.log(global.PRODUCTION);
 const app = express();
 app.use(express.static(`${__dirname}/../../public`));
 const config = require('../config');
-const audio = require('../util/gcloud-util')(config.gcloud, config.cloudAudioStorageBucket);
+
 const image = require('../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
-const m_userService = new UserService({ auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
+const userService = new UserService({ auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
 
 // set up Jade
 app.use(BodyParser.urlencoded({ extended: false }));
@@ -43,6 +43,8 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+/* Passport Configuration */
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -112,13 +114,12 @@ passport.use(new FacebookStrategy({
   }
 ));
 
-const jwtOptions = {  
+const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeader(),
   secretOrKey: 'theAssyrianCameDownLikeAWolfOnTheFold',
 };
 
 passport.use(new JwtStrategy(jwtOptions, (profile, done) => {
-  console.log(profile);
   connectToDb(config.connectionString, (connection) => {
     if (connection.status === 'SUCCESS') {
       let user;
@@ -180,46 +181,18 @@ app.get('/auth/facebook/callback',
     res.redirect('/');
   });
 
-app.get('/test', ensureAuthenticated, (req, res) => {
-  res.render('index');
-});
-
-require('./api-routes')(app, { auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
 
 app.get('/logout', (req, res) => {
   req.logout();
   res.redirect('/test');
 });
 
-app.get('/me', (req, res) => {
-  res.redirect(`/user/${req.user == null ? -1 : req.user.id}`);
-  // track here
-});
+/* Import API Routes */
+require('./api-routes')(app, { auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
 
-app.post('/add-image', ensureAuthenticated, (req, res) => {
-  const form = new Formidable.IncomingForm();
-  form.uploadDir = '/uploads';
-
-  form.onPart = part => {
-    form.handlePart(part);
-  };
-
-  form.parse(req, (err, fields) => {
-    const buffer = new Buffer(fields.file, 'base64');
-
-    image.sendUploadToGCS(`${fields.name}`, buffer, response => {
-      if (response && response.error) {
-        res.status(500).send();
-      }
-
-      console.log(response.cloudStoragePublicUrl);
-      res.status(200).send(response);
-    });
-  });
-});
-
+/* Normal Routes */
 app.get('/*', (req, res) => {
-  m_userService.getUser(req.user ? req.user.id : null, user => {
+  userService.getUser(req.user ? req.user.id : null, user => {
     res.render('index', {
       props: encodeURIComponent(JSON.stringify(
         {

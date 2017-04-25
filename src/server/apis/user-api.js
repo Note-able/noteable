@@ -25,12 +25,12 @@ module.exports = function userApi(app, options) {
       const splits = Object.keys(fields)[0].split('.');
 
       image.sendUploadToGCS(splits[splits.length - 1], buffer)
-      .then(response => {
-        console.log(response);
+      .then((response) => {
         next(response);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
+        next(null);
       });
     });
   };
@@ -50,8 +50,6 @@ module.exports = function userApi(app, options) {
   /** USER API **/
 
   app.post('/user/edit', options.auth, options.auth, (req, res) => {
-    console.log(req.body) // <- standard for getting things out post.
-
     options.connect(options.database, (connection) => {
       console.log(connection);
     });
@@ -59,7 +57,6 @@ module.exports = function userApi(app, options) {
   });
 
   app.post('/register', (req, res) => {
-    console.log(req.body);
     if (req.body.email == null || req.body.password == null) {
       res.status(400).json({ badRequest: 'empty username or password' });
       return;

@@ -33,7 +33,6 @@ module.exports = function musicApi(app, options) {
         .catch(response => {
           console.log(response.error);
           res.status(500).send();
-          return;
         });
     });
   });
