@@ -1,4 +1,5 @@
-import { UserDbHelper } from './model/userDto.js';
+import { UserDbHelper } from './model/userDto';
+
 const Users = UserDbHelper();
 
 export default class UserService {
@@ -31,11 +32,9 @@ export default class UserService {
       .on('row', (row) => {
         if (row.first_name || row.last_name) {
           user = { ...user, ...row };
-        }
-        else if (row.instruments) {
+        } else if (row.instruments) {
           user.instruments = row.instruments;
-        }
-        else {
+        } else {
           user = { ...user, ...row };
         }
       })
@@ -80,11 +79,9 @@ export default class UserService {
       .on('row', (row) => {
         if (row.first_name || row.last_name) {
           users[row.id] = { ...users[row.id], ...row };
-        }
-        else if (row.instruments) {
+        } else if (row.instruments) {
           users[row.user_id].instruments = row.instruments;
-        }
-        else {
+        } else {
           users[row.profile_id].is_looking = row.is_looking;
           users[row.profile_id].display_location = row.display_location;
         }
@@ -142,7 +139,7 @@ export default class UserService {
           ) RETURNING id;
           COMMIT;
         `)
-        .on('row', row => { id = row; })
+        .on('row', (row) => { id = row; })
         .on('error', error => reject(error))
         .on('end', () => {
           connection.done();

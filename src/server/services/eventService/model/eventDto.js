@@ -11,5 +11,5 @@ export const eventMapper = (event, user) => {
     name: event.name,
     imageUrl: event.image_url,
     user,
-  }
-}
+  };
+};

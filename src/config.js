@@ -1,7 +1,6 @@
-'use strict';
-const path = require('path');
+import path from 'path';
 
-const config = module.exports = {
+const config = {
   port: process.env.PORT || 8080,
   dataBackend: 'datastore',
   gcloud: {
@@ -10,8 +9,10 @@ const config = module.exports = {
   },
   cloudAudioStorageBucket: 'noteable-audio-storage',
   cloudImageStorageBucket: 'user-image-files-staging',
-  connectionString: process.env.DATABASE_URL || `postgres://bxujcozubyosgb:m1rgVoS1lEpdCZVRos6uWZVouU@ec2-54-235-146-58.compute-1.amazonaws.com:5432/d42dnjskegivlt?ssl=true`
+  connectionString: process.env.DATABASE_URL || 'postgres://bxujcozubyosgb:m1rgVoS1lEpdCZVRos6uWZVouU@ec2-54-235-146-58.compute-1.amazonaws.com:5432/d42dnjskegivlt?ssl=true',
 };
+
+export default config;
 
 const projectId = config.gcloud.projectId;
 

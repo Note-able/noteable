@@ -51,7 +51,7 @@ export default class NewsfeedService {
         connection.client.query(
           `INSERT INTO ${Metadata.columns('', 'INSERT')}
             VALUES ${Metadata.values(metadataDto, 'INSERT')} RETURNING id;`
-        ).on('row', row => id = row)
+        ).on('row', (row) => { id = row; })
         .on('error', error => reject(error))
         .on('end', () => resolve(id));
       });
@@ -75,14 +75,12 @@ export default class NewsfeedService {
           this.options.connect(this.options.database, (connection) => {
             connection.client.query(
               `INSERT INTO ${Newsfeed.columns('INSERT')} VALUES ${values(newsfeedDto, 'INSERT')} RETURNING id;`
-            ).on('row', row => id = row)
+            ).on('row', (row) => { id = row; })
             .on('error', error => reject(error))
             .on('end', () => resolve(id));
           });
         })
-        .catch(error => {
-          return reject(error);
-        });
+        .catch(error => reject(error));
     });
   }
 
@@ -96,7 +94,7 @@ export default class NewsfeedService {
       this.options.connect(this.options.database, (connection) => {
         connection.client.query(
           `SELECT ${Newsfeed.columns('SELECT')} WHERE n.id = ${newsfeedItemId};`
-        ).on('row', row => newsitem = row)
+        ).on('row', (row) => { newsitem = row; })
         .on('error', error => reject(error))
         .on('end', () => resolve(newsitem));
       });
@@ -113,9 +111,7 @@ export default class NewsfeedService {
       limit = limit || 0;
 
       const newsfeedItems = [];
-      console.log(`SELECT ${Newsfeed.columns('SELECT')}
-          WHERE n.destination_id = ${destinationId} AND n.id > ${offsetId}
-          LIMIT ${limit};`);
+
       this.options.connect(this.options.database, (connection) => {
         connection.client.query(
           `SELECT ${Newsfeed.columns('SELECT')}

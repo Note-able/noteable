@@ -42,43 +42,43 @@ export const DbNewsfeedHelper = () => ({
   },
 
   columns: (kind, id) => {
-    switch(kind) {
-      case 'INSERT':
-        return `public.newsfeed (
-          kind,
-          created_date,
-          is_deleted,
-          destination_id,
-          author_id,
-          content_metadata,
-          text,
-          modified_date);
-        `;
-      case 'SELECT':
-        return `n.kind, n.created_date, n.is_deleted, n.destination_id, n.author, n.content_metadata, n.text, n.modified_date, m.event_id, m.music_id, m.url, m.id as metadata_id, n.id
-        FROM public.newsfeed n 
-        INNER JOIN public.content_metadata m 
-        ON m.id = n.content_metadata`;
-      default:
-        return '*';
+    switch (kind) {
+    case 'INSERT':
+      return `public.newsfeed (
+        kind,
+        created_date,
+        is_deleted,
+        destination_id,
+        author_id,
+        content_metadata,
+        text,
+        modified_date);
+      `;
+    case 'SELECT':
+      return `n.kind, n.created_date, n.is_deleted, n.destination_id, n.author, n.content_metadata, n.text, n.modified_date, m.event_id, m.music_id, m.url, m.id as metadata_id, n.id
+      FROM public.newsfeed n 
+      INNER JOIN public.content_metadata m 
+      ON m.id = n.content_metadata`;
+    default:
+      return '*';
     }
   },
 
   values: ({ createdDate, kind, isDeleted, authorId, destinationId, contentMetadataId, text, modifiedDate, id }, query) => {
-    switch(query) {
-      case 'INSERT':
-        return `(
-          ${createdDate},
-          ${kind},
-          ${isDeleted || '0'},
-          ${authorId},
-          ${contentMetadataId},
-          '${text},
-          ${modifiedDate},
-          ${destinationId}
-        )`;
-      default:
-        return '';
+    switch (query) {
+    case 'INSERT':
+      return `(
+        ${createdDate},
+        ${kind},
+        ${isDeleted || '0'},
+        ${authorId},
+        ${contentMetadataId},
+        '${text},
+        ${modifiedDate},
+        ${destinationId}
+      )`;
+    default:
+      return '';
     }
   },
 
@@ -88,6 +88,6 @@ export const DbNewsfeedHelper = () => ({
     1: 'event',
     event: 1,
     2: 'engagement',
-    engagement: 2
-  }
+    engagement: 2,
+  },
 });

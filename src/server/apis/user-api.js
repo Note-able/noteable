@@ -1,7 +1,7 @@
 import { UserService } from '../services';
+import config from '../../config';
 
 const Formidable = require('formidable');
-const config = require('../../config');
 const image = require('../../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
 const bcrypt = require('bcrypt-nodejs');
 

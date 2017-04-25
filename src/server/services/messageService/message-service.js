@@ -1,5 +1,5 @@
-import { conversationMapper } from './model/conversationDto.js';
-import { UserService } from '../index.js';
+import { conversationMapper } from './model/conversationDto';
+import { UserService } from '../index';
 
 /** MESSAGES API ***/
 /**
@@ -10,21 +10,21 @@ import { UserService } from '../index.js';
  *  DESTINATION
  *  CONVERSATION
  * }
- * 
+ *
  * SEQUENCE CONVERSATION ID
- * 
+ *
  * CONVERSATION {
  *  USERID
  *  CONVERSATIONID
  *  LAST READ MESSAGE
  *  ID
  * }
- * 
+ *
  * CREATE CONVERSATION
  * CREATE MESSAGE
- * 
+ *
  * DELETE CONVERSATION
- * 
+ *
  * GET CONVERSATION BY ID
  * GET CONVERSATIONS BY USER ID
  * GET MESSAGE BY ID
@@ -60,7 +60,7 @@ export default class MessageService {
           return;
         }
 
-        this.getConversationByUserIds(userIds[0], userIds[1]).then(result => {
+        this.getConversationByUserIds(userIds[0], userIds[1]).then((result) => {
           if (result) {
             resolve(result);
             return;
@@ -80,7 +80,7 @@ export default class MessageService {
             COMMIT;
           `)
           .on('row', (row) => { conversation.push(row); })
-          .on('error', (error) => { reject(error); return; })
+          .on('error', (error) => { reject(error); })
           .on('end', () => {
             connection.done();
             resolve(conversation[0].createconversation);
@@ -129,14 +129,13 @@ export default class MessageService {
             
             DROP TABLE conversations_temp;
           COMMIT;`)
-          .on('row', row => { conversations.push(row); })
-          .on('error', error => { reject(error); return; })
+          .on('row', (row) => { conversations.push(row); })
+          .on('error', (error) => { reject(error); })
           .on('end', () => {
             connection.done();
             resolve(conversations);
           });
-
-      })
+      });
     });
   }
 
@@ -164,15 +163,15 @@ export default class MessageService {
           WHERE is_deleted = 0 AND conversation_id = ${conversationId}
           LIMIT 20;
         `)
-        .on('row', row => { conversation.push(row); })
-        .on('error', error => { reject(error); return; })
-        .on('end', () => { 
+        .on('row', (row) => { conversation.push(row); })
+        .on('error', (error) => { reject(error); })
+        .on('end', () => {
           connection.done();
           const messages = [  ...conversation ];
-          messages.splice(0,1);
+          messages.splice(0, 1);
           resolve(conversation.length > 0 ? { conversation: conversation[0], messages } : null);
         });
-      })
+      });
     });
   }
 
@@ -197,9 +196,9 @@ export default class MessageService {
           ON c2.conversation_id = c1.conversation_id
           WHERE c1.user_id = ${userId} and c2.user_id = ${otherUserId};
         `)
-        .on('row', row => { conversation.push(row); })
-        .on('error', error => { reject(error); return; })
-        .on('end', () => { 
+        .on('row', (row) => { conversation.push(row); })
+        .on('error', (error) => { reject(error); })
+        .on('end', () => {
           connection.done();
           if (conversation.length !== 0) {
             return this.getConversation(conversation[0].conversation_id, userId)
@@ -208,7 +207,7 @@ export default class MessageService {
 
           resolve(null);
         });
-      })
+      });
     });
   }
 
@@ -230,14 +229,13 @@ export default class MessageService {
         connection.client.query(`
           SELECT * FROM messages WHERE user_id = ${userId} AND id = ${messageId} AND is_deleted = 0 LIMIT 20;
         `)
-        .on('row', row => { message.push(row); })
-        .on('error', error => { reject(error); return; })
+        .on('row', (row) => { message.push(row); })
+        .on('error', (error) => { reject(error); })
         .on('end', () => {
           connection.done();
           resolve(message[0]);
-          return; 
         });
-      })
+      });
     });
   }
 
@@ -258,9 +256,9 @@ export default class MessageService {
           `;
           const messages = [];
           connection.client.query(query)
-          .on('row', row => { messages.push(row); })
-          .on('error', error => { reject({ error, query }); return; })
-          .on('end', end => {
+          .on('row', (row) => { messages.push(row); })
+          .on('error', (error) => { reject({ error, query }); })
+          .on('end', (end) => {
             connection.done();
             resolve(messages);
           });
@@ -288,8 +286,8 @@ export default class MessageService {
           VALUES ('${content}', ${userId}, now(), ${destinationId == null ? 'default' : destinationId}, ${conversationId})
           RETURNING id;
         `)
-        .on('row', row => { messageId = row.id })
-        .on('error', error => { reject(error); return; })
+        .on('row', (row) => { messageId = row.id; })
+        .on('error', (error) => { reject(error); })
         .on('end', () => {
           connection.done();
           resolve(messageId);
@@ -315,8 +313,8 @@ export default class MessageService {
         connection.client.query(`
           UPDATE messages SET is_deleted = 1 where id = ${messageId} RETURNING id;
         `)
-        .on('row', row => { messageId = row.id; })
-        .on('error', error => { reject(error); return; })
+        .on('row', (row) => { messageId = row.id; })
+        .on('error', (error) => { reject(error); })
         .on('end', () => {
           connection.done();
           resolve(messageId);
@@ -342,8 +340,8 @@ export default class MessageService {
         connection.client.query(`
           UPDATE messages SET is_deleted = 1 where conversation_id = ${conversationId} RETURNING id;
         `)
-        .on('row', row => { conversations.push(row.id); })
-        .on('error', error => { reject(error); return; })
+        .on('row', (row) => { conversations.push(row.id); })
+        .on('error', (error) => { reject(error); })
         .on('end', () => {
           connection.done();
           resolve(conversations.length);

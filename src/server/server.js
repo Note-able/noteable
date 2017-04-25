@@ -7,9 +7,10 @@ import LocalStrategy from 'passport-local';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import session from 'express-session';
 import Formidable from 'formidable';
-import { UserService } from './services';
 import fs from 'fs';
+import { UserService } from './services';
 import { connectToDb, ensureAuthenticated, validatePassword, generateToken, validateWithProvider } from './server-util';
+import config from '../config';
 
 const MongoStore = require('connect-mongo')(session);
 
@@ -18,13 +19,10 @@ console.log(env);
 global.DEBUG = env !== 'production' && env !== 'internal';
 global.PRODUCTION = env === 'production';
 global.CLIENT = false;
-console.log(global.PRODUCTION);
 
 const app = express();
 app.use(express.static(`${__dirname}/../../public`));
-const config = require('../config');
 
-const image = require('../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
 const userService = new UserService({ auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
 
 // set up Jade
@@ -111,7 +109,7 @@ passport.use(new FacebookStrategy({
         });
       }
     });
-  }
+  },
 ));
 
 const jwtOptions = {
@@ -138,7 +136,7 @@ passport.use(new JwtStrategy(jwtOptions, (profile, done) => {
         return null;
       });
     }
-  })
+  });
 }));
 
 app.get('/auth/facebook',
@@ -164,12 +162,10 @@ app.post('/auth/jwt',
               connection.done();
               return res.status(200).json({
                 token: `JWT ${generateToken(user)}`,
-                user: user,
-              })
+                user,
+              });
             })
-            .on('end', () => {
-              return res.status(404).send();
-            });
+            .on('end', () => res.status(404).send());
           }
         });
       });
@@ -192,13 +188,13 @@ require('./api-routes')(app, { auth: ensureAuthenticated, connect: connectToDb, 
 
 /* Normal Routes */
 app.get('/*', (req, res) => {
-  userService.getUser(req.user ? req.user.id : null, user => {
+  userService.getUser(req.user ? req.user.id : null, (user) => {
     res.render('index', {
       props: encodeURIComponent(JSON.stringify(
         {
           isAuthenticated: user == null,
           profile: user,
-        }
+        },
       )),
       env: global.PRODUCTION ? 'production' : 'dev',
     });

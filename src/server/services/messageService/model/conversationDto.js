@@ -1,16 +1,16 @@
 import { userMapper } from '../../userService/model/userDto.js'
 
 export const conversationMapper = (users, conversation) => {
-  const messages = conversation.messages.map((dbMessage) => ({
-      id: dbMessage.id,
-      content: dbMessage.content,
-      userId: dbMessage.user_id,
-      timeStamp: dbMessage.time_stamp,
-      isDeleted: dbMessage.is_deleted,
-      conversationId: dbMessage.conversation_id,
+  const messages = conversation.messages.map(dbMessage => ({
+    id: dbMessage.id,
+    content: dbMessage.content,
+    userId: dbMessage.user_id,
+    timeStamp: dbMessage.time_stamp,
+    isDeleted: dbMessage.is_deleted,
+    conversationId: dbMessage.conversation_id,
   }));
   return { users, id: conversation.conversation.conversation_id, messages };
-}
+};
 
 export const conversationsMapper = (users, conversations) => {
   users = users.reduce((map, user) => { map[user.id] = user; return map; }, {});
@@ -25,8 +25,8 @@ export const conversationsMapper = (users, conversations) => {
   return Object.keys(conversationMap).map((id) => {
     return { id, users: conversationMap[id].users, lastMessage: conversationMap[id].lastMessage };
   });
-}
+};
 
 export const messageMapper = (dbMessage) => {
 
-}
+};

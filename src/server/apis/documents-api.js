@@ -46,7 +46,7 @@ module.exports = function documentsApi(app, options) {
       connection.client.query(`SELECT id, title, description, date, modified, profiles FROM public.documents
         WHERE ${req.user.id} = ANY (SELECT unnest(profiles) from public.documents) AND ${req.params.documentId} = id;`)
       .on('row', (row) => { song.push(row); })
-      .on('error', (error) => { console.log(`error encountered ${error}`) })
+      .on('error', (error) => { console.log(`error encountered ${error}`); })
       .on('end', () => {
         if (song.length > 0) {
           connection.client.query(`UPDATE public.documents SET contents = '${JSON.stringify(req.body)}', modified = current_timestamp

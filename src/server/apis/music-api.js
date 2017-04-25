@@ -1,7 +1,7 @@
 import { MediaService } from '../services';
+import config from '../../config';
 
 const Formidable = require('formidable');
-const config = require('../../config');
 const audio = require('../../util/gcloud-util')(config.gcloud, config.cloudAudioStorageBucket);
 
 module.exports = function musicApi(app, options) {
@@ -21,16 +21,16 @@ module.exports = function musicApi(app, options) {
     form.parse(req, (err, fields) => {
       const buffer = new Buffer(fields.file, 'base64');
       audio.sendUploadToGCS(fields.extension ? fields.extension : '.mp3', buffer)
-        .then(result => {
+        .then((result) => {
           mediaService.createMusic({ audioUrl: result.cloudStoragePublicUrl, author: req.user.id, createdDate: new Date().toISOString(), name: fields.name, size: fields.size })
             .then((id) => {
               res.status(201).json({ id });
             })
-            .catch(error => {
+            .catch((error) => {
               res.json(error);
             });
         })
-        .catch(response => {
+        .catch((response) => {
           console.log(response.error);
           res.status(500).send();
         });
@@ -46,7 +46,7 @@ module.exports = function musicApi(app, options) {
 
     mediaService.getMusicByUser(req.user.id, serviceOptions)
       .then(result => res.json(result))
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
         res.json(error);
       });
@@ -58,8 +58,8 @@ module.exports = function musicApi(app, options) {
     }
 
     mediaService.getMusic(req.params.recordingId)
-      .then((result) => res.json(result))
-      .catch(error => {
+      .then(result => res.json(result))
+      .catch((error) => {
         console.log(error);
         res.error(error);
       });

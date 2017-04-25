@@ -11,7 +11,8 @@ module.exports = function eventsApi(app, options) {
   const eventService = new EventService(options);
 
 
-  /** Events API - consider moving the queries to elasticsearch to order by popularity of events and user ratings **/
+  /** Events API - **/
+  /* TODO: consider moving the queries to elasticsearch to order by popularity of events and user ratings */
 
   app.get('/api/events', (req, res) => {
     eventService.getEventsByLocation()

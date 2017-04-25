@@ -1,7 +1,7 @@
-import { DbMetadataHelper } from './dbMetadataHelper.js';
-import { DbNewsfeedHelper } from './dbNewsfeedHelper.js';
+import { DbMetadataHelper } from './dbMetadataHelper';
+import { DbNewsfeedHelper } from './dbNewsfeedHelper';
 
 export {
   DbMetadataHelper,
-  DbNewsfeedHelper
+  DbNewsfeedHelper,
 };

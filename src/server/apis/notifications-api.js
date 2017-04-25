@@ -34,7 +34,7 @@ module.exports = function notificationsApi(app, options) {
       .then(() => {
         res.status(201).send();
       })
-      .catch(error => {
+      .catch((error) => {
         res.json(error);
       });
   });
@@ -52,7 +52,7 @@ module.exports = function notificationsApi(app, options) {
     } else {
       notificationService.getNotifications(req.query.ids, req.query.limit || DEFAULT_QUERY_SIZE, req.query.status || 0)
         .then(notifications => res.json(notifications))
-        .catch(error => res.json(errors));
+        .catch(error => res.json(error));
     }
   });
 

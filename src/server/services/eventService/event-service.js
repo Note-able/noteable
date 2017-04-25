@@ -1,5 +1,5 @@
-import { eventMapper } from './model/eventDto.js';
-import { UserService } from '../index.js';
+import { eventMapper } from './model/eventDto';
+import { UserService } from '../index';
 
 export default class EventService {
   constructor(options) {
@@ -7,7 +7,7 @@ export default class EventService {
     this.m_userService = new UserService(options);
   }
 
-  //TODO: Actually get them by location
+  // TODO: Actually get them by location
   getEventsByLocation() {
     return new Promise((resolve, reject) => {
       this.options.connect(this.options.database, (connection) => {
@@ -19,8 +19,8 @@ export default class EventService {
         const events = [];
         connection.client.query(`
           SELECT * FROM events LIMIT 50;`)
-          .on('row', row => { events.push(row); })
-          .on('error', error => { reject(error); return; })
+          .on('row', (row) => { events.push(row); })
+          .on('error', (error) => { reject(error); })
           .on('end', () => {
             connection.done();
             let userIds = events.map(event => event.user_id);
@@ -30,7 +30,7 @@ export default class EventService {
               resolve(events.map((event) => { return eventMapper(event, usersById[event.user_id]); }));
             });
           });
-      })
+      });
     });
   }
 

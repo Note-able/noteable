@@ -39,14 +39,14 @@ module.exports = function messagesApi(app, options) {
 
     const userIds = req.body.userIds.split(',');
     messageService.createConversation(userIds)
-      .then(result => {
+      .then((result) => {
         if (typeof (result) === 'object') {
           res.status(200).json(result);
         } else {
           res.status(201).json({ conversationId: result });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         res.status(500).json(error);
       });
   });
@@ -56,13 +56,13 @@ module.exports = function messagesApi(app, options) {
       res.status(404).send();
     } else {
       messageService.getConversationsByUserId(req.user.id)
-        .then(conversations => {
+        .then((conversations) => {
           const userIds = [...new Set(conversations.map(x => x.user_id))];
           userService.getUsers(userIds, (users) => {
             res.status(200).json(conversationsMapper(users, conversations));
           });
         })
-        .catch(error => {
+        .catch((error) => {
           res.status(500).json(error);
         });
     }
@@ -75,14 +75,14 @@ module.exports = function messagesApi(app, options) {
       res.status(400).send();
     } else {
       messageService.getConversation(req.params.conversationId, req.user.id)
-        .then(conversation => {
+        .then((conversation) => {
           // TODO: support groups or multiple userIds
           const userIds = [...new Set(conversation.messages.map(x => x.user_id))];
           userService.getUsers(userIds, (users) => {
             res.status(200).json(conversationMapper(users, conversation));
           });
         })
-        .catch(error => {
+        .catch((error) => {
           res.status(500).json(error);
         });
     }
@@ -100,10 +100,10 @@ module.exports = function messagesApi(app, options) {
     }
 
     messageService.getMessage(req.params.messageId, req.user.id)
-      .then(message => {
+      .then((message) => {
         res.status(200).json(message);
       })
-      .catch(error => {
+      .catch((error) => {
         res.status(500).json(error);
       });
   });
@@ -115,10 +115,10 @@ module.exports = function messagesApi(app, options) {
       res.status(400).send();
     } else {
       messageService.getMessages(req.user.id, req.params.conversationId, req.query.start, req.query.count)
-        .then(messages => {
+        .then((messages) => {
           res.status(200).json(messages);
         })
-        .catch(error => {
+        .catch((error) => {
           res.status(500).json(error);
         });
     }
@@ -136,11 +136,10 @@ module.exports = function messagesApi(app, options) {
     }
 
     messageService.createMessage(req.body.conversationId, req.body.userId, req.body.content, req.body.destinationId)
-      .then(messageId => {
+      .then((messageId) => {
         res.status(201).json({ messageId });
-        return;
       })
-      .catch(error => {
+      .catch((error) => {
         res.status(500).json(error);
       });
   });
@@ -154,10 +153,10 @@ module.exports = function messagesApi(app, options) {
     }
 
     messageService.deleteMessage(req.params.messageId)
-      .then(count => {
+      .then((count) => {
         res.status(200).json(count);
       })
-      .catch(error => {
+      .catch((error) => {
         res.status(500).json(error);
       });
   });
@@ -171,10 +170,10 @@ module.exports = function messagesApi(app, options) {
     }
 
     messageService.deleteConversation(req.params.conversationId)
-      .then(count => {
+      .then((count) => {
         res.status(200).json(count);
       })
-      .catch(error => {
+      .catch((error) => {
         res.status(500).json(error);
       });
   });

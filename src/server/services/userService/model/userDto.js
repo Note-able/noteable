@@ -27,5 +27,5 @@ export const UserDbHelper = () => ({
   columns: (t, kind) => {
     const pre = t == null || t === '' ? '' : `${t}.`;
     return `${pre}id, ${pre}email, ${pre}location, ${pre}cover_url, ${pre}first_name, ${pre}last_name, ${pre}avatar_url, ${pre}bio, ${pre}zip_code, ${pre}profession`;
-  }
+  },
 });
