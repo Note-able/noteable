@@ -11,8 +11,8 @@ export function connectToDb(connectionString, callback) {
       error = err;
     }
     console.log(error);
-    const connection = err ? { status : 'ERROR', error : error } : { status : 'SUCCESS', client : client, done };
-    if(callback){
+    const connection = err ? { status: 'ERROR', error } : { status: 'SUCCESS', client, done };
+    if (callback) {
       callback(connection);
       return null;
     }
@@ -20,9 +20,9 @@ export function connectToDb(connectionString, callback) {
   });
 }
 
-export function ensureAuthenticated (req, res, next) {
-  passport.authenticate('jwt', { session: false }, function(err, user, info) {
-    if (err || !user) { 
+export function ensureAuthenticated(req, res, next) {
+  passport.authenticate('jwt', { session: false }, (err, user, info) => {
+    if (err || !user) {
       if (req.isAuthenticated()) {
         next();
         return;
@@ -45,24 +45,23 @@ export function generateToken(user) {
 
 const providers = {
   facebook: {
-      url: 'https://graph.facebook.com/me'
-  }
+    url: 'https://graph.facebook.com/me',
+  },
 };
 
 export function validateWithProvider(network, socialToken) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
   // Send a GET request to Facebook with the token as query string
     request({
-        url: providers[network].url,
-        qs: {access_token: socialToken}
-      },
-      function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          resolve(JSON.parse(body));
-        } else {
-          reject(err);
-        }
+      url: providers[network].url,
+      qs: { access_token: socialToken },
+    },
+    (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        resolve(JSON.parse(body));
+      } else {
+        reject(error);
       }
-    );
+    });
   });
 }
