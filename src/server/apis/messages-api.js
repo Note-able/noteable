@@ -1,7 +1,7 @@
 import { MessageService, UserService } from '../services';
 import { conversationMapper, conversationsMapper } from '../services/messageService/model/conversationDto';
 
-module.exports = function messagesApi(app, options) {
+module.exports = function messagesApi(app, options, prefix) {
   const messageService = new MessageService(options);
   const userService = new UserService(options);
 
@@ -31,7 +31,7 @@ module.exports = function messagesApi(app, options) {
    * GET MESSAGE BY ID
    */
 
-  app.post('/conversations', options.auth, (req, res) => {
+  app.post(`${prefix}/conversations`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
       return;
@@ -51,7 +51,7 @@ module.exports = function messagesApi(app, options) {
       });
   });
 
-  app.get('/conversations', options.auth, (req, res) => {
+  app.get(`${prefix}/conversations`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
     } else {
@@ -68,7 +68,7 @@ module.exports = function messagesApi(app, options) {
     }
   });
 
-  app.get('/conversation/:conversationId', options.auth, (req, res) => {
+  app.get(`${prefix}/conversation/:conversationId`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
     } else if (req.params.conversationId == null) {
@@ -88,7 +88,7 @@ module.exports = function messagesApi(app, options) {
     }
   });
 
-  app.get('/message/:messageId', options.auth, (req, res) => {
+  app.get(`${prefix}/message/:messageId`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
       return;
@@ -108,7 +108,7 @@ module.exports = function messagesApi(app, options) {
       });
   });
 
-  app.get('/messages/:conversationId', options.auth, (req, res) => {
+  app.get(`${prefix}/messages/:conversationId`, options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
     } else if (req.params.conversationId == null) {
@@ -124,7 +124,7 @@ module.exports = function messagesApi(app, options) {
     }
   });
 
-  app.post('/messages', options.auth, (req, res) => {
+  app.post(`${prefix}/messages`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
       return;
@@ -144,7 +144,7 @@ module.exports = function messagesApi(app, options) {
       });
   });
 
-  app.delete('/message/:messageId', options.auth, (req, res) => {
+  app.delete(`${prefix}/message/:messageId`, options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
@@ -161,7 +161,7 @@ module.exports = function messagesApi(app, options) {
       });
   });
 
-  app.delete('/conversation/:conversationId', options.auth, (req, res) => {
+  app.delete(`${prefix}/conversation/:conversationId`, options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;

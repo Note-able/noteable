@@ -4,7 +4,7 @@ import config from '../../config';
 const Formidable = require('formidable');
 const audio = require('../../util/gcloud-util')(config.gcloud, config.cloudAudioStorageBucket);
 
-module.exports = function musicApi(app, options) {
+module.exports = function musicApi(app, options, prefix) {
   const mediaService = new MediaService(options);
 
   /** MUSIC API **/
@@ -14,7 +14,7 @@ module.exports = function musicApi(app, options) {
 
   /** queryParams: limit, offset */
 
-  app.post('/recordings', options.auth, (req, res) => {
+  app.post(`${prefix}/recordings`, options.auth, (req, res) => {
     const form = new Formidable.IncomingForm();
     form.uploadDir = '/uploads';
 
@@ -37,7 +37,7 @@ module.exports = function musicApi(app, options) {
     });
   });
 
-  app.get('/recordings', options.auth, (req, res) => {
+  app.get(`${prefix}/recordings`, options.auth, (req, res) => {
     if (!req.user) {
       return res.status(404).send();
     }
@@ -65,7 +65,7 @@ module.exports = function musicApi(app, options) {
       });
   });
 
-  app.patch('/recordings/:id', options.auth, (req, res) => {
+  app.patch(`${prefix}/recordings/:id`, options.auth, (req, res) => {
     if (!req.user) {
       return res.status(404).send();
     }
@@ -73,7 +73,7 @@ module.exports = function musicApi(app, options) {
     // TODO: Add recoridng update
   });
 
-  app.delete('/recordings/:id', options.auth, (req, res) => {
+  app.delete(`${prefix}/recordings/:id`, options.auth, (req, res) => {
     if (!req.user) {
       return res.status(404).send();
     }

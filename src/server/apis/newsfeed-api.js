@@ -1,6 +1,6 @@
 import { NewsfeedService } from '../services';
 
-module.exports = function newsfeedApi(app, options) {
+module.exports = function newsfeedApi(app, options, prefix) {
   const newsfeedService = new NewsfeedService(options);
 
   /** Newsfeed API **/
@@ -30,7 +30,7 @@ module.exports = function newsfeedApi(app, options) {
       }
     }
   */
-  app.post('/newsfeed', options.auth, (req, res) => {
+  app.post(`${prefix}/newsfeed`, options.auth, (req, res) => {
     if (req.user == null) {
       return res.status(404).send();
     }
@@ -52,7 +52,7 @@ module.exports = function newsfeedApi(app, options) {
     .catch(error => res.json(error));
   });
 
-  app.get('/newsfeed/:destinationId', options.auth, (req, res) => {
+  app.get(`${prefix}/newsfeed/:destinationId`, options.auth, (req, res) => {
     if (req.user == null) {
       return res.status(404).send();
     }

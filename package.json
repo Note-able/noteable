@@ -11,7 +11,7 @@
     "dist": "./node_modules/.bin/webpack && rm -rf ./lib && mkdir ./lib && mkdir ./lib/src && mkdir ./lib/src/server && ./node_modules/.bin/babel ./src/server --out-dir ./lib/src/server && ./node_modules/.bin/babel ./src/util --out-dir ./lib/src/util && ./node_modules/.bin/babel server.js -o ./lib/server.js && ./node_modules/.bin/babel ./src/config.js -o ./lib/src/config.js && cp -a ./views ./lib && cp -a ./public ./lib && cp Noteable-e4d2cea40c15.json ./lib",
     "icons": "node civilize-svgs.js ./public/icons ./src/shared/components/icons",
     "lint": "./node_modules/.bin/eslint ./src",
-    "server": "node lib/server/server",
+    "server": "node lib/src/server/server",
     "mongo": "sudo mongod --dbpath=/data",
     "dev-server": "./node_modules/.bin/webpack && ./node_modules/.bin/webpack-dev-server --config ./webpack.dev.config.js --port 8081 --content-base dist",
     "start-dev": "rm -rf dist && ./node_modules/.bin/webpack && ./node_modules/.bin/webpack-dev-server --config ./webpack.dev.config.js --port 8081 --content-base dist",

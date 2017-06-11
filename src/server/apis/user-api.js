@@ -5,7 +5,7 @@ const Formidable = require('formidable');
 const image = require('../../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
 const bcrypt = require('bcrypt-nodejs');
 
-module.exports = function userApi(app, options) {
+module.exports = function userApi(app, options, prefix) {
   const userService = new UserService(options);
 
   /** *PICTURES API* **/
@@ -35,11 +35,11 @@ module.exports = function userApi(app, options) {
     });
   };
 
-  app.get('/user/me', options.auth, (req, res) => {
+  app.get(`${prefix}/user/me`, options.auth, (req, res) => {
     res.redirect(`/user/${req.user.id}`);
   });
 
-  app.get('/user/search/{text}', options.auth, (req, res) => {
+  app.get(`${prefix}/user/search/{text}`, options.auth, (req, res) => {
     if (req.params.text.length === 0) {
       res.status(400).send();
     } else {
@@ -49,14 +49,14 @@ module.exports = function userApi(app, options) {
 
   /** USER API **/
 
-  app.post('/user/edit', options.auth, options.auth, (req, res) => {
+  app.post(`${prefix}/user/edit`, options.auth, options.auth, (req, res) => {
     options.connect(options.database, (connection) => {
       console.log(connection);
     });
     res.send('lol');
   });
 
-  app.post('/register', (req, res) => {
+  app.post(`${prefix}/register`, (req, res) => {
     if (req.body.email == null || req.body.password == null) {
       res.status(400).json({ badRequest: 'empty username or password' });
       return;
@@ -79,7 +79,7 @@ module.exports = function userApi(app, options) {
     });
   });
 
-  app.post('/user/profile/:userId', options.auth, (req, res) => {
+  app.post(`${prefix}/user/profile/:userId`, options.auth, (req, res) => {
     if (req.user.id !== req.params.userId) {
       res.status(400).send();
       return;
@@ -90,7 +90,7 @@ module.exports = function userApi(app, options) {
     });
   });
 
-  app.get('/user/:id', options.auth, (req, res) => {
+  app.get(`${prefix}/user/:id`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
       return;
@@ -106,7 +106,7 @@ module.exports = function userApi(app, options) {
     });
   });
 
-  app.post('/user/edit/picture/new', options.auth, (req, res) => {
+  app.post(`${prefix}/user/edit/picture/new`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
     }
@@ -130,7 +130,7 @@ module.exports = function userApi(app, options) {
     });
   });
 
-  app.post('/user/follow/:userId', options.auth, (req, res) => {
+  app.post(`${prefix}/user/follow/:userId`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
     }

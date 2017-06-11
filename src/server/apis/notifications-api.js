@@ -2,7 +2,7 @@ import { NotificationService } from '../services';
 
 const DEFAULT_QUERY_SIZE = 30;
 
-module.exports = function notificationsApi(app, options) {
+module.exports = function notificationsApi(app, options, prefix) {
   const notificationService = new NotificationService(options);
 
   /** Notifications API **/
@@ -15,7 +15,7 @@ module.exports = function notificationsApi(app, options) {
   // app.post('/notifications/delete/{notificationId}', options.auth, (req, res) => {});
 
   /** body: { createdDate, kind, recipientId, sourceId, status  } */
-  app.post('/notifications', options.auth, (req, res) => {
+  app.post(`${prefix}/notifications`, options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
@@ -40,7 +40,7 @@ module.exports = function notificationsApi(app, options) {
   });
 
   /** queryParams(optional): ids, limit, offsetId, status */
-  app.get('/notifications', options.auth, (req, res) => {
+  app.get(`${prefix}/notifications`, options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
     }
@@ -57,7 +57,7 @@ module.exports = function notificationsApi(app, options) {
   });
 
   /** routeParams: notificationId */
-  app.get('/notifications/:notificationId', options.auth, (req, res) => {
+  app.get(`${prefix}/notifications/:notificationId`, options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
@@ -69,7 +69,7 @@ module.exports = function notificationsApi(app, options) {
   });
 
   /** queryParams: ids(optional) */
-  app.post('/notifications/markread', options.auth, (req, res) => {
+  app.post(`${prefix}/notifications/markread`, options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
@@ -81,7 +81,7 @@ module.exports = function notificationsApi(app, options) {
   });
 
   /** routeParams: notificationId */
-  app.post('/notifications/delete/:notificationId', options.auth, (req, res) => {
+  app.post(`${prefix}/notifications/delete/:notificationId`, options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;

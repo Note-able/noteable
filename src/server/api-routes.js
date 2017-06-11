@@ -17,11 +17,13 @@ module.exports = function (app, options) {
     });
   });
 
-  userApi(app, options);
-  eventsApi(app, options);
-  documentsApi(app, options);
-  messagesApi(app, options);
-  musicApi(app, options);
-  newsfeedApi(app, options);
-  notificationsApi(app, options);
+  const prefix = '/api/v1';
+
+  userApi(app, options, prefix);
+  eventsApi(app, options, prefix);
+  documentsApi(app, options, prefix);
+  messagesApi(app, options, prefix);
+  musicApi(app, options, prefix);
+  newsfeedApi(app, options, prefix);
+  notificationsApi(app, options, prefix);
 };

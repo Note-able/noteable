@@ -7,14 +7,14 @@ function escaper(char) {
   return r[m.indexOf(char)];
 }
 
-module.exports = function eventsApi(app, options) {
+module.exports = function eventsApi(app, options, prefix) {
   const eventService = new EventService(options);
 
 
   /** Events API - **/
   /* TODO: consider moving the queries to elasticsearch to order by popularity of events and user ratings */
 
-  app.get('/api/events', (req, res) => {
+  app.get(`${prefix}/api/events`, (req, res) => {
     eventService.getEventsByLocation()
       .then((events) => {
         res.status(200).json(events);
@@ -24,7 +24,7 @@ module.exports = function eventsApi(app, options) {
       });
   });
 
-  app.get('/api/events/nearby', (req, res) => {
+  app.get(`${prefix}/api/events/nearby`, (req, res) => {
     if (req.query.lat == null || req.query.lng == null || req.query.radius == null) {
       res.status(400).send({
         error: 'The request is missing some parameters',
@@ -68,7 +68,7 @@ module.exports = function eventsApi(app, options) {
     });
   });
 
-  app.post('/api/events/create', options.auth, (req, res) => {
+  app.post(`${prefix}/api/events/create`, options.auth, (req, res) => {
     const event = req.body;
     options.connect(options.database, (connection) => {
       let eventId = -1;
@@ -96,7 +96,7 @@ module.exports = function eventsApi(app, options) {
     });
   });
 
-  app.get('/events/nearby/{location}', options.auth, (req, res) => {
+  app.get(`${prefix}/events/nearby/{location}`, options.auth, (req, res) => {
     res.status(204).send();
     // how the hell do you search based on location?
   });
@@ -137,7 +137,7 @@ module.exports = function eventsApi(app, options) {
     }
   });
 
-  app.get('/events/user/{userId}', options.auth, (req, res) => {
+  app.get(`${prefix}/events/user/{userId}`, options.auth, (req, res) => {
     if (!req.params.userId) {
       res.status(400).send();
     } else {

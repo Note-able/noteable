@@ -1,8 +1,8 @@
-module.exports = function documentsApi(app, options) {
+module.exports = function documentsApi(app, options, prefix) {
 /** DOCUMENTS API **/
 
   // Retrieve all song documents owned by user
-  app.get('/songs/user', options.auth, (req, res) => {
+  app.get(`${prefix}/songs/user`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
     } else {
@@ -18,7 +18,7 @@ module.exports = function documentsApi(app, options) {
     }
   });
 
-  app.get('/document/:documentId', options.auth, (req, res) => {
+  app.get(`${prefix}/document/:documentId`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
     }
@@ -37,7 +37,7 @@ module.exports = function documentsApi(app, options) {
     });
   });
 
-  app.post('/document/:documentId', options.auth, (req, res) => {
+  app.post(`${prefix}/document/:documentId`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
     }
