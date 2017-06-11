@@ -1,13 +1,16 @@
-Use noteable;
-CREATE TABLE IF NOT EXISTS user (
+Use noteable_test;
+
+START TRANSACTION;
+
+CREATE TABLE IF NOT EXISTS users (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   email VARCHAR(120) UNIQUE,
   password VARCHAR(1000),
   username VARCHAR(30) UNIQUE,
   facebook_id VARCHAR(100) UNIQUE
-) EGNINE InnoDB;
+) ENGINE InnoDB;
 
-CREATE TABLE IF NOT EXISTS profile (
+CREATE TABLE IF NOT EXISTS profiles (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   user_id INT NOT NULL UNIQUE,
   email VARCHAR(120) UNIQUE,
@@ -20,8 +23,8 @@ CREATE TABLE IF NOT EXISTS profile (
   zip_code INT,
   is_admin BOOLEAN,
   profession VARCHAR(255),
-  FOREIGN KEY (user_id) REFERENCES user(id)
-) EGNINE InnoDB;
+  FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS events (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -33,8 +36,8 @@ CREATE TABLE IF NOT EXISTS events (
   user_id INT NOT NULL,
   image_url VARCHAR(150),
   description VARCHAR(1000),
-  FOREIGN KEY (user_id) REFERENCES user(id)
-) EGNINE InnoDB;
+  FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS songs (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -43,7 +46,7 @@ CREATE TABLE IF NOT EXISTS songs (
   description VARCHAR(500),
   created DATETIME NOT NULL,
   modified DATETIME,
-  FOREIGN KEY (user_id) REFERENCES user(id)
+  FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS messages (
@@ -53,8 +56,7 @@ CREATE TABLE IF NOT EXISTS messages (
   conversation_id INT NOT NULL,
   user_id INT NOT NULL,
   is_deleted BOOLEAN DEFAULT false,
-  FOREIGN KEY (user_id) REFERENCES user(id),
-  FOREIGN KEY (conversation_id) REFERENCES conversations(id)
+  FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS conversations (
@@ -62,13 +64,15 @@ CREATE TABLE IF NOT EXISTS conversations (
   user_id INT NOT NULL,
   is_deleted BOOLEAN NOT NULL DEFAULT false,
   last_read_message INT,
-  FOREIGN KEY (user_id) REFERENCES user(id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (last_read_message) REFERENCES messages(id)
 ) ENGINE InnoDB;
 
+ALTER TABLE messages ADD CONSTRAINT fk_conversation_id FOREIGN KEY (conversation_id) REFERENCES conversations(id);
+
 CREATE TABLE IF NOT EXISTS instruments (
   id INT PRIMARY KEY AUTO_INCREMENT,
-  instrument VARCHAR(100) NOT NULL,
+  instrument VARCHAR(100) NOT NULL
 ) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS pictures (
@@ -76,21 +80,21 @@ CREATE TABLE IF NOT EXISTS pictures (
   user_id INT NOT NULL,
   file_name VARCHAR(200) NOT NULL,
   picture_type INT NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES user(id)
+  FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS followers (
   user_id INT NOT NULL,
   follower_id INT NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES user(id),
-  FOREIGN KEY (follow_id) REFERENCES user(id)
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (follower_id) REFERENCES users(id)
 ) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS audio (
   id INT PRIMARY KEY AUTO_INCREMENT,
   file_name INT NOT NULL,
   user_id INT NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES user(id)
+  FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS music (
@@ -102,20 +106,20 @@ CREATE TABLE IF NOT EXISTS music (
   name VARCHAR(200) NOT NULL,
   size VARCHAR(50) NOT NULL,
   created_date DATETIME NOT NULL,
-  FOREIGN KEY (author) REFERENCES user(id)
+  FOREIGN KEY (author) REFERENCES users(id)
 ) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS preferences (
   id INT PRIMARY KEY AUTO_INCREMENT,
   profile_id INT NOT NULL,
   is_looking BOOLEAN DEFAULT false,
-  display_location DEFAULT false,
+  display_location BOOLEAN DEFAULT false
 ) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS genres (
   id INT PRIMARY KEY AUTO_INCREMENT,
-  genre VARCHAR(150) NOT NULL,
-) EGNINE InnoDB;
+  genre VARCHAR(150) NOT NULL
+) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS preferred_generes (
   preferences_id INT NOT NULL,
@@ -136,7 +140,7 @@ CREATE TABLE IF NOT EXISTS notifications(
   recipient_id INT,
   source_id INT,
   status INT,
-  FOREIGN KEY (recipient_id) REFERENCES profile(id),
+  FOREIGN KEY (recipient_id) REFERENCES profiles(id),
   FOREIGN KEY (status) REFERENCES notification_status_kind(id)
 ) ENGINE InnoDB;
 
@@ -165,7 +169,9 @@ CREATE TABLE IF NOT EXISTS newsfeed (
   source_id INT,
   recipient_id INT,
   FOREIGN KEY (content_metadata) REFERENCES content_metadata(id),
-  FOREIGN KEY (author) REFERENCES profile(id),
-  FOREIGN KEY (kind) REFERENCES news_item_kind(id)
-  FOREIGN KEY (recipient_id) REFERENCES profile(id)
+  FOREIGN KEY (author) REFERENCES profiles(id),
+  FOREIGN KEY (kind) REFERENCES news_item_kind(id),
+  FOREIGN KEY (recipient_id) REFERENCES profiles(id)
 ) ENGINE InnoDB;
+
+COMMIT;
