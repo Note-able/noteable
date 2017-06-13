@@ -3,6 +3,13 @@ import path from 'path';
 const config = {
   port: process.env.PORT || 8080,
   dataBackend: 'datastore',
+  apiUrl: 'http://test.noteable.me/api/v1',
+  mysqlConnection: {
+    host: '104.236.157.202',
+    user: 'noteable_test',
+    database: 'noteable_test',
+    password: 'jamsesh_tester',
+  },
   gcloud: {
     projectId: process.env.GCLOUD_PROJECT || 'jovial-welder-128202',
     keyFilename: path.resolve(__dirname, '../Noteable-e4d2cea40c15.json'),

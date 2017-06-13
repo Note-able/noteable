@@ -16,6 +16,7 @@ const MongoStore = require('connect-mongo')(session);
 
 const env = process.env.NODE_ENV;
 console.log(env);
+console.log(process.env.TESTING);
 global.DEBUG = env !== 'production' && env !== 'internal';
 global.PRODUCTION = env === 'production';
 global.CLIENT = false;
@@ -201,7 +202,7 @@ app.get('/*', (req, res) => {
   });
 });
 
-if (fs.existsSync('./src/server/keys/server.key')) {
+if (fs.existsSync('./src/server/keys/server.key') && process.env.TESTING !== 'true') {
   const options = {
     key: fs.readFileSync('./src/server/keys/server.key'),
     cert: fs.readFileSync('./src/server/keys/server.crt'),
@@ -227,3 +228,5 @@ const httpServer = app.listen(config.port, () => {
 });
 
 require('./sockets')(httpServer, { auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
+
+module.exports = app;
