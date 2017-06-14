@@ -13,8 +13,9 @@ mocha.describe('User API tests', () => {
     const id = uuidV4();
     agent.post('/api/v1/register')
       .send({ email: `${id}@test.com`, password: 'password', firstName: 'Uncle', lastName: 'Drew' })
-      .expect('set-cookie')
       .end((err, res) => {
+        console.log(err);
+        assert.isNull(err);
         assert.isNotNull(res.body);
         assert.isNotNull(res.body.id);
         done();

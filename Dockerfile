@@ -1,6 +1,6 @@
 # Dockerfile extending the generic Node image with application files for a
 # single application.
-FROM node:boron
+FROM node:8
 
 ARG NODE=production
 

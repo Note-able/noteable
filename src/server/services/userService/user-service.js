@@ -1,3 +1,5 @@
+import mysql from 'mysql2';
+
 import { UserDbHelper } from './model/userDto';
 
 const Users = UserDbHelper();
@@ -123,29 +125,44 @@ export default class UserService {
     });
   }
 
-  registerUser(email, password, firstName, lastName) {
-    return new Promise((resolve, reject) => {
-      this.options.connect(this.options.database, (connection) => {
-        let id;
-        connection.client
-        .query(`
-          BEGIN;
-          INSERT INTO public.user (email, password) VALUES ('${email}', '${password}');
-          INSERT INTO public.profile (email, user_id, first_name, last_name) VALUES (
-            '${email}',
-            currval('user_id_seq'),
-            '${firstName}',
-            '${lastName}'
-          ) RETURNING id;
-          COMMIT;
-        `)
-        .on('row', (row) => { id = row; })
-        .on('error', error => reject(error))
-        .on('end', () => {
-          connection.done();
-          resolve(id);
-        });
+  registerUser = async (email, password, firstName, lastName) => {
+    return new Promise(async (resolve, reject) => {
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+      await connection.beginTransaction((err) => {
+        if (err) {
+          reject(err);
+        }
       });
+
+      const insertUserSql = mysql.format(
+        'INSERT INTO users (email, password) VALUES(?, ?);',
+        [email, password],
+      );
+      let userId;
+      try {
+        const [rows, fields] = await connection.query(insertUserSql);
+        userId = rows.insertId;
+      } catch (err) {
+        reject(err);
+      }
+      const insertProfileSql = mysql.format(
+          'INSERT INTO profiles (email, user_id, first_name, last_name) VALUES (?, ?, ?, ?);',
+          [email, userId, firstName, lastName],
+        );
+      let profileId;
+      try {
+        const [rows] = await connection.execute(insertProfileSql);
+        profileId = rows.insertId;
+      } catch (err) {
+        reject(err);
+      }
+      try {
+        await connection.commit();
+      } catch (err) {
+        connection.rollback();
+        reject(err);
+      }
+      resolve(profileId);
     });
   }
 }

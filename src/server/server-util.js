@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import pg from 'pg';
 import request from 'request';
 import passport from 'passport';
+import mysql from 'mysql2/promise';
 
 export function connectToDb(connectionString, callback) {
   pg.connect(connectionString, (err, client, done) => {
@@ -18,6 +19,10 @@ export function connectToDb(connectionString, callback) {
     }
     return connection;
   });
+}
+
+export function connectToMysqlDb(connectionParameters) {
+  return mysql.createConnection(connectionParameters);
 }
 
 export function ensureAuthenticated(req, res, next) {

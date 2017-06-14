@@ -9,6 +9,7 @@ const config = {
     user: 'noteable_test',
     database: 'noteable_test',
     password: 'jamsesh_tester',
+    multipleStatements: true,
   },
   gcloud: {
     projectId: process.env.GCLOUD_PROJECT || 'jovial-welder-128202',

@@ -9,7 +9,7 @@ import session from 'express-session';
 import Formidable from 'formidable';
 import fs from 'fs';
 import { UserService } from './services';
-import { connectToDb, ensureAuthenticated, validatePassword, generateToken, validateWithProvider } from './server-util';
+import { connectToDb, ensureAuthenticated, validatePassword, generateToken, validateWithProvider, connectToMysqlDb } from './server-util';
 import config from '../config';
 
 const MongoStore = require('connect-mongo')(session);
@@ -185,7 +185,13 @@ app.get('/logout', (req, res) => {
 });
 
 /* Import API Routes */
-require('./api-routes')(app, { auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
+require('./api-routes')(app, {
+  auth: ensureAuthenticated,
+  connect: connectToDb,
+  database: config.connectionString,
+  connectToMysqlDb: connectToMysqlDb,
+  mysqlParameters: config.mysqlConnection,
+});
 
 /* Normal Routes */
 app.get('/*', (req, res) => {
