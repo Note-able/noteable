@@ -35,11 +35,11 @@ module.exports = function userApi(app, options, prefix) {
     });
   };
 
-  app.get(`${prefix}/user/me`, options.auth, (req, res) => {
+  app.get(`${prefix}/users/me`, options.auth, (req, res) => {
     res.redirect(`/user/${req.user.id}`);
   });
 
-  app.get(`${prefix}/user/search/{text}`, options.auth, (req, res) => {
+  app.get(`${prefix}/users/search/{text}`, options.auth, (req, res) => {
     if (req.params.text.length === 0) {
       res.status(400).send();
     } else {
@@ -49,7 +49,7 @@ module.exports = function userApi(app, options, prefix) {
 
   /** USER API **/
 
-  app.post(`${prefix}/user/edit`, options.auth, options.auth, (req, res) => {
+  app.post(`${prefix}/users/edit`, options.auth, options.auth, (req, res) => {
     options.connect(options.database, (connection) => {
       console.log(connection);
     });
@@ -79,34 +79,37 @@ module.exports = function userApi(app, options, prefix) {
     });
   });
 
-  app.post(`${prefix}/user/profile/:userId`, options.auth, (req, res) => {
-    if (req.user.id !== req.params.userId) {
+  app.post(`${prefix}/users/:userId/profile`, options.auth, (req, res) => {
+    console.log('updating profile');
+    if (req.user.id != req.params.userId) {
       res.status(400).send();
       return;
     }
-
-    userService.updateProfile(req.body, () => {
+    console.log('calling user service');
+    userService.updateProfile(req.body, req.user.id)
+    .then(() => {
       res.status(201).send();
     });
   });
 
-  app.get(`${prefix}/user/:id`, options.auth, (req, res) => {
+  app.get(`${prefix}/users/:id`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
       return;
     }
 
-    userService.getUser(req.params.id, (user) => {
-      if (user == null) {
-        res.status(404).send();
-        return;
-      }
+    userService.getUser(req.params.id)
+      .then((user) => {
+        if (user == null) {
+          res.status(404).send();
+          return;
+        }
 
-      res.send(user);
-    });
+        res.send(user);
+      });
   });
 
-  app.post(`${prefix}/user/edit/picture/new`, options.auth, (req, res) => {
+  app.post(`${prefix}/users/edit/picture/new`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
     }
@@ -130,7 +133,7 @@ module.exports = function userApi(app, options, prefix) {
     });
   });
 
-  app.post(`${prefix}/user/follow/:userId`, options.auth, (req, res) => {
+  app.post(`${prefix}/users/:userId/follow`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(400).send();
     }

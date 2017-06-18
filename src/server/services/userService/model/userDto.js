@@ -15,7 +15,7 @@ export const UserDbHelper = () => ({
       bio: dbUser.bio,
       profession: dbUser.profession,
       preferences: {
-        instruments: dbUser.instruments == null ? [] : dbUser.instruments.split(','),
+        instruments: dbUser.instruments || [],
         isLooking: dbUser.is_looking,
         displayLocation: dbUser.display_location,
         preferredGenres: dbUser.preferred_genres,

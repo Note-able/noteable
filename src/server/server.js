@@ -54,33 +54,29 @@ passport.deserializeUser((obj, done) => {
 });
 
 
-passport.use(new LocalStrategy({ callbackURL: '/auth/local/callback' }, (username, password, done) => {
-  connectToDb(config.connectionString, (connection) => {
-    if (connection.status === 'SUCCESS') {
-      let user = null;
-      connection.client
-      .query(`SELECT pr.id, p.password, pr.email FROM public.user p INNER JOIN public.profile pr ON p.id = pr.user_id WHERE pr.email = '${username}';`)
-      .on('row', (row) => {
-        user = row;
-        connection.done();
-        if (!user) {
-          return done(null, false);
-        }
+passport.use(new LocalStrategy({ callbackURL: '/auth/local/callback' }, async (username, password, done) => {
+  const connection = await connectToMysqlDb(config.mysqlConnection);
+  let user = null;
+  console.log('trying to auth');
+  const [rows] = await connection.query(`
+    SELECT pr.id, p.password, pr.email
+    FROM users p
+    INNER JOIN profiles pr
+    ON p.id = pr.user_id WHERE pr.email = ?;`,
+    [username]);
 
-        if (validatePassword(password, user.password)) {
-          return done(null, user);
-        }
+  connection.destroy();
 
-        return done(null, false);
-      }).on('end', () => {
-        if (user === null) {
-          return done(null, false);
-        }
+  user = rows[0];
+  if (!user) {
+    return done(null, false);
+  }
 
-        return null;
-      });
-    }
-  });
+  if (validatePassword(password, user.password)) {
+    return done(null, user);
+  }
+
+  return done(null, false);
 }));
 
 // set up passport

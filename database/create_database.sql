@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS profiles (
   first_name VARCHAR(255),
   last_name VARCHAR(255),
   avatar_url VARCHAR(255),
-  profile_irl VARCHAR(255),
+  cover_url VARCHAR(255),
+  profile_url VARCHAR(255),
   bio VARCHAR(10000),
   zip_code INT,
   is_admin BOOLEAN,
@@ -73,6 +74,13 @@ ALTER TABLE messages ADD CONSTRAINT fk_conversation_id FOREIGN KEY (conversation
 CREATE TABLE IF NOT EXISTS instruments (
   id INT PRIMARY KEY AUTO_INCREMENT,
   instrument VARCHAR(100) NOT NULL
+) ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS profiles_instruments (
+  profile_id INT NOT NULL,
+  instrument_id INT NOT NULL,
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (instrument_id) REFERENCES instruments(id)
 ) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS pictures (

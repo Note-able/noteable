@@ -32,7 +32,7 @@ export function ensureAuthenticated(req, res, next) {
         next();
         return;
       }
-
+      console.log('not authenticated');
       return res.redirect('/');
     }
     req.user = user;

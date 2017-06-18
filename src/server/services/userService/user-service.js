@@ -9,119 +9,136 @@ export default class UserService {
     this.options = options;
   }
 
-  getUser(userId, callback) {
-    if (userId == null) {
-      callback({ id: -1 });
-      return;
-    }
-
-    this.options.connect(this.options.database, (connection) => {
-      if (connection.client == null) {
-        return callback({ id: -1 });
+  getUser = async (userId) => {
+    return new Promise(async (resolve, reject) => {
+      if (userId == null) {
+        return resolve({ id: -1 });
       }
 
-      let user = {};
-      connection.client.query(`
-        SELECT ${Users.columns('p', 'SELECT')} FROM public.profile p
-        WHERE p.id = ${userId};
-        
-        SELECT * FROM public.instruments i
-        WHERE i.user_id = ${userId};
-        
-        SELECT * FROM public.preferences pr
-        WHERE pr.profile_id = ${userId};
-      `)
-      .on('row', (row) => {
-        if (row.first_name || row.last_name) {
-          user = { ...user, ...row };
-        } else if (row.instruments) {
-          user.instruments = row.instruments;
-        } else {
-          user = { ...user, ...row };
-        }
-      })
-      .on('error', (error) => {
-        console.log(`error encountered ${error}`);
-        callback({ id: -1 });
-      })
-      .on('end', () => {
-        if (user.length === 0) {
-          callback({ id: -1 });
-          return;
-        }
-        // user[0].profileImage = image.getPublicUrl(user[0].filename);
-        connection.done();
-        callback(Users.userMapper(user));
-      });
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+        let user = {};
+        let [rows] = await connection.query(`
+          SELECT ${Users.columns('p', 'SELECT')} FROM profiles p
+          WHERE p.id = :id;
+        `, { id: userId });
+
+        user = { ...rows[0] };
+
+        [rows] = await connection.query(`
+            SELECT * FROM profiles_instruments pi
+              INNER JOIN instruments i
+              ON i.id = pi.instrument_id
+            WHERE pi.profile_id = :id;`, { id: userId });
+
+        user.instruments = rows;
+
+        [rows] = await connection.query(`
+            SELECT * FROM preferences pr
+            WHERE pr.profile_id = :id;`, { id: userId });
+
+        user = { ...user, ...rows[0] };
+
+        resolve(Users.userMapper(user));
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 
-  getUsers(userIds, callback) {
-    if (userIds == null || userIds.length === 0) {
-      callback({ id: -1 });
-      return;
-    }
-
-    this.options.connect(this.options.database, (connection) => {
-      if (connection.client == null) {
-        return callback({ id: -1 });
+  getUsers = async (userIds, callback) => (
+    new Promise((resolve, reject) => {
+      if (userIds == null || userIds.length === 0) {
+        resolve({ id: -1 });
+        return;
       }
 
-      const users = [];
-      connection.client.query(`
-        SELECT p.id, p.email, p.location, p.cover_url, p.first_name, p.last_name, p.avatar_url, p.bio, p.zip_code, p.profession FROM public.profile p
-        WHERE p.id IN (${userIds.join(', ')});
-        
-        SELECT * FROM public.instruments i
-        WHERE i.user_id IN (${userIds.join(', ')});
+      const users = userIds.map(async id => (await this.getUser(id)));
 
-        SELECT * FROM public.preferences pr
-        WHERE pr.profile_id IN(${userIds.join(', ')});
-      `)
-      .on('row', (row) => {
-        if (row.first_name || row.last_name) {
-          users[row.id] = { ...users[row.id], ...row };
-        } else if (row.instruments) {
-          users[row.user_id].instruments = row.instruments;
-        } else {
-          users[row.profile_id].is_looking = row.is_looking;
-          users[row.profile_id].display_location = row.display_location;
+      if (users.length === 0) {
+        resolve({ id: -1 });
+        return;
+      }
+
+      resolve(users);
+    })
+  );
+
+  updateProfile = async (profile, id) => {
+    return new Promise(async (resolve, reject)  => {
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+        await connection.beginTransaction(err => reject(err));
+
+        await connection.execute(`
+          UPDATE profiles
+          SET location = :location,
+            bio = :bio,
+            cover_url = :coverUrl,
+            first_name = :firstName,
+            last_name = :lastName,
+            avatar_url = :avatarUrl,
+            zip_code = :zipCode,
+            profession = :profession
+          WHERE id = :id;`,
+          { location: profile.location || 'NULL',
+            bio: profile.bio || 'NULL',
+            coverUrl: profile.coverImage || 'NULL',
+            firstName: profile.firstName || 'NULL',
+            lastName: profile.lastName || 'NULL',
+            avatarUrl: profile.avatarUrl || 'NULL',
+            zipCode: profile.zipCode || 'NULL',
+            profession: profile.profession || 'NULL',
+            id,
+          });
+
+        const [rows] = await connection.query(`
+          SELECT pi.instrument_id
+          FROM profiles_instruments pi
+          WHERE pi.profile_id = :id;`,
+          { id });
+
+        const instrumentSets = profile.instruments.reduce((obj, instrumentId) => {
+          if (!rows.includes(instrumentId)) {
+            obj.newInstrumentIds.push(instrumentId);
+          }
+          return obj;
+        }, { newInstrumentIds: [], instrumentIdsToRemove: [] });
+
+        rows.reduce((obj, instrumentId) => {
+          if (!profile.instruments.includes(instrumentId)) {
+            obj.instrumentIdsToRemove.push(instrumentId);
+          }
+          return obj;
+        }, instrumentSets);
+
+        for (const instrumentId of instrumentSets.newInstrumentIds) {
+          await connection.execute(`
+            INSERT INTO profiles_instruments (instrument_id, profile_id) VALUES (:instrumentId, :profileId)`,
+            { instrumentId, profileId: id });
         }
-      })
-      .on('error', (error) => {
-        console.log(`error encountered ${error}`);
-        callback({ id: -1 });
-      })
-      .on('end', () => {
-        if (users.length === 0) {
-          callback({ id: -1 });
-          return;
+
+        for (const instrumentId of instrumentSets.instrumentIdsToRemove) {
+          await connection.execute(`
+            DELETE FROM profiles_instruments WHERE instrument_id = :instrumentId AND profile_id = :profileId;`,
+            { instrumentId, profileId: id });
         }
 
-        // user[0].profileImage = image.getPublicUrl(user[0].filename);
-        connection.done();
-        callback(Object.keys(users).map(id => Users.userMapper(users[id])));
-      });
-    });
-  }
+        await connection.execute(`
+          UPDATE preferences SET is_looking = :isLooking, display_location = :displayLocation
+          WHERE profile_id = :id;`,
+          { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
 
-  updateProfile(profile, callback) {
-    this.options.connect(this.options.database, (connection) => {
-      connection.client.query(`
-        UPDATE public.profile SET location = '${profile.location}', bio = $$${profile.bio}$$, cover_url = '${profile.coverImage}', first_name = '${profile.firstName}', last_name = '${profile.lastName}', avatar_url = '${profile.avatarUrl}', zip_code = ${profile.zipCode || 'NULL'}, profession = '${profile.profession}'
-        WHERE id = ${profile.id};
-        UPDATE public.instruments SET instruments = '${profile.preferences.instruments.toString()}'
-        WHERE user_id = ${profile.id};
-        UPDATE public.preferences SET is_looking = ${profile.preferences.isLooking || 'DEFAULT'}, display_location = ${profile.preferences.displayLocation || 'DEFAULT'}
-        WHERE profile_id = ${profile.id};
-        INSERT INTO public.preferences (is_looking, display_location, profile_id) SELECT ${profile.preferences.isLooking || 'false'}, ${profile.preferences.displayLocation || 'false'}, ${profile.id}
-          WHERE NOT EXISTS (SELECT * FROM public.preferences WHERE profile_id = ${profile.id});
-      `).on('error', (error) => {
-        console.log(error);
-      }).on('end', () => {
-        connection.done();
-        callback();
-      });
+        await connection.execute(`
+          INSERT INTO preferences (is_looking, display_location, profile_id) SELECT :isLooking, :displayLocation, :id
+            WHERE NOT EXISTS (SELECT * FROM preferences WHERE profile_id = :id);`,
+          { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
+
+        await connection.commit();
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 
