@@ -5,7 +5,7 @@ const app = require('../lib/src/server/server');
 const uuidV4 = require('uuid/v4');
 
 const assert = chai.assert;
-/*
+
 mocha.describe('User API tests', () => {
   const agent = request.agent(app);
   let userId;
@@ -35,4 +35,3 @@ mocha.describe('User API tests', () => {
     assert.equal(res.body.profession, 'baller');
   });
 });
-*/

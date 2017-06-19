@@ -14,7 +14,7 @@ mocha.describe('Music API tests', () => {
   mocha.before(async () => {
     console.log('Register new user and sign in (sets auth cookie)');
     let res = await agent.post('/api/v1/register')
-      .send({ email: `${id}@test.com`, password: 'password', firstName: 'Uncle', lastName: 'Drew' })
+      .send({ email: `${id}@test.com`, password: 'password', firstName: 'Mic', lastName: 'Check' });
     assert.isNotNull(res.body);
     userId = res.body;
     res = await agent.post('/auth/local')
