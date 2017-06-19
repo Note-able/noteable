@@ -3,10 +3,11 @@ const mocha = require('mocha');
 const request = require('supertest');
 const app = require('../lib/src/server/server');
 const uuidV4 = require('uuid/v4');
+const fs = require('fs');
 
 const assert = chai.assert;
-/*
-mocha.describe('User API tests', () => {
+
+mocha.describe('Music API tests', () => {
   const agent = request.agent(app);
   let userId;
   const id = uuidV4();
@@ -21,18 +22,16 @@ mocha.describe('User API tests', () => {
     assert.equal(res.status, 200);
   });
 
-  mocha.it('Should update profile', async () => {
-    const res = await agent.post(`/api/v1/users/${userId}/profile`)
-    .send({ bio: 'test bio', zipCode: 98225, firstName: 'Uncle', lastName: 'Drew', profession: 'baller', instruments: [1, 2], preferences: { isLooking: true } });
+  mocha.it('Should upload recordings', async () => {
+    const file = fs.readFileSync('./test/test-audio.aac');
+    const res = await agent.post('/api/v1/recordings')
+      .field('duration', '2s')
+      .field('name', 'testing.aac')
+      .field('size', '14kb')
+      .field('extension', '.aac')
+      .field('file', new Buffer(file).toString('base64'));
 
     assert.equal(res.status, 201);
-  });
-
-  mocha.it('Should get the user\'s profile', async () => {
-    const res = await agent.get(`/api/v1/users/${userId}`);
-
-    assert.isNotNull(res.body);
-    assert.equal(res.body.profession, 'baller');
+    assert.equal(res.body.name, 'testing.aac');
   });
 });
-*/

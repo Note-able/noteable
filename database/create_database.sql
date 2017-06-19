@@ -40,16 +40,6 @@ CREATE TABLE IF NOT EXISTS events (
   FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE InnoDB;
 
-CREATE TABLE IF NOT EXISTS songs (
-  id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  user_id INT NOT NULL,
-  name VARCHAR(100) NOT NULL,
-  description VARCHAR(500),
-  created DATETIME NOT NULL,
-  modified DATETIME,
-  FOREIGN KEY (user_id) REFERENCES users(id)
-) ENGINE InnoDB;
-
 CREATE TABLE IF NOT EXISTS messages (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   content VARCHAR(2000) NOT NULL,
@@ -107,14 +97,15 @@ CREATE TABLE IF NOT EXISTS audio (
 
 CREATE TABLE IF NOT EXISTS music (
   id INT PRIMARY KEY AUTO_INCREMENT,
-  author INT NOT NULL,
+  author_user_id INT NOT NULL,
+  audio_url VARCHAAR(255),
   cover_url VARCHAR(200),
   description VARCHAR(200),
   duration VARCHAR(200) NOT NULL,
   name VARCHAR(200) NOT NULL,
   size VARCHAR(50) NOT NULL,
   created_date DATETIME NOT NULL,
-  FOREIGN KEY (author) REFERENCES users(id)
+  FOREIGN KEY (author_user_id) REFERENCES users(id)
 ) ENGINE InnoDB;
 
 CREATE TABLE IF NOT EXISTS preferences (

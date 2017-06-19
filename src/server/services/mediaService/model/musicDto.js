@@ -11,23 +11,22 @@ export const musicMapper = dbMusic => (dbMusic == null ? null : {
 });
 
 export const columns = (t, kind) => {
-  const pre = t == null || t === '' ? '' : `${t}.`;
   switch (kind) {
   case 'INSERT':
   case 'UPDATE':
-    return `public.music ${pre === '' ? t : ''} (${pre + 'audio_url'}, ${pre + 'author'}, ${pre + 'cover_url'}, ${pre + 'created_date'}, ${pre + 'description'}, ${pre + 'duration'}, ${pre + 'name'}, ${pre + 'size'})`;
+    return 'music (audio_url, author_user_id, cover_url, created_date, description, duration, name, size)';
   case 'SELECT':
-    return `audio_url, author, cover_url, created_date, description, duration, name, size, id FROM public.music ${t === '' ? '' : ' AS ' + t}`;
+    return `audio_url, author_user_id, cover_url, created_date, description, duration, name, size, id FROM music ${t}`;
   default:
     return '*';
   }
 };
 
-export const values = (t, { audioUrl, author, coverUrl, createdDate, description, duration, id, name, size }, kind) => {
-  const pre = t == null || t === '' ? '' : `${t}.`;
+export const values = async ({ audioUrl, authorUserId, coverUrl, description, duration, id, name, size }, kind, connection) => {
   switch (kind) {
   case 'INSERT':
-    return `('${pre + audioUrl || ''}', ${pre + author}, '${pre + (coverUrl || '')}', '${pre + createdDate}', '${pre + (description || '')}', '${pre + (duration || '')}', '${pre + name || ''}', '${pre + size || ''}')`;
+    return await connection.format('(:audioUrl, :authorUserId, :coverUrl, UTC_TIMESTAMP(), :description, :duration, :name, :size)',
+      { audioUrl: audioUrl || '', authorUserId, coverUrl, description: description || '', duration: duration || '', name: name || '', size: size || '' });
   default:
     return '';
   }

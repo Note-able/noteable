@@ -9,30 +9,30 @@ module.exports = function musicApi(app, options, prefix) {
 
   /** MUSIC API **/
   /**
-   * audioUrl, author, coverUrl, createdDate, description, durations, id, name, size
+   * audioUrl, authorUserId, coverUrl, createdDate, description, durations, id, name, size
    */
 
   /** queryParams: limit, offset */
 
   app.post(`${prefix}/recordings`, options.auth, (req, res) => {
     const form = new Formidable.IncomingForm();
-    form.uploadDir = '/uploads';
+    form.uploadDir = './uploads';
 
     form.parse(req, (err, fields) => {
       const buffer = new Buffer(fields.file, 'base64');
+
       audio.sendUploadToGCS(fields.extension ? fields.extension : '.mp3', buffer)
         .then((result) => {
-          mediaService.createMusic({ audioUrl: result.cloudStoragePublicUrl, author: req.user.id, createdDate: new Date().toISOString(), name: fields.name, size: fields.size })
-            .then((id) => {
-              res.status(201).json({ id });
+          mediaService.createMusic({ audioUrl: result.cloudStoragePublicUrl, authorUserId: req.user.id, name: fields.name, size: fields.size })
+            .then((music) => {
+              res.status(201).json(music);
             })
             .catch((error) => {
-              res.json(error);
+              res.status(500).json(error);
             });
         })
-        .catch((response) => {
-          console.log(response.error);
-          res.status(500).send();
+        .catch((error) => {
+          res.status(500).json(error);
         });
     });
   });

@@ -47,7 +47,7 @@ export default class UserService {
   }
 
   getUsers = async (userIds, callback) => (
-    new Promise((resolve, reject) => {
+    new Promise(async (resolve, reject) => {
       if (userIds == null || userIds.length === 0) {
         resolve({ id: -1 });
         return;

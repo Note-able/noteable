@@ -1,4 +1,5 @@
 import { musicMapper, columns, values } from './model/musicDto.js';
+
 const defaultMusicLimit = 10;
 
 export default class MusicService {
@@ -7,42 +8,47 @@ export default class MusicService {
   }
 
   getMusic(id) {
-    return new Promise((resolve, reject) => {
-      this.options.connect(this.options.database, (connection) => {
-        let music;
-        connection.client.query(
-          `SELECT ${columns('m', 'SELECT')} WHERE m.id = ${id};`
-        ).on('row', row => { music = row; })
-        .on('error', error => reject(error))
-        .on('end', () => resolve(musicMapper(music)));
-      })
+    return new Promise(async (resolve, reject) => {
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+      try {
+        const [rows] = await connection.query(`SELECT ${columns('m', 'SELECT')} WHERE m.id = :id;`, { id });
+        resolve(musicMapper(rows[0]));
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   getMusicByUser(userId, options) {
-    return new Promise((resolve, reject) => {
-      this.options.connect(this.options.database, connection => {
-        const result = [];
-        const query = `SELECT ${columns('m', 'SELECT')} WHERE m.author = ${userId}${' LIMIT ' + (options.limit || defaultMusicLimit)}${' OFFSET ' + (options.offset || 0)};`;
-        console.log(query);
-        connection.client.query(query)
-          .on('row', row => result.push(row))
-          .on('error', error => reject(error))
-          .on('end', () => resolve(result));
-      });
+    return new Promise(async (resolve, reject) => {
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+      try {
+        const [rows] = await connection.query(`
+        SELECT ${columns('m', 'SELECT')}
+        WHERE m.author_user_id = :userId
+        LIMIT :limit
+        OFFSET :offset;`,
+        { userId, limit: options.limit || defaultMusicLimit, offset: options.offset || 0 });
+
+        resolve(rows.map(music => musicMapper(music)));
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   createMusic(musicDto) {
-    return new Promise((resolve, reject) => {
-      this.options.connect(this.options.database, (connection) => {
-        let id;
-        connection.client.query(
-          `INSERT INTO ${columns('', 'INSERT')} VALUES ${values('', musicDto, 'INSERT')} RETURNING ID;`
-        ).on('row', row => id = row)
-        .on('error', error => reject(error))
-        .on('end', () => resolve(id));
-      })
+    return new Promise(async (resolve, reject) => {
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+      try {
+        const [rows] = await connection.execute(`
+          INSERT INTO ${columns('', 'INSERT')}
+          VALUES ${await values(musicDto, 'INSERT', connection)};`);
+        const id = rows.insertId;
+        resolve(this.getMusic(id));
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 }
