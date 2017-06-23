@@ -37,4 +37,22 @@ mocha.describe('Music API tests', () => {
     const getMusicResponse = await agent.get(`/api/v1/recordings/${res.body.id}`);
     assert.equal(res.body.id, getMusicResponse.body.id);
   }).timeout(10000);
+
+  mocha.it('Should get user\'s recordings', async () => {
+    const file = fs.readFileSync('./test/test-audio.aac');
+    const res = await agent.post('/api/v1/recordings')
+      .field('duration', '2s')
+      .field('name', 'user.aac')
+      .field('size', '14kb')
+      .field('extension', '.aac')
+      .field('file', new Buffer(file).toString('base64'));
+
+    assert.equal(res.status, 201);
+    assert.equal(res.body.name, 'user.aac');
+
+    const getMusicForUserResponse = await agent.get('/api/v1/recordings');
+    assert.isArray(getMusicForUserResponse.body);
+    assert.isTrue(getMusicForUserResponse.body.length > 0);
+    assert.isNotNull(getMusicForUserResponse.body.find(m => m.name === 'user.aac'));
+  }).timeout(10000);
 });
