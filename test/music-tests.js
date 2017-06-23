@@ -33,5 +33,8 @@ mocha.describe('Music API tests', () => {
 
     assert.equal(res.status, 201);
     assert.equal(res.body.name, 'testing.aac');
-  });
+
+    const getMusicResponse = await agent.get(`/api/v1/recordings/${res.body.id}`);
+    assert.equal(res.body.id, getMusicResponse.body.id);
+  }).timeout(10000);
 });

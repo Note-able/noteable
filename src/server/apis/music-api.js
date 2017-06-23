@@ -52,7 +52,7 @@ module.exports = function musicApi(app, options, prefix) {
       });
   });
 
-  app.get('/recordings/:recordingId', options.auth, (req, res) => {
+  app.get(`${prefix}/recordings/:recordingId`, options.auth, (req, res) => {
     if (!req.user) {
       return res.status(404).send();
     }
