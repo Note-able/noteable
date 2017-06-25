@@ -157,13 +157,13 @@ module.exports = class CreateEvent extends React.Component {
     return (
       <div className="event-form">
         <div className="event-form-wrapper">
-          <label for="name">Name</label>
+          <label>Name</label>
           <input name="name" className="event-name" onChange={this.changeName} type="text" placeholder="Name"/>
           <label>Date</label>
           <Calendar onChange={this.handleDateChange}/>
-          <label for="location">Location</label>
+          <label>Location</label>
           <input name="location" className="map-search" ref="searchBox" type="text" placeholder="Search Box"/>
-          <label for="notes">Notes</label>
+          <label>Notes</label>
           <textarea name="notes" className="event-notes" type="text" placeholder="Leave a note or description."/>
           <button className="submit-event" onClick={this.createEvent} disabled={this.state.positionSet && this.state.nameSet && this.state.dateIsValid ? false : 'disabled'}>Submit</button>
         </div>
@@ -174,7 +174,7 @@ module.exports = class CreateEvent extends React.Component {
   render () {
     return (
       <div className="create-event-container">
-        <div id="map" />
+        <div id="map" style={{ height: '100%'}} />
         {this.state.loading ? this.renderLoader() : this.renderComponent()}
       </div>
     );

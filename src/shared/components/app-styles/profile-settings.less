@@ -1,0 +1,130 @@
+@import './variables';
+
+:local {
+  .profile-settings {
+    box-sizing: border-box;
+    font: @normal-font;
+    height: 350px;
+    margin: @navbar-height 0 0 250px;
+    padding: 20px 50px;
+    position: relative;
+  }
+
+  .profile-settings-container {
+    background: @white;
+    box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
+    margin: 0 auto;
+    max-width: 1000px;
+    padding: 20px;
+    position: relative;
+    width: 100%;
+  }
+
+  .save-settings {
+    background: @green;
+    border: none;
+    color: @white;
+    cursor: pointer;
+    height: 36px;
+    line-height: 36px;
+    margin: 0 0 6px 16px;
+    text-align: center;
+    width: 76px;
+
+    &:hover {
+      background: @green-hover;
+    }
+  }
+
+  .close-icon {
+    cursor: pointer;
+    right: 20px;
+    position: absolute;
+    top: 20px;
+
+    svg {
+      fill: @grey-medium;
+    }
+  }
+
+  .input-settings {
+    display: block;
+    margin: 0 0 16px 16px;
+
+    label {
+      display: inline-block;
+      width: 72px;
+    }
+  }
+
+  .upload-button {
+    background: none;
+    border-radius: 50%;
+    bottom: 0;
+    cursor: pointer;
+    height: 100px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    width: 100px;
+    z-index: 2;
+
+    svg {
+      bottom: 0;
+      fill: none;
+      left: 0;
+      height: 36px;
+      margin: auto;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 36px;
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.2);
+
+      svg {
+        fill: @white;
+      }
+    }
+  }
+
+  .file-upload {
+    display: none;
+  }
+
+  .avatar {
+    background: @white;
+    background-position: center;
+    background-size: cover;
+    border-radius: 50%;
+    box-shadow: @box-shadow;
+    box-sizing: border-box;
+    display: inline-block;
+    height: 100px;
+    width: 100px;
+  }
+
+  .settings-name, .settings-title, .settings-location {
+    border: 1px solid @grey-light;
+    border-radius: 2px;
+    display: inline-block;
+    font: @normal-font;
+    height: 28px;
+    line-height: 32px;
+    margin: 0 0 6px 16px;
+    max-width: 600px;
+    outline: none;
+    padding: 0 6px;
+    width: 100%;
+  }
+
+  .uploaders {
+    margin: 0 0 20px 16px;
+    position: relative;
+    width: 100px;
+  }
+}

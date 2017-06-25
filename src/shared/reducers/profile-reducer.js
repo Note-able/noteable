@@ -5,6 +5,7 @@ const {
   saveProfileTypes,
   updateBioType,
   updateInstrumentsType,
+  updateProfileType,
 } = profileActionTypes;
 
 export const profile = (state = {}, action) => {
@@ -34,10 +35,16 @@ export const profile = (state = {}, action) => {
         },
       };
 
-    case saveProfileTypes.success:
+    case updateProfileType:
       return {
         ...state,
         ...action.profile,
+      };
+
+    case saveProfileTypes.success:
+      return {
+        ...state,
+        isSaved: true,
       };
 
     default:

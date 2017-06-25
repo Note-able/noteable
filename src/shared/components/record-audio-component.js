@@ -15,23 +15,22 @@ module.exports = class AudioComponent extends React.Component {
   componentDidMount () {
     const mediaConstraints = {
       audio: {
-        mandatory: {
-          echoCancellation: true,
-          googAutoGainControl: true,
-          googNoiseSuppression: true,
-          googHighpassFilter: true
-        }
+        frameRate: 44100,
+        channelCount: 1,
+        sampleRate: 44100,
+        sampleSize: 8
       }
     };
     RecordRTC = require('recordrtc');
 
-    navigator.webkitGetUserMedia(mediaConstraints, this.successCallback, this.errorCallback);
+    navigator.mediaDevices.getUserMedia(mediaConstraints).then(this.successCallback).catch(this.errorCallback);
   }
   successCallback (stream) {
     const options = {
       bufferSize: 16384,
-      type: 'audio',
-      audioBitsPerSecond: 128000,
+      type: 'audio/mpeg',
+      sampleRate: 44100,
+      numberOfAudioChannels: 1,
     };
 
     recorder = RecordRTC(stream, options);
@@ -54,7 +53,8 @@ module.exports = class AudioComponent extends React.Component {
           audioUrl: audioURL,
           dataUrl: dataURL,
           blob: recordedBlob,
-          isRecording: false
+          isRecording: false, 
+          size: recordedBlob.size / 1000,
         });
       });
 
@@ -68,7 +68,9 @@ module.exports = class AudioComponent extends React.Component {
       const dataUrl = reader.result;
       const base64 = dataUrl.split(',')[1];
       const formData = new FormData();
-      formData.append('name', 'testing.wav');
+      formData.append('duration', this.state.duration);
+      formData.append('name', 'testing.mp3');
+      formData.append('size', `${this.state.size}kb`);
       formData.append('file', base64);
 
       const request = new XMLHttpRequest();
@@ -92,7 +94,7 @@ module.exports = class AudioComponent extends React.Component {
         <div>
           <div onClick={ this.state.isRecording ? () => { this.stopRecording() } : () => { this.startRecording() } } className="record-button"></div>
           <div onClick={ () => { this.stopRecording() } } className="stop-button"></div>
-          <audio src={ this.state.audioUrl } className="audio-player" controls/>
+          <audio src={ this.state.audioUrl } ref={ref => { this._thing = ref; }} className="audio-player" controls/>
           <button onClick= { () => { this.sendAudioToServer() } } >Send</button>
         </div>
       </div>

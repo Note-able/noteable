@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { CameraIcon, CrossIcon } from '../icons/common-icons.g';
+import styles from '../app-styles/profile-settings.less';
 
 class ProfileSettings extends Component {
   static propTypes = {
@@ -11,7 +12,6 @@ class ProfileSettings extends Component {
       profession: PropTypes.string,
     }),
     profileChange: PropTypes.func.isRequired,
-    sendImageToServer: PropTypes.func.isRequired,
   };
 
   state = {
@@ -60,64 +60,55 @@ class ProfileSettings extends Component {
     });
   }
 
-  changeAvatar = (file) => {
-    this.props.sendImageToServer(file, (url) => {
-      this.setState({
-        profile: {
-          ...this.state.profile,
-          avatarUrl: url,
-        },
-      });
-    });
-  }
-
   render() {
     return (
-      <div className="profile-settings">
-        <div className="profile-settings__close-icon" onClick={() => this.props.closeSettings()}>
-          <CrossIcon />
+      <div className={styles.profileSettings}>
+        <div className={styles.profileSettingsContainer}>
+          <div className={styles.closeIcon} onClick={() => this.props.closeSettings()}>
+            <CrossIcon />
+          </div>
+          <form className={styles.uploaders} encType="multipart/form-data" >
+            <div className={styles.avatar} style={{ backgroundImage: `url('${this.state.profile.avatarUrl}'` }} />
+            <div className={styles.uploadButton} onClick={() => { this._file.click(); }}><CameraIcon /></div>
+            <input className={styles.fileUpload} ref={ref => { this._file = ref; }} type="file" name="file" onChange={() => this.props.changeAvatar(this._file.files[0])} />
+          </form>
+          <div className={styles.inputSettings}>
+            <label htmlFor="name">Name: </label>
+            <input
+              className={styles.settingsName}
+              type="text"
+              onChange={this.nameChange}
+              placeholder="Like John Lennon or something"
+              name="name"
+              value={this.state.profile.name}
+              ref={ref => { this._name = ref; }}
+            />
+          </div>
+          <div className={styles.inputSettings}>
+            <label htmlFor="title">Profession: </label>
+            <input
+              className={styles.settingsTitle}
+              type="text"
+              onChange={this.professionChange}
+              placeholder="Student at Belmont or Lonnie's karaoke winner"
+              name="title" value={this.state.profile.profession}
+              ref={ref => { this._profession = ref; }}
+            />
+          </div>
+          <div className={styles.inputSettings}>
+            <label htmlFor="location">Location: </label>
+            <input
+              className={styles.settingsLocation}
+              type="text"
+              onChange={this.locationChange}
+              placeholder="Location"
+              name="location"
+              value={this.state.profile.location}
+              ref={ref => { this._location = ref; }}
+            />
+          </div>
+          <div className={styles.saveSettings} onClick={() => this.saveProfile()}>Save</div>
         </div>
-        <form className="uploader" encType="multipart/form-data" >
-          <div className="profile-settings__avatar" style={{ backgroundImage: `url('${this.state.profile.avatarUrl}'` }} />
-          <div className="profile-settings__upload-button" onClick={() => { this._file.click(); }}><CameraIcon /></div>
-          <input className="profile-settings__file-upload" ref={ref => { this._file = ref; }} type="file" name="file" onChange={() => this.changeAvatar(this._file.files[0])} />
-        </form>
-        <div className="profile-settings__input-container">
-          <label htmlFor="name">Name: </label>
-          <input
-            className="profile-settings__name"
-            type="text"
-            onChange={this.nameChange}
-            placeholder="Like John Lennon or something"
-            name="name"
-            value={this.state.profile.name}
-            ref={ref => { this._name = ref; }}
-          />
-        </div>
-        <div className="profile-settings__input-container">
-          <label htmlFor="title">Profession: </label>
-          <input
-            className="profile-settings__title"
-            type="text"
-            onChange={this.professionChange}
-            placeholder="Student at Belmont or Lonnie's karaoke winner"
-            name="title" value={this.state.profile.profession}
-            ref={ref => { this._profession = ref; }}
-          />
-        </div>
-        <div className="profile-settings__input-container">
-          <label htmlFor="location">Location: </label>
-          <input
-            className="profile-settings__location"
-            type="text"
-            onChange={this.locationChange}
-            placeholder="Location"
-            name="location"
-            value={this.state.profile.location}
-            ref={ref => { this._location = ref; }}
-          />
-        </div>
-        <div className="profile-settings__save" onClick={() => this.saveProfile()}>Save</div>
       </div>
     );
   }

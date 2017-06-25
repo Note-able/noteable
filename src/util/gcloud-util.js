@@ -13,7 +13,7 @@
 
 'use strict';
 
-const gcloud = require('gcloud');
+const gcloud = require('google-cloud');
 const path = require('path');
 
 function guid() {
@@ -31,26 +31,27 @@ module.exports = function (gcloudConfig, cloudStorageBucket) {
   const storage = gcloud.storage(gcloudConfig);
   const bucket = storage.bucket(cloudStorageBucket);
 
-  function sendUploadToGCS(filename, buffer, next) {
-    let gcsname = `${Date.now()}${guid()}${filename}`;
+  function sendUploadToGCS(extension, buffer, next) {
+    let gcsname = `${Date.now()}${guid()}${extension}`;
 
     if (gcsname.length >= 101) {
       gcsname = gcsname.substring(gcsname.length - 100);
     }
 
     const file = bucket.file(gcsname);
-    const stream = file.createWriteStream();
+    return new Promise((resolve, reject) => {
+      const stream = file.createWriteStream();
 
-    stream.on('error', err => {
-      console.log(`EERORRROROR ${err}`);
-      next({ error: err });
+      stream.on('error', err => {
+        reject({ error: err });
+      });
+
+      stream.on('finish', () => {
+        resolve({ cloudStorageObject: gcsname, cloudStoragePublicUrl: getPublicUrl(gcsname) });
+      });
+
+      stream.end(buffer);
     });
-
-    stream.on('finish', () => {
-      next({ cloudStorageObject: gcsname, cloudStoragePublicUrl: getPublicUrl(gcsname) });
-    });
-
-    stream.end(buffer);
   }
 
   function getPublicUrl(filename) {

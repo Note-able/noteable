@@ -1,0 +1,37 @@
+@import '../../app-styles/variables.less';
+
+:local {
+  .input-label {
+    color: @grey-medium;
+    font: @normal-font;
+    margin: 16px 0 0 4px;
+    position: absolute;
+    transition: margin .2s, font-size .2s, color .5s;
+    z-index: -1;
+  }
+
+  .active-label {
+    color: @blue;
+    font-size: 12px;
+    margin-top: -2px;
+  }
+
+  .date {
+    border: 1px solid @grey-medium;
+    border-radius: 2px;
+    height: 28px;
+    line-height: 28px;
+    margin: 12px 8px 12px 0;
+    width: 120px;
+  }
+
+  .start-time {
+    font-size: 14px;
+    outline: none;
+    width: 75px;
+  }
+
+  .error {
+    color: @red;
+  }
+}

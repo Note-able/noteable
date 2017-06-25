@@ -101,7 +101,6 @@ class Calendar extends React.Component {
     });
 
     this.onDateChange = this._onDateChange.bind(this);
-    this.onKeyDown = this._onKeyDown.bind(this);
     this.onFocusStart = this._onFocusStart.bind(this);
     this.onFocusEnd = this._onFocusEnd.bind(this);
     this.closeTooltips = this._closeTooltips.bind(this);
@@ -236,12 +235,6 @@ class Calendar extends React.Component {
       showTooltipStartDate: false,
       showTooltipEndDate: false
     });
-  }
-
-  _onKeyDown(event) {
-    if (event.keyCode === 47 || event.keyCode === 92 || event.keyCode === 45 || event.keyCode === 189 || event.keyCode === 191 || event.keyCode === 220) {
-      event.preventDefault();
-    }
   }
 
   _onFocusStart(event) {

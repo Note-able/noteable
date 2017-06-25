@@ -10,14 +10,14 @@ module.exports = {
   },
 
   output: {
-    path: path.resolve(projectRoot, './dist'),
+    path: path.resolve(projectRoot, './public/js/dist'),
     filename: '[name].bundle.js',
   },
 
-  devtool: '#source-map',
+  devtool: 'source-map',
 
   plugins: [
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new ExtractTextPlugin({
       filename: 'style.css',
       allChunks: true,
@@ -39,16 +39,13 @@ module.exports = {
         exclude: /(node_modules)/,
       },
       {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader!autoprefixer-loader' }),
-      },
-      {
-        test: /.less$/,
-        loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader!autoprefixer-loader!less-loader' }),
-      },
-      {
-        test: /\.json$/,
-        loader: 'json',
+        test: /\.(less|css)$/,
+        use: [
+          'style-loader',
+          { loader: 'css-loader', options: { importLoaders: 1, camelCase: true, localIdentName: '[local]--[name]--[hash:base64:5]' } },
+          'postcss-loader',
+          'less-loader',
+        ]
       },
     ],
   },

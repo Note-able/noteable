@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = (server, options) => {
   const io = require('socket.io').listen(server);
 
@@ -21,10 +19,10 @@ module.exports = (server, options) => {
              ${message.destinationId ? message.destinationId : 'NULL'},
              now());
              SELECT LASTVAL();`)
-        .on(`row`, (row) => {
+        .on('row', (row) => {
           id = parseInt(row.lastval);
         }).on(`end`, () => {
-          const fullMessage = Object.assign({}, message, {id: id});
+          const fullMessage = Object.assign({}, message, { id });
           io.sockets.in(`${fullMessage.documentId}`).emit('incoming', fullMessage);
         });
       });

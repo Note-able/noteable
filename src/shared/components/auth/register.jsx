@@ -1,4 +1,6 @@
 import React, { Component, PropTypes } from 'react';
+import { validateEmail, validatePassword } from '../../../util/util.js';
+import styles from '../app-styles/auth.less';
 
 const ajax = require('../../ajax');
 
@@ -19,55 +21,70 @@ module.exports = class Register extends Component {
     this.setState({
       email: this._email.value,
       password: this._password.value,
-      user: this._username.value,
+      firstName: this._firstName.value,
+      lastName: this._lastName.value,
       registerFailed: false,
+    });
+
+    this.validateFields();
+  }
+
+  validateFields() {
+    this.setState({
+      validEmail: validateEmail(this.state.email || ''),
+      validPassword: validatePassword(this.state.password || ''),
     });
   }
 
   registerUser() {
     const password = this.state.password;
     const username = this.state.username;
+    const firstName = this.state.firstName;
+    const lastName = this.state.lastName
     const email = this.state.email;
 
-    ajax.post('/register', JSON.stringify({ email, password, username }), (response) => {
-      if (response && JSON.parse(response).name === 'error') {
+    if (!this.state.validEmail || !this.state.validPassword) {
+      this.setState({
+        registerFailed: !this.state.validEmail ? 'Invalid email.' : 'Invalid password. Password must consist of',
+      });
+      return;
+    }
+
+    ajax.post('/api/v1/register', { email, password, firstName, lastName })
+      .then(() =>
+      ajax.post('auth/local', { username: this.state.email, password: this.state.password }).then(
+        (junk, response) => {
+          if (response.status === 200) {
+            window.location = '/profile/create';
+            return;
+          }
+        }))
+      .catch((error) => {
         this.setState({
-          registerFailed: true,
-        });
-
-        return;
-      }
-
-      ajax.post(`auth/local?username=${email}&password=${password}`, null, (stuff, resp) => {
-        if (resp.status === 200) {
-          window.location = '/profile';
-          return;
-        }
-
-        this.setState({
-          registerFailed: true,
+          registerFailed: 'An account with that email already exists.',
         });
       });
-    });
+
     return false;
   }
 
   render() {
     return (
-      <div className="register-container">
-        <div className="register-container__header">Register</div>
-        <div className="register-form">
-          {this.state.registerFailed ? <div className="register-form__error-message">Email already exists</div> : null}
-          <input className="register-form__username" name="name" onChange={() => this.updateForm()} type="text" placeholder="Name" ref={ref => { this._username = ref; }} />
-          <input className="register-form__password__verify" name="email" onChange={() => this.updateForm()} placeholder="Email" ref={ref => { this._email = ref; }} />
-          <input className="register-form__password" name="password" onChange={() => this.updateForm()} type="password" placeholder="Password" ref={ref => { this._password = ref; }} />
-          <button className="signin-form__submit-button" onClick={() => this.registerUser()}>Submit</button>
+      <div className={styles.registerContainer}>
+        <div className={styles.header}>Register</div>
+        <div className={styles.registerForm}>
+          { this.state.registerFailed != null && this.state.registerFailed !== '' ? <div className="register-form__error-message">{this.state.registerFailed}</div> : null}
+          <input className={styles.email} name="email" onChange={() => this.updateForm()} placeholder="Email" ref={ref => { this._email = ref; }} />
+          <input className={styles.password} name="password" onChange={() => this.updateForm()} type="password" placeholder="Password" ref={ref => { this._password = ref; }} />
+          <input className={styles.firstname} name="firstname" onChange={() => this.updateForm()} type="text" placeholder="First name" ref={ref => { this._firstName = ref; }} />
+          <input className={styles.lastname} name="lastname" onChange={() => this.updateForm()} type="text" placeholder="Last name" ref={ref => { this._lastName = ref; }} />
+          <button className={styles.submitButton} onClick={() => this.registerUser()}>Submit</button>
         </div>
-        <div className="button-container">
-          <button className="button-container__submit-button" onClick={() => this.facebookLogin()}>Sign up with Facebook</button>
+        <div className={styles.buttonContainer}>
+          <button className={styles.submitButtonContainer} onClick={() => this.facebookLogin()}>Sign up with Facebook</button>
         </div>
-        <div className="button-container">
-          <div className="button-container__open-register" onClick={() => this.props.switchToLogin()}>Sign in</div>
+        <div className={styles.buttonContainer}>
+          <div className={styles.openRegister} onClick={() => this.props.switchToLogin()}>Sign in</div>
         </div>
       </div>
     );

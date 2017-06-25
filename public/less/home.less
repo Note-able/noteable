@@ -12,28 +12,25 @@ button {
   outline: none;
 }
 
+.logout {
+  border: 1px solid @white;
+  border-radius: 2px;
+  color: @white;
+  font: @normal-font;
+  line-height: 28px;
+  margin: 7px 32px;
+  padding: 0 12px;
+  position: absolute;
+  right: 0;
+  top: 0;
+
+  &:hover {
+    color: @green;
+  }
+}
+
 .error {
   color: @red;
-}
-
-.testing-horizontal {
-  width: 100%;
-  height: 3px;
-  background: black;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-}
-
-.testing-vertical {
-  width: 3px;
-  height: 100%;
-  background: black;
-  position: fixed;
-  left: 0;
-  right: 0;
-  margin: auto;
 }
 
 @-webkit-keyframes blink {
@@ -60,7 +57,7 @@ button {
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 2;
+  z-index: 3;
 
   &__no-home {
     background: #1B1F20;

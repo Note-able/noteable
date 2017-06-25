@@ -1,0 +1,88 @@
+@import '../../app-styles/variables';
+
+:local {
+  .active-tab {
+    background: @green;
+    color: @white;
+
+    svg {
+      fill: @white;
+    }
+  }
+
+  .active-tab:hover {
+    color: @white !important;
+  }
+
+  .current-user {
+    box-sizing: border-box;
+    padding: 8px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .current-avatar {
+    border-radius: 50%;
+    height: 32px;
+    margin: 0 0 4px;
+    width: 32px;
+  }
+
+  .current-name {
+    font: @normal-font;
+  }
+
+  .navigation-content {
+    background: @white;
+    box-shadow: 0px 1px 6px -2px rgba(0, 0, 0, 0.4);
+    bottom: 0;
+    height: 300px;
+    position: fixed;
+    left: 50px;
+    top: 60px;
+    width: 200px;
+  }
+    
+  .navigation-options {
+    border-top: 1px solid @grey-light;
+    width: 100%;
+  }
+    
+  .navigation-option {
+    cursor: pointer;
+    flex: 1;
+    font: @middle-font;
+    font-variant-ligatures: no-common-ligatures;
+    line-height: @middle-font-size;
+    padding: 8px 24px;
+    text-align: left;
+
+    svg {
+      height: 18px;
+      margin: 0 6px 0 0;
+      vertical-align: top;
+      width: 18px;
+    }
+
+    &:hover {
+      color: @green;
+      cursor: pointer;
+
+      svg {
+        color: @green;
+      }
+    }
+  }
+
+  .suboptions {
+    color: black;
+  }
+
+  .suboptions-option {
+    padding: 8px 12px 0;
+
+    &:hover {
+      color: @green;
+    }
+  }
+}

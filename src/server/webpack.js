@@ -6,13 +6,13 @@ export function runWebpackDevServer() {
   let bundleStart = null;
   const compiler = webpack(config);
 
-  compiler.plugin('compile', function() {
+  compiler.plugin('compile', () => {
     console.log('Bundling...');
     bundleStart = Date.now();
   });
 
-  compiler.plugin('done', function () {
-    console.log('Bundled in ' + (Date.now() - bundleStart) + 'ms');
+  compiler.plugin('done', () => {
+    console.log(`Bundled in ${Date.now() - bundleStart}ms`);
   });
 
   const server = new WebpackDevServer(compiler, {
@@ -30,7 +30,7 @@ export function runWebpackDevServer() {
     },
   });
 
-  server.listen(8081, 'localhost', function() {
+  server.listen(8081, 'localhost', () => {
     console.log('webpack dev server running on 8081');
   });
 }

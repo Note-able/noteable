@@ -4,7 +4,7 @@
     "isShellCommand": true,
     "tasks": [
         {
-            "taskName": "start",
+            "taskName": "dis",
             "args": [],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
