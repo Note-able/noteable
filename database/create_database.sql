@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS audio (
 CREATE TABLE IF NOT EXISTS music (
   id INT PRIMARY KEY AUTO_INCREMENT,
   author_user_id INT NOT NULL,
-  audio_url VARCHAAR(255),
+  audio_url VARCHAR(255),
   cover_url VARCHAR(200),
   description VARCHAR(200),
   duration VARCHAR(200) NOT NULL,
