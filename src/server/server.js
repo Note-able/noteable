@@ -62,7 +62,8 @@ passport.use(new LocalStrategy({ callbackURL: '/auth/local/callback' }, async (u
     SELECT pr.id, p.password, pr.email
     FROM users p
     INNER JOIN profiles pr
-    ON p.id = pr.user_id WHERE pr.email = ?;`,
+    ON p.id = pr.user_id
+    WHERE pr.email = ?;`,
     [username]);
 
   connection.destroy();
@@ -94,7 +95,7 @@ passport.use(new FacebookStrategy({
       SELECT *
       FROM users p
       WHERE facebook_id = ?;`,
-      [profile.id]);
+      [profile.facebook_id]);
 
     connection.destroy();
 
@@ -115,12 +116,12 @@ const jwtOptions = {
 passport.use(new JwtStrategy(jwtOptions, async (profile, done) => {
   const connection = await connectToMysqlDb(config.mysqlConnection);
   let user = null;
-  console.log('trying to fb auth');
+  console.log('trying to jwt auth');
   const [rows] = await connection.query(`
     SELECT *
     FROM users p
-    WHERE facebook_id = ?;`,
-    [profile.facebook_id]);
+    WHERE facebook_id = ? OR id = ?;`,
+    [profile.facebook_id, profile.id]);
 
   connection.destroy();
 
@@ -141,7 +142,37 @@ app.post('/auth/local',
     res.status(200).send();
   });
 
-app.post('/auth/jwt',
+app.post('/auth/local/jwt',
+  async  (req, res) => {
+    const connection = await connectToMysqlDb(config.mysqlConnection);
+    let user = null;
+    console.log('trying to jwt local auth');
+    const [rows] = await connection.query(`
+      SELECT pr.id, p.password, pr.email
+      FROM users p
+      INNER JOIN profiles pr
+      ON p.id = pr.user_id
+      WHERE pr.email = ?;`,
+      [req.body.username]);
+
+    connection.destroy();
+
+    user = rows[0];
+    if (!user) {
+      return res.status(404).send();
+    }
+
+    if (validatePassword(req.body.password, user.password)) {
+      return res.status(200).json({
+        token: `JWT ${generateToken(user)}`,
+        user,
+      });
+    }
+
+    return res.status(401).send();
+  });
+
+app.post('/auth/facebook/jwt',
   (req, res) => {
     validateWithProvider('facebook', req.body.token)
       .then(async (profile) => {
