@@ -50,23 +50,21 @@ module.exports = class Register extends Component {
       return;
     }
 
-    ajax.post('/register', { email, password, firstName, lastName })
+    ajax.post('/api/v1/register', { email, password, firstName, lastName })
       .then(() =>
-        ajax.postOld(`auth/local?username=${this.state.email}&password=${this.state.password}`,
-          null,
-          (junk, response) => {
-            if (response.status === 200) {
-              window.location = '/profile/create';
-              return;
-            }
-      }))
-      .catch(error => {
+      ajax.post('auth/local', { username: this.state.email, password: this.state.password }).then(
+        (junk, response) => {
+          if (response.status === 200) {
+            window.location = '/profile/create';
+            return;
+          }
+        }))
+      .catch((error) => {
         this.setState({
           registerFailed: 'An account with that email already exists.',
         });
       });
 
-    
     return false;
   }
 
