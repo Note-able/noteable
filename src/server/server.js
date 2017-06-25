@@ -9,7 +9,7 @@ import session from 'express-session';
 import Formidable from 'formidable';
 import fs from 'fs';
 import { UserService } from './services';
-import { connectToDb, ensureAuthenticated, validatePassword, generateToken, validateWithProvider, connectToMysqlDb } from './server-util';
+import { ensureAuthenticated, validatePassword, generateToken, validateWithProvider, connectToMysqlDb } from './server-util';
 import config from '../config';
 
 const MongoStore = require('connect-mongo')(session);
@@ -24,7 +24,7 @@ global.CLIENT = false;
 const app = express();
 app.use(express.static(`${__dirname}/../../public`));
 
-const userService = new UserService({ auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
+const userService = new UserService({ auth: ensureAuthenticated, database: config.connectionString });
 
 // set up Jade
 app.use(BodyParser.urlencoded({ extended: false }));
@@ -86,26 +86,24 @@ passport.use(new FacebookStrategy({
   callbackURL: '/auth/facebook/callback',
   enableProof: false,
 },
-  (accessToken, refreshToken, profile, done) => {
-    connectToDb(config.connectionString, (connection) => {
-      if (connection.status === 'SUCCESS') {
-        let user;
-        connection.client
-        .query(`SELECT * FROM public.user WHERE facebook_id = '${profile.id}';`)
-        .on('row', (row) => {
-          user = row;
-          connection.done();
-          return done(null, user);
-        })
-        .on('end', () => {
-          if (user === null) {
-            return done(null, false);
-          }
+  async (accessToken, refreshToken, profile, done) => {
+    const connection = await connectToMysqlDb(config.mysqlConnection);
+    let user = null;
+    console.log('trying to fb auth');
+    const [rows] = await connection.query(`
+      SELECT *
+      FROM users p
+      WHERE facebook_id = ?;`,
+      [profile.id]);
 
-          return null;
-        });
-      }
-    });
+    connection.destroy();
+
+    user = rows[0];
+    if (!user) {
+      return done(null, false);
+    }
+
+    return done(null, user);
   },
 ));
 
@@ -114,26 +112,24 @@ const jwtOptions = {
   secretOrKey: 'theAssyrianCameDownLikeAWolfOnTheFold',
 };
 
-passport.use(new JwtStrategy(jwtOptions, (profile, done) => {
-  connectToDb(config.connectionString, (connection) => {
-    if (connection.status === 'SUCCESS') {
-      let user;
-      connection.client
-      .query(`SELECT * FROM public.user WHERE facebook_id = '${profile.facebook_id}';`)
-      .on('row', (row) => {
-        user = row;
-        connection.done();
-        return done(null, user);
-      })
-      .on('end', () => {
-        if (user === null) {
-          return done(null, false);
-        }
+passport.use(new JwtStrategy(jwtOptions, async (profile, done) => {
+  const connection = await connectToMysqlDb(config.mysqlConnection);
+  let user = null;
+  console.log('trying to fb auth');
+  const [rows] = await connection.query(`
+    SELECT *
+    FROM users p
+    WHERE facebook_id = ?;`,
+    [profile.facebook_id]);
 
-        return null;
-      });
-    }
-  });
+  connection.destroy();
+
+  user = rows[0];
+  if (!user) {
+    return done(null, false);
+  }
+
+  return done(null, user);
 }));
 
 app.get('/auth/facebook',
@@ -148,22 +144,26 @@ app.post('/auth/local',
 app.post('/auth/jwt',
   (req, res) => {
     validateWithProvider('facebook', req.body.token)
-      .then((profile) => {
-        connectToDb(config.connectionString, (connection) => {
-          if (connection.status === 'SUCCESS') {
-            let user;
-            connection.client
-            .query(`SELECT * FROM public.user WHERE facebook_id = '${profile.id}';`)
-            .on('row', (row) => {
-              user = row;
-              connection.done();
-              return res.status(200).json({
-                token: `JWT ${generateToken(user)}`,
-                user,
-              });
-            })
-            .on('end', () => res.status(404).send());
-          }
+      .then(async (profile) => {
+        const connection = await connectToMysqlDb(config.mysqlConnection);
+        let user = null;
+        console.log('trying to fb auth');
+        const [rows] = await connection.query(`
+          SELECT *
+          FROM users p
+          WHERE facebook_id = ?;`,
+          [profile.id]);
+
+        connection.destroy();
+
+        user = rows[0];
+        if (!user) {
+          return res.status(404).send();
+        }
+
+        return res.status(200).json({
+          token: `JWT ${generateToken(user)}`,
+          user,
         });
       });
   });
@@ -183,7 +183,6 @@ app.get('/logout', (req, res) => {
 /* Import API Routes */
 require('./api-routes')(app, {
   auth: ensureAuthenticated,
-  connect: connectToDb,
   database: config.connectionString,
   connectToMysqlDb: connectToMysqlDb,
   mysqlParameters: config.mysqlConnection,
@@ -191,7 +190,7 @@ require('./api-routes')(app, {
 
 /* Normal Routes */
 app.get('/*', (req, res) => {
-  userService.getUser(req.user ? req.user.id : null, (user) => {
+  userService.getUser(req.user ? req.user.id : null).then((user) => {
     res.render('index', {
       props: encodeURIComponent(JSON.stringify(
         {
@@ -219,7 +218,7 @@ if (fs.existsSync('./src/server/keys/server.key') && process.env.TESTING !== 'tr
     console.log('JamSesh is listening at https://%s:%s', host, port);
   });
 
-  require('./sockets')(httpsServer, { auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
+  require('./sockets')(httpsServer, { auth: ensureAuthenticated, database: config.connectionString });
 }
 
 const httpServer = app.listen(config.port, () => {
@@ -229,6 +228,6 @@ const httpServer = app.listen(config.port, () => {
   console.log('JamSesh is listening at http://%s:%s', host, port);
 });
 
-require('./sockets')(httpServer, { auth: ensureAuthenticated, connect: connectToDb, database: config.connectionString });
+require('./sockets')(httpServer, { auth: ensureAuthenticated, database: config.connectionString });
 
 module.exports = app;
