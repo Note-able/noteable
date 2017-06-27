@@ -51,4 +51,34 @@ export default class MusicService {
       }
     });
   }
+
+  updateMusic(musicDto) {
+    return new Promise(async (resolve, reject) => {
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+      try {
+        await connection.execute(`
+          UPDATE ${await values(musicDto, 'UPDATE', connection)}
+          WHERE id = :id`,
+          { id: musicDto.id });
+        resolve(this.getMusic(musicDto.id));
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  deleteMusic(id) {
+    return new Promise(async (resolve, reject) => {
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+      try {
+        await connection.execute(`
+          UPDATE music SET is_deleted = TRUE
+          WHERE id = :id`,
+          { id });
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 }

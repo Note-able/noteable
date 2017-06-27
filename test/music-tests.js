@@ -22,7 +22,7 @@ mocha.describe('Music API tests', () => {
     assert.equal(res.status, 200);
   });
 
-  mocha.it('Should upload recordings', async () => {
+  mocha.it('Should upload recording and update it', async () => {
     const file = fs.readFileSync('./test/test-audio.aac');
     const res = await agent.post('/api/v1/recordings')
       .field('duration', '2s')
@@ -36,6 +36,15 @@ mocha.describe('Music API tests', () => {
 
     const getMusicResponse = await agent.get(`/api/v1/recordings/${res.body.id}`);
     assert.equal(res.body.id, getMusicResponse.body.id);
+
+    const updateMusicResponse = await agent.patch(`/api/v1/recordings/${res.body.id}`)
+      .send({
+        name: 'changed.aac',
+        description: 'THIS SICK BEAT',
+      });
+
+    assert.equal(updateMusicResponse.body.name, 'changed.aac');
+    assert.equal(updateMusicResponse.body.description, 'THIS SICK BEAT');
   }).timeout(10000);
 
   mocha.it('Should get user\'s recordings', async () => {
@@ -54,5 +63,25 @@ mocha.describe('Music API tests', () => {
     assert.isArray(getMusicForUserResponse.body);
     assert.isTrue(getMusicForUserResponse.body.length > 0);
     assert.isNotNull(getMusicForUserResponse.body.find(m => m.name === 'user.aac'));
+  }).timeout(10000);
+
+  mocha.it('Should delete the recording', async () => {
+    const file = fs.readFileSync('./test/test-audio.aac');
+    const res = await agent.post('/api/v1/recordings')
+      .field('duration', '2s')
+      .field('name', 'deleteme.aac')
+      .field('size', '14kb')
+      .field('extension', '.aac')
+      .field('file', new Buffer(file).toString('base64'));
+
+    assert.equal(res.status, 201);
+
+    const deleteMusicResponse = await agent.delete(`/api/v1/recordings/${res.body.id}`);
+
+    assert.equal(deleteMusicResponse.status, 204);
+
+    const getMusicResponse = await agent.get(`/api/v1/recordings/${res.body.id}`);
+    assert.equal(res.body.id, getMusicResponse.body.id);
+    assert.isTrue(getMusicResponse.body.isDeleted);
   }).timeout(10000);
 });

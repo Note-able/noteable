@@ -105,6 +105,8 @@ CREATE TABLE IF NOT EXISTS music (
   name VARCHAR(200) NOT NULL,
   size VARCHAR(50) NOT NULL,
   created_date DATETIME NOT NULL,
+  modified_date DATETIME NOT NULL,
+  is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   FOREIGN KEY (author_user_id) REFERENCES users(id)
 ) ENGINE InnoDB;
 

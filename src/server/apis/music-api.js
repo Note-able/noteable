@@ -23,7 +23,13 @@ module.exports = function musicApi(app, options, prefix) {
 
       audio.sendUploadToGCS(fields.extension ? fields.extension : '.mp3', buffer)
         .then((result) => {
-          mediaService.createMusic({ audioUrl: result.cloudStoragePublicUrl, authorUserId: req.user.id, name: fields.name, size: fields.size })
+          mediaService.createMusic({
+            audioUrl: result.cloudStoragePublicUrl,
+            authorUserId: req.user.id,
+            name: fields.name,
+            size: fields.size,
+            description: req.body.description,
+          })
             .then((music) => {
               res.status(201).json(music);
             })
@@ -48,7 +54,7 @@ module.exports = function musicApi(app, options, prefix) {
       .then(result => res.json(result))
       .catch((error) => {
         console.log(error);
-        res.json(error);
+        res.status(500).json(error);
       });
   });
 
@@ -61,23 +67,33 @@ module.exports = function musicApi(app, options, prefix) {
       .then(result => res.json(result))
       .catch((error) => {
         console.log(error);
-        res.error(error);
+        res.status(500).error(error);
       });
   });
 
-  app.patch(`${prefix}/recordings/:id`, options.auth, (req, res) => {
+  app.patch(`${prefix}/recordings/:recordingId`, options.auth, (req, res) => {
     if (!req.user) {
       return res.status(404).send();
     }
 
-    // TODO: Add recoridng update
+    return mediaService.updateMusic({
+      id: req.params.recordingId,
+      authorUserId: req.user.id,
+      description: req.body.description,
+      name: req.body.name,
+      size: req.body.size,
+    })
+      .then(result => res.status(200).json(result))
+      .catch(error => res.status(500).json(error));
   });
 
-  app.delete(`${prefix}/recordings/:id`, options.auth, (req, res) => {
+  app.delete(`${prefix}/recordings/:recordingId`, options.auth, (req, res) => {
     if (!req.user) {
       return res.status(404).send();
     }
 
-    // TODO: Add Delete recording
+    return mediaService.deleteMusic(req.params.recordingId)
+      .then(result => res.status(204).send())
+      .catch(error => res.status(500).json(error));
   });
 };

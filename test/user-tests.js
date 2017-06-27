@@ -5,7 +5,7 @@ const app = require('../lib/src/server/server');
 const uuidV4 = require('uuid/v4');
 
 const assert = chai.assert;
-/*
+
 mocha.describe('User API tests using cookie', () => {
   const agent = request.agent(app);
   let userId;
@@ -35,7 +35,7 @@ mocha.describe('User API tests using cookie', () => {
     assert.equal(res.body.profession, 'baller');
   });
 });
-*/
+
 mocha.describe('User API tests using JWT', () => {
   let userId;
   let jwt;
