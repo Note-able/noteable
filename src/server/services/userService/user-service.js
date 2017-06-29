@@ -46,6 +46,32 @@ export default class UserService {
     });
   }
 
+  getUserByFacebookId = async (facebookId) => {
+    return new Promise(async (resolve, reject) => {
+      if (facebookId == null) {
+        return resolve({ id: -1 });
+      }
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+        let user = {};
+        const [rows] = await connection.query(`
+          SELECT * FROM users u
+          WHERE u.facebook_id = :facebookId;
+        `, { facebookId });
+
+        user = { ...rows[0] };
+
+        if (user == null) {
+          return resolve({ id: -1 });
+        }
+
+        resolve(this.getUser(user.id));
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
   getUsers = async (userIds, callback) => (
     new Promise(async (resolve, reject) => {
       if (userIds == null || userIds.length === 0) {
@@ -142,8 +168,15 @@ export default class UserService {
     });
   }
 
-  registerUser = async (email, password, firstName, lastName) => {
+  registerUser = async (email, password, firstName, lastName, facebookId) => {
     return new Promise(async (resolve, reject) => {
+      if (!email && !facebookId) {
+        reject('Must have either an email or facebook id to register user');
+      }
+      if (!facebookId && !password) {
+        reject('If not using facebook login, must include a password');
+      }
+
       const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
       await connection.beginTransaction((err) => {
         if (err) {
@@ -151,24 +184,23 @@ export default class UserService {
         }
       });
 
-      const insertUserSql = mysql.format(
-        'INSERT INTO users (email, password) VALUES(?, ?);',
-        [email, password],
-      );
       let userId;
       try {
-        const [rows, fields] = await connection.query(insertUserSql);
+        const [rows, fields] = await connection.query(
+          'INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);',
+          { email: email || 'NULL', password: password || 'NULL', facebookId: facebookId || '' },
+        );
         userId = rows.insertId;
       } catch (err) {
         reject(err);
       }
-      const insertProfileSql = mysql.format(
-          'INSERT INTO profiles (email, user_id, first_name, last_name) VALUES (?, ?, ?, ?);',
-          [email, userId, firstName, lastName],
-        );
+
       let profileId;
       try {
-        const [rows] = await connection.execute(insertProfileSql);
+        const [rows] = await connection.execute(
+          'INSERT INTO profiles (email, user_id, first_name, last_name) VALUES (:email, :userId, :firstName, :lastName);',
+          { email: email || 'NULL', userId, firstName, lastName },
+        );
         profileId = rows.insertId;
       } catch (err) {
         reject(err);
