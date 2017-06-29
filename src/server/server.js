@@ -24,7 +24,7 @@ global.CLIENT = false;
 const app = express();
 app.use(express.static(`${__dirname}/../../public`));
 
-const userService = new UserService({ auth: ensureAuthenticated, database: config.connectionString });
+const userService = new UserService({ auth: ensureAuthenticated, connectToMysqlDb, mysqlParameters: config.mysqlConnection });
 
 // set up Jade
 app.use(BodyParser.urlencoded({ extended: false }));
@@ -88,19 +88,23 @@ passport.use(new FacebookStrategy({
   enableProof: false,
 },
   async (accessToken, refreshToken, profile, done) => {
-    const connection = await connectToMysqlDb(config.mysqlConnection);
-    let user = null;
-    console.log('trying to fb auth');
-    const [rows] = await connection.query(`
-      SELECT *
-      FROM users p
-      WHERE facebook_id = ?;`,
-      [profile.facebook_id]);
+    let user = await userService.getUserByFacebookId(profile.id);
 
-    connection.destroy();
+    if (user.id === -1) {
+      let firstName = profile.name.givenName;
+      let lastName = profile.name.familyName;
+      if (!firstName || !lastName) {
+        const names = profile.displayName.split(' ');
+        firstName = names.slice(0, names.length - 1).join(' ');
+        lastName = names[names.length - 1];
+      }
 
-    user = rows[0];
-    if (!user) {
+      console.log('registering new fb user');
+      const userId = await userService.registerUser(profile.email, '', firstName, lastName, profile.id);
+      user = await userService.getUser(userId);
+    }
+
+    if (!user || user.id === -1) {
       return done(null, false);
     }
 
@@ -202,6 +206,7 @@ app.post('/auth/facebook/jwt',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   (req, res) => {
+    console.log('hit callback');
     res.redirect('/');
   });
 
