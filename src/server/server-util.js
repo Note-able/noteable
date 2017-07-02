@@ -8,7 +8,7 @@ import mysql from 'mysql2/promise';
 export function connectToDb(connectionString, callback) {
   pg.connect(connectionString, (err, client, done) => {
     let error;
-    if (err){
+    if (err) {
       error = err;
     }
     console.log(error);
@@ -59,7 +59,7 @@ export function validateWithProvider(network, socialToken) {
   // Send a GET request to Facebook with the token as query string
     request({
       url: providers[network].url,
-      qs: { access_token: socialToken },
+      qs: { access_token: socialToken, fields: ['id', 'name', 'email', 'first_name', 'last_name'].toString() },
     },
     (error, response, body) => {
       if (!error && response.statusCode === 200) {
