@@ -188,14 +188,24 @@ app.post('/auth/facebook/jwt',
           WHERE facebook_id = ?;`,
           [profile.id]);
 
-        connection.destroy();
 
         user = rows[0];
         if (!user) {
-          const firstName = profile.first_name;
-          const lastName = profile.last_name;
-          const userId = await userService.registerUser(profile.email, '', firstName, lastName, profile.id);
-          user = await userService.getUser(userId);
+          user = await connection.query(`
+            SELECT *
+            FROM users p
+            WHERE email = ?;`,
+            [profile.email]);
+
+          connection.destroy();
+          if (!user) {
+            const firstName = profile.first_name;
+            const lastName = profile.last_name;
+            const userId = await userService.registerUser(profile.email, '', firstName, lastName, profile.id);
+            user = await userService.getUser(userId);
+          }
+        } else {
+          connection.destroy();
         }
 
         return res.status(200).json({
