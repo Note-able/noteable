@@ -197,6 +197,8 @@ app.post('/auth/facebook/jwt',
             WHERE email = ?;`,
             [profile.email])[0];
 
+          console.log(user, !user);
+
           connection.destroy();
           if (!user) {
             const firstName = profile.first_name;
