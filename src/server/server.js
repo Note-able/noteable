@@ -191,19 +191,19 @@ app.post('/auth/facebook/jwt',
 
         user = rows[0];
         if (!user) {
-          user = await connection.query(`
+          [user] = await connection.query(`
             SELECT *
             FROM users p
             WHERE email = ?;`,
-            [profile.email])[0];
-
-          console.log(user, !user);
+            [profile.email]);
+          user = user[0];
 
           connection.destroy();
           if (!user) {
-            const firstName = profile.first_name;
-            const lastName = profile.last_name;
-            const userId = await userService.registerUser(profile.email, '', firstName, lastName, profile.id);
+            const userId = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id);
+            user = await userService.getUser(userId);
+          } else {
+            const userId = await userService.updateUser(user.id, profile.id);
             user = await userService.getUser(userId);
           }
         } else {
