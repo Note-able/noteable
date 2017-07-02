@@ -190,15 +190,12 @@ app.post('/auth/facebook/jwt',
 
 
         user = rows[0];
-        console.log(user);
         if (!user) {
           user = await connection.query(`
             SELECT *
             FROM users p
             WHERE email = ?;`,
-            [profile.email]);
-
-          console.log(user);
+            [profile.email])[0];
 
           connection.destroy();
           if (!user) {
