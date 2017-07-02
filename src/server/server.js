@@ -147,7 +147,7 @@ app.post('/auth/local',
   });
 
 app.post('/auth/local/jwt',
-  async  (req, res) => {
+  async (req, res) => {
     const connection = await connectToMysqlDb(config.mysqlConnection);
     let user = null;
     console.log('trying to jwt local auth');
@@ -182,7 +182,6 @@ app.post('/auth/facebook/jwt',
       .then(async (profile) => {
         const connection = await connectToMysqlDb(config.mysqlConnection);
         let user = null;
-        console.log('trying to fb auth');
         const [rows] = await connection.query(`
           SELECT *
           FROM users p
@@ -193,7 +192,10 @@ app.post('/auth/facebook/jwt',
 
         user = rows[0];
         if (!user) {
-          return res.status(404).send();
+          const firstName = profile.first_name;
+          const lastName = profile.last_name;
+          const userId = await userService.registerUser(profile.email, '', firstName, lastName, profile.id);
+          user = await userService.getUser(userId);
         }
 
         return res.status(200).json({
@@ -220,7 +222,7 @@ app.get('/logout', (req, res) => {
 require('./api-routes')(app, {
   auth: ensureAuthenticated,
   database: config.connectionString,
-  connectToMysqlDb: connectToMysqlDb,
+  connectToMysqlDb,
   mysqlParameters: config.mysqlConnection,
 });
 
