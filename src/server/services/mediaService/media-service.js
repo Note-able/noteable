@@ -28,7 +28,11 @@ export default class MusicService {
         WHERE m.author_user_id = :userId
         LIMIT :limit
         OFFSET :offset;`,
-        { userId, limit: options.limit || defaultMusicLimit, offset: options.offset || 0 });
+          {
+            userId,
+            limit: parseInt(options.limit || defaultMusicLimit, 10),
+            offset: parseInt(options.offset || 0, 10),
+          });
 
         resolve(rows.map(music => musicMapper(music)));
       } catch (error) {
