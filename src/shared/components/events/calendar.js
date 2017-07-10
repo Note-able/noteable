@@ -1,8 +1,5 @@
-'use strict';
-
-const React = require('react');
-const ReactDOM = require('react-dom');
-const Moment = require('moment');
+import React from 'react';
+import Moment from 'moment';
 
 const minute = new Array(4).fill(0).map((value, index) => {
   if (index === 0) {
@@ -465,4 +462,4 @@ Calendar.propTypes = {
   onChange: React.PropTypes.func.isRequired
 };
 
-module.exports = Calendar;
+export default Calendar;

@@ -1,13 +1,10 @@
-'use-strict';
+import React from 'react';
+import GoogleMaps from 'google-maps';
+import Moment from 'moment';
+import ajax from '../../ajax';
+import Calendar from './calendar';
 
-const React = require('react');
-const ReactDOM = require('react-dom');
-const Router = require('react-router');
-const GoogleMaps = require('google-maps');
-const Calendar = require('./calendar');
 GoogleMaps.LIBRARIES = ['geometry', 'places', 'controls'];
-const Moment = require('moment');
-const ajax = require('../../ajax');
 let Google;
 
 module.exports = class CreateEvent extends React.Component {

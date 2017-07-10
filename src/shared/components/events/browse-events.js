@@ -1,18 +1,15 @@
-'use strict';
+import React from 'react';
+import GoogleMaps from 'google-maps';
+import EventsListView from './events-list-view';
+import EventsMapView from './events-map-view';
+import ajax from '../../ajax';
 
-const React = require('react');
-const ReactDOM = require('react-dom');
-const Router = require('react-router');
-const GoogleMaps = require('google-maps');
-const EventsListView = require('./events-list-view');
-const EventsMapView = require('./events-map-view');
-const ajax = require('../../ajax');
 let Google;
 
 const left = {left: 0};
 const right = {right: 0};
 
-module.exports = class BrowseEvents extends React.Component {
+export default class BrowseEvents extends React.Component {
   constructor(props) {
     super(props);
 

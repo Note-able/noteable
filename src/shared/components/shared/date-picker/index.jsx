@@ -1,8 +1,6 @@
-'use strict';
-
-const React = require('react');
-const ReactDOM = require('react-dom');
-const Moment = require('moment');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Moment from 'moment';
 import styles from './styles.less';
 
 const minute = new Array(4).fill(0).map((value, index) => {

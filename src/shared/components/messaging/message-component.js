@@ -1,11 +1,7 @@
-'use strict';
+import React from 'react';
+import MessageFeed from './message-feed';
 
-const React = require('react');
-const ReactDOM = require('react-dom');
-const Router = require('react-router');
-const MessageFeed = require('./message-feed');
-
-module.exports = class MessageComponent extends React.Component {
+export default class MessageComponent extends React.Component {
   constructor (props, context) {
     super(props, context);
 

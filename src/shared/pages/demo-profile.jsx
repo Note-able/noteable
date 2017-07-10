@@ -1,7 +1,7 @@
 import React from 'react';
-import AJAX from '../../ajax';
+import AJAX from '../ajax';
 
-class Profile extends React.Component {
+export default class DemoProfile extends React.Component {
   render () {
     return (
       <div>
@@ -156,5 +156,3 @@ class Profile extends React.Component {
     );
   }
 }
-
-module.exports = Profile;

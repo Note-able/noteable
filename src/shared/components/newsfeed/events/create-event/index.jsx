@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import styles from './styles.less';
-import AJAX from '../../../../ajax.js';
-import Calendar from '../../../events/calendar.js';
-import { DatePicker } from '../../../shared/index.js';
+import AJAX from '../../../../ajax';
+import Calendar from '../../../events/calendar';
+import { DatePicker } from '../../../shared';
 
 export default class CreateEvent extends Component {
   state = {

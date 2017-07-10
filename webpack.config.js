@@ -6,7 +6,7 @@ const projectRoot = __dirname;
 
 module.exports = {
   entry: {
-    main: path.join(projectRoot, '/src/client/entry.js'),
+    main: path.join(projectRoot, '/src/client/entry.jsx'),
   },
 
   output: {
@@ -24,11 +24,9 @@ module.exports = {
     }),
   ],
 
-  resolveLoader: {
-    modules: [
-      path.resolve(projectRoot, './node_modules'),
-    ],
-    extensions: ['*', '.js', '.jsx'],
+  resolve: {
+    extensions: [ '.js', '.jsx' ],
+    modules: [ 'node_modules' ],
   },
 
   module: {

@@ -1,8 +1,6 @@
-'use strict';
+import React from 'react';
 
-const React = require(`react`);
-
-module.exports = class MessageFeed extends React.Component {
+export default class MessageFeed extends React.Component {
   constructor(props) {
     super(props);
   }

@@ -1,31 +1,31 @@
-'use strict';
+import React from 'react';
+import Moment from 'moment';
 
-const React = require('react');
 let RecordRTC;
-const Moment = require('moment');
 let recorder;
 
-module.exports = class AudioComponent extends React.Component {
-  constructor (props) {
+export default class RecordAudio extends React.Component {
+  constructor(props) {
     super(props);
 
     this.state = { isRecording: false };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const mediaConstraints = {
       audio: {
         frameRate: 44100,
         channelCount: 1,
         sampleRate: 44100,
-        sampleSize: 8
-      }
+        sampleSize: 8,
+      },
     };
     RecordRTC = require('recordrtc');
 
     navigator.mediaDevices.getUserMedia(mediaConstraints).then(this.successCallback).catch(this.errorCallback);
   }
-  successCallback (stream) {
+
+  successCallback(stream) {
     const options = {
       bufferSize: 16384,
       type: 'audio/mpeg',
@@ -35,16 +35,19 @@ module.exports = class AudioComponent extends React.Component {
 
     recorder = RecordRTC(stream, options);
   }
-  errorCallback (error) {
+
+  errorCallback(error) {
     window.alert(error);
   }
-  startRecording () {
+
+  startRecording() {
     recorder.startRecording();
     this.setState({
       isRecording: true
     });
   }
-  stopRecording () {
+
+  stopRecording() {
     recorder.stopRecording((audioURL) => {
       const recordedBlob = recorder.getBlob();
 
@@ -61,7 +64,8 @@ module.exports = class AudioComponent extends React.Component {
       this.recordButtonFunction = () => { this.startRecording() };
     });
   }
-  sendAudioToServer () {
+
+  sendAudioToServer() {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -80,7 +84,8 @@ module.exports = class AudioComponent extends React.Component {
 
     reader.readAsDataURL(this.state.blob);
   }
-  renderGrid () {
+
+  renderGrid() {
     return (
       <div>
         <div className="testing-vertical"></div>
@@ -88,14 +93,15 @@ module.exports = class AudioComponent extends React.Component {
       </div>
     );
   }
-  render () {
-    return(
+
+  render() {
+    return (
       <div>
         <div>
-          <div onClick={ this.state.isRecording ? () => { this.stopRecording() } : () => { this.startRecording() } } className="record-button"></div>
-          <div onClick={ () => { this.stopRecording() } } className="stop-button"></div>
-          <audio src={ this.state.audioUrl } ref={ref => { this._thing = ref; }} className="audio-player" controls/>
-          <button onClick= { () => { this.sendAudioToServer() } } >Send</button>
+          <div onClick={this.state.isRecording ? () => { this.stopRecording(); } : () => { this.startRecording(); }} className="record-button" />
+          <div onClick={() => { this.stopRecording(); }} className="stop-button" />
+          <audio src={this.state.audioUrl} ref={(ref) => { this._thing = ref; }} className="audio-player" controls />
+          <button onClick={() => { this.sendAudioToServer(); }} >Send</button>
         </div>
       </div>
     );

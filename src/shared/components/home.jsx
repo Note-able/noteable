@@ -1,14 +1,15 @@
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
-import Login from './auth/login.jsx';
-import Register from './auth/register.jsx';
+import { Link } from 'react-router';
+import Login from './auth/login';
+import Register from './auth/register';
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.profile.id !== -1,
   userId: state.profile.id,
 });
 
-class HomeController extends Component {
+class Home extends Component {
   state = {
     showUserOptions: false,
   };
@@ -82,9 +83,8 @@ class HomeController extends Component {
   renderUserOptions() {
     return (
       <div className="user-options">
-        <a href={'/profile'}><div className="dropdown-button">Profile</div></a>
-        <a href="/editor"><div className="dropdown-button">Editor</div></a>
-        <a href="/logout"><div className="dropdown-button">Sign out</div></a>
+        <Link to="/profile"><div className="dropdown-button">Profile</div></Link>
+        <Link to="/logout"><div className="dropdown-button">Sign out</div></Link>
       </div>
     );
   }
@@ -123,7 +123,7 @@ class HomeController extends Component {
     return (
       <div className="home-container">
         <div className="navbar">
-          <a href="/"><div className="home-button">Noteable</div></a>
+          <Link to="/"><div className="home-button">Noteable</div></Link>
           {this.renderAuthenticationOptions()}
           {this.state.showUserOptions ? this.renderUserOptions() : null}
           {this.state.showAccountDialog ? this.renderSignInDialog() : null}
@@ -173,12 +173,11 @@ class HomeController extends Component {
               Quisque vitae fringilla tellus, quis eleifend diam. Duis eget nisl et metus porta faucibus. Maecenas efficitur eu erat et semper.</div>
             </div>
           </div>
-          <a href="/contact"><div className="signin-button contact" style={{ 'margin-right': '10px' }}>Contact Us</div></a>
+          <Link to="/contact"><div className="signin-button contact" style={{ 'margin-right': '10px' }}>Contact Us</div></Link>
         </div>
       </div>
     );
   }
 }
 
-
-module.exports = connect(mapStateToProps)(HomeController);
+export default connect(mapStateToProps)(Home);

@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { validateEmail, validatePassword } from '../../../util/util.js';
-import styles from '../app-styles/auth.less';
+import styles from '../../styles/auth.less';
 
-const ajax = require('../../ajax');
+import ajax from '../../ajax';
 
-module.exports = class Register extends Component {
+export default class Register extends Component {
   static propTypes = {
     switchToLogin: PropTypes.func.isRequired,
   };

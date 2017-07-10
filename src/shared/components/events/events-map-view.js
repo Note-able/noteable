@@ -1,17 +1,14 @@
-'use strict';
+import React from 'react';
+import GoogleMaps from 'google-maps';
+import EventsListView from './events-list-view';
+import Event from './event';
 
-const React = require('react');
-const ReactDOM = require('react-dom');
-const Router = require('react-router');
-const EventsListView = require('./events-list-view');
-const Event = require('./event');
-const GoogleMaps = require('google-maps');
 GoogleMaps.LIBRARIES = ['geometry', 'places', 'controls'];
 let Google;
 
 //script(async defer src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAKVBUoH34uEatkaHIhMcB7c3ejf1nLyYc&libraries=places&callback=initMap')
 
-module.exports = class EventsListView extends React.Component {
+export default class EventsListView extends React.Component {
   constructor(props) {
     super(props);
   }

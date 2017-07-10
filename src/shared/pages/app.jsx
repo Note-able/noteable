@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
 import React, { Component, PropTypes } from 'react';
-import Home from './home.jsx';
-import { Newsfeed } from './newsfeed';
-import { NavigationSidebar } from './shared';
-import AudioComponent from './record-audio-component.js';
-import styles from './app-styles/app-controller.less';
+import { Link } from 'react-router';
+import Home from '../components/home';
+import { NavigationSidebar } from '../components/shared';
+import RecordAudio from './record-audio';
+import styles from '../styles/app-controller.less';
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.profile.id !== -1,
@@ -12,7 +12,7 @@ const mapStateToProps = (state) => ({
 });
 
 
-class AppController extends Component {
+class App extends Component {
   static propTypes = {
     location: PropTypes.shape({
       pathname: PropTypes.string.isRequired,
@@ -39,14 +39,6 @@ class AppController extends Component {
   }
 
   renderChildren() {
-    if (this.props.isAuthenticated && this.props.location.pathname === '/') {
-      return (
-        <Newsfeed activeTab={this.state.activeTab}>
-          {this.renderSidebar()}
-        </Newsfeed>
-      );
-    }
-
     if (this.props.isAuthenticated) {
       return this.props.children;
     }
@@ -78,7 +70,7 @@ class AppController extends Component {
   renderNavbar() {
     return (
       <div className="navbar navbar__no-home">
-        <a href="/home"><div className="home-button">Noteable</div></a>
+        <Link href="/"><div className="home-button">Noteable</div></Link>
         <div className={styles.searchBarContainer}>
           <div className={styles.searchBarBox}>
             <input className={styles.searchBar} placeholder="Search people, events, or songs" />
@@ -86,7 +78,7 @@ class AppController extends Component {
         </div>
         {this.state.isRecording ? 
           <div className={styles.recordContainer}>
-            <AudioComponent />
+            <RecordAudio />
           </div>
           : <div className={styles.record} onClick={() => this.setState({ isRecording: true })}>Record</div>}
       </div>
@@ -108,4 +100,4 @@ class AppController extends Component {
 };
 
 
-module.exports = connect(mapStateToProps)(AppController);
+export default connect(mapStateToProps)(App);

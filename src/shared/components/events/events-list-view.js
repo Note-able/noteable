@@ -1,12 +1,9 @@
-'use strict';
+import React from 'react';
+import Event from './event';
 
-const React = require('react');
-const ReactDOM = require('react-dom');
-const Router = require('react-router');
-const Event = require('./event');
 let Google;
 
-module.exports = class EventsListView extends React.Component {
+export default class EventsListView extends React.Component {
   constructor(props) {
     super(props);
   }

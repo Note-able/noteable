@@ -1,17 +1,19 @@
 import React, { Component, PropTypes } from 'react';
-import instruments from './instruments.json';
-import styles from '../app-styles/create.less';
-import { CameraIcon } from '../icons/common-icons.g';
-import { validateProfile } from '../../../util/util.js';
 import { Editor, EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import { stateFromHTML } from 'draft-js-import-html';
 import GoogleMaps from 'google-maps';
+
+import instruments from '../components/profile-settings/instruments.json';
+import styles from '../styles/create.less';
+import { CameraIcon } from '../components/icons/common-icons.g';
+import { validateProfile } from '../../util/util';
+
 GoogleMaps.KEY = 'AIzaSyAKVBUoH34uEatkaHIhMcB7c3ejf1nLyYc';
 GoogleMaps.LIBRARIES = ['geometry', 'places', 'controls'];
 let Google;
 
-module.exports = class ProfileCreate extends Component {
+export default class ProfileCreate extends Component {
   static propTypes = {
     bio: PropTypes.object,
     onBioChange: PropTypes.func.isRequired,
