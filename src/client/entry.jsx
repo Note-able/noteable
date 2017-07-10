@@ -1,7 +1,7 @@
 import React from 'react';
-import { render } from 'react-dom';
+import ReactDOM from 'react-dom'
 import { Route } from 'react-router';
-import { Router } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
@@ -25,7 +25,7 @@ const store = compose(applyMiddleware(thunk), typeof window !== 'undefined' && w
     profile: { ...props.profile },
   });
 
-render(
+ReactDOM.render(
   <Provider store={store}>
     <Router>
       <div className="app-container">

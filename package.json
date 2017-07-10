@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/note-able/noteable#readme",
   "devDependencies": {
-    "autoprefixer": "^6.6.1",
+    "autoprefixer": "^6.7.7",
     "autoprefixer-loader": "^3.2.0",
     "babel-cli": "^6.14.0",
     "babel-core": "^6.14.0",
@@ -59,7 +59,7 @@
     "eslint-plugin-react": "^6.10.3",
     "express": "^4.13.3",
     "express-session": "^1.14.1",
-    "extract-text-webpack-plugin": "^2.0.0-beta.4",
+    "extract-text-webpack-plugin": "^2.1.2",
     "forever-monitor": "^1.7.0",
     "history": "^1.17.0",
     "jade": "^1.11.0",
