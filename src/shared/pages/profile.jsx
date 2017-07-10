@@ -4,14 +4,13 @@ import { stateFromHTML } from 'draft-js-import-html';
 import React, { Component, PropTypes, cloneElement } from 'react';
 import { connect } from 'react-redux';
 
-import AJAX from '../../ajax';
-import { NavigationSidebar } from '../shared';
-import ProfileSettings from './profile-settings.jsx';
-import { CameraIcon, CogIcon, PencilIcon } from '../icons/common-icons.g';
-import { profileActions } from '../../actions';
-import styles from '../app-styles/profile.less';
-import CreateProfile from './create.jsx';
-import AudioComponent from '../record-audio-component.js';
+import AJAX from '../ajax';
+import { NavigationSidebar } from '../components/shared';
+import ProfileSettings from '../components/profile-settings';
+import { CameraIcon, CogIcon, PencilIcon } from '../components/icons/common-icons.g';
+import { profileActions } from '../actions';
+import styles from '../styles/profile.less';
+import CreateProfile from './profile-create';
 
 const {
   loadUser,
@@ -223,4 +222,4 @@ class Profile extends Component {
   }
 }
 
-module.exports = connect(mapStateToProps, mapDispatchToProps)(Profile);
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

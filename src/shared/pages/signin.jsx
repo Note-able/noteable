@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import Login from './auth/login.jsx';
-import Register from './auth/register.jsx';
+import Login from '../components/auth/login';
+import Register from '../components/auth/register';
 
-module.exports = class SigninController extends Component {
+export default class Signin extends Component {
   state = {
     isRegistering: false,
   };
@@ -16,7 +16,10 @@ module.exports = class SigninController extends Component {
   render() {
     return (
       <div className="auth-container" style={this.state.isRegistering ? { height: '350px' } : { height: '300px' }}>
-        { this.state.isRegistering ? <Register switchToLogin={() => this.toggleDialog()} /> : <Login switchToRegister={() => this.toggleDialog()} /> }
+        { this.state.isRegistering ?
+          <Register switchToLogin={() => this.toggleDialog()} /> :
+          <Login switchToRegister={() => this.toggleDialog()} />
+        }
       </div>
     );
   }

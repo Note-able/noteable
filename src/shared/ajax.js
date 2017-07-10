@@ -85,4 +85,4 @@ const AJAX = {
   },
 };
 
-module.exports = AJAX;
+export default AJAX;

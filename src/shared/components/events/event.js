@@ -1,11 +1,8 @@
-'use strict';
+import React from 'react';
 
-const React = require('react');
-const ReactDOM = require('react-dom');
-const Router = require('react-router');
 let Google;
 
-module.exports = class Event extends React.Component {
+export default class Event extends React.Component {
   constructor(props) {
     super(props);
 

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { CameraIcon, CrossIcon } from '../icons/common-icons.g';
-import styles from '../app-styles/profile-settings.less';
+import styles from '../../styles/profile-settings.less';
 
 class ProfileSettings extends Component {
   static propTypes = {
