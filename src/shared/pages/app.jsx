@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import Home from '../components/home';
 import { NavigationSidebar } from '../components/shared';
 import RecordAudio from './record-audio';
@@ -70,7 +70,7 @@ class App extends Component {
   renderNavbar() {
     return (
       <div className="navbar navbar__no-home">
-        <Link href="/"><div className="home-button">Noteable</div></Link>
+        <Link to="/"><div className="home-button">Noteable</div></Link>
         <div className={styles.searchBarContainer}>
           <div className={styles.searchBarBox}>
             <input className={styles.searchBar} placeholder="Search people, events, or songs" />
