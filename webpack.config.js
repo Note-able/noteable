@@ -18,7 +18,6 @@ module.exports = {
   devtool: '#source-map',
 
   plugins: [
-    new webpack.NoEmitOnErrorsPlugin(),
     new ExtractTextPlugin({
       filename: 'style.css',
       allChunks: true,
@@ -41,7 +40,7 @@ module.exports = {
         test: /\.(less|css)$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: [ 'css-loader', { loader: 'postcss-loader', options: { plugins: [ autoprefixer ] } }, 'less-loader' ],
+          use: [ 'css-loader?camelCase&localIdentName=[name]--[local]--[hash:base64:5]', { loader: 'postcss-loader', options: { plugins: [ autoprefixer ] } }, 'less-loader' ],
         }),
       },
     ],

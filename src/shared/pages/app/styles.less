@@ -1,4 +1,4 @@
-@import 'variables';
+@import '../../styles/variables';
 
 :local {
   .testing-horizontal {
@@ -88,4 +88,49 @@
     }
   }
 
+  .navbar {
+    font: @normal-font;
+    height: @navbar-height;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 3;
+
+    &-no-home {
+      background: #1B1F20;
+    }
+
+    button {
+      float: right;
+      font: inherit;
+    }
+
+    .signin-dialog {
+      background: white;
+      left: 0;
+      margin: 100px auto;
+      position: fixed;
+      right: 0;
+      width: 300px;
+      z-index: 2;
+    }
+    
+    .home-button {
+      color: @white;
+      float: left;
+      font: @large-lobster-font;
+      height: @navbar-height;
+      line-height: @navbar-height;
+      padding: 0 60px 0 28px;
+      width: 100px;
+    }
+      
+    .signin-background {
+      background: rgba(204, 204, 204, 0.5);
+      height: 100%;
+      position: fixed;
+      width: 100%;
+      z-index: 1;
+    }
+  }
 }

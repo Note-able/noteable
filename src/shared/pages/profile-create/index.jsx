@@ -4,10 +4,10 @@ import { stateToHTML } from 'draft-js-export-html';
 import { stateFromHTML } from 'draft-js-import-html';
 import GoogleMaps from 'google-maps';
 
-import instruments from '../components/profile-settings/instruments.json';
-import styles from '../styles/create.less';
-import { CameraIcon } from '../components/icons/common-icons.g';
-import { validateProfile } from '../../util/util';
+import instruments from '../../components/profile-settings/instruments.json';
+import styles from './styles.less';
+import { CameraIcon } from '../../components/icons/common-icons.g';
+import { validateProfile } from '../../../util/util';
 
 GoogleMaps.KEY = 'AIzaSyAKVBUoH34uEatkaHIhMcB7c3ejf1nLyYc';
 GoogleMaps.LIBRARIES = ['geometry', 'places', 'controls'];

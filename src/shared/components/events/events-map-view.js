@@ -2,6 +2,7 @@ import React from 'react';
 import GoogleMaps from 'google-maps';
 import EventsListView from './events-list-view';
 import Event from './event';
+import styles from './styles.less';
 
 GoogleMaps.LIBRARIES = ['geometry', 'places', 'controls'];
 let Google;
@@ -84,10 +85,10 @@ export default class EventsListView extends React.Component {
 
   render() {
     return (
-      <div className="events-map-container">
-        <input name="location" className="map-search" ref="searchBox" type="text" placeholder="Search Box"/>
+      <div className={styles.eventsMapContainer}>
+        <input name="location" className={styles.mapSearch} ref="searchBox" type="text" placeholder="Search Box"/>
         <div id="map"/>
-        <div className="events-list-container">
+        <div className={styles.eventListContainer}>
           {this.props.events.map(event => {
             console.log(event);
             return (

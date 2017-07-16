@@ -1,6 +1,5 @@
 import React from 'react';
-
-let Google;
+import styles from './styles.less';
 
 export default class Event extends React.Component {
   constructor(props) {
@@ -13,7 +12,7 @@ export default class Event extends React.Component {
 
   render() {
     return (
-      <div className="event-container">
+      <div className={styles.eventContainer}>
         <span>{this.state.event.name}</span>
         <span>{this.state.event.latitude}+{this.state.event.longitude}</span>
         <span>{this.state.event.notes}</span>

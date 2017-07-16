@@ -3,6 +3,7 @@ import GoogleMaps from 'google-maps';
 import Moment from 'moment';
 import ajax from '../../ajax';
 import Calendar from './calendar';
+import styles from './styles.less';
 
 GoogleMaps.LIBRARIES = ['geometry', 'places', 'controls'];
 let Google;
@@ -144,25 +145,25 @@ module.exports = class CreateEvent extends React.Component {
 
   renderLoader() {
     return (
-      <div className="loader">
-        <div className="spinner"/>
+      <div className={styles.loader}>
+        <div className={styles.spinner} />
       </div>
     );
   }
 
   renderComponent() {
     return (
-      <div className="event-form">
-        <div className="event-form-wrapper">
+      <div className={styles.eventForm}>
+        <div className={styles.eventFormWrapper}>
           <label>Name</label>
-          <input name="name" className="event-name" onChange={this.changeName} type="text" placeholder="Name"/>
+          <input name="name" className={styles.eventName} onChange={this.changeName} type="text" placeholder="Name"/>
           <label>Date</label>
           <Calendar onChange={this.handleDateChange}/>
           <label>Location</label>
-          <input name="location" className="map-search" ref="searchBox" type="text" placeholder="Search Box"/>
+          <input name="location" className={styles.mapSearch} ref="searchBox" type="text" placeholder="Search Box"/>
           <label>Notes</label>
-          <textarea name="notes" className="event-notes" type="text" placeholder="Leave a note or description."/>
-          <button className="submit-event" onClick={this.createEvent} disabled={this.state.positionSet && this.state.nameSet && this.state.dateIsValid ? false : 'disabled'}>Submit</button>
+          <textarea name="notes" className={styles.eventNotes} type="text" placeholder="Leave a note or description."/>
+          <button className={styles.submitEvent} onClick={this.createEvent} disabled={this.state.positionSet && this.state.nameSet && this.state.dateIsValid ? false : 'disabled'}>Submit</button>
         </div>
       </div>
     );
@@ -170,7 +171,7 @@ module.exports = class CreateEvent extends React.Component {
 
   render () {
     return (
-      <div className="create-event-container">
+      <div className={styles.createEventContainer}>
         <div id="map" style={{ height: '100%'}} />
         {this.state.loading ? this.renderLoader() : this.renderComponent()}
       </div>

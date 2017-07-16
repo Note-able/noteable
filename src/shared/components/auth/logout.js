@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import styles from './styles.less';
 
 export default class Logout extends React.Component {
   logout() {
@@ -15,8 +16,8 @@ export default class Logout extends React.Component {
   }
   render() {
     return(
-      <div className="logout-button">
-        <button className="logout-button__submit-button" onClick={this.logout}>Logout of Facebook</button>
+      <div className={styles.logoutButton}>
+        <button className={styles.logoutButtonSubmitButton} onClick={this.logout}>Logout of Facebook</button>
       </div>
     );
   }

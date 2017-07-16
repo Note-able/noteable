@@ -1,8 +1,10 @@
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import Login from './auth/login';
-import Register from './auth/register';
+import Login from '../auth/login';
+import Register from '../auth/register';
+
+import styles from './styles.less';
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.profile.id !== -1,
@@ -83,8 +85,8 @@ class Home extends Component {
   renderUserOptions() {
     return (
       <div className="user-options">
-        <Link to="/profile"><div className="dropdown-button">Profile</div></Link>
-        <Link to="/logout"><div className="dropdown-button">Sign out</div></Link>
+        <Link to="/profile"><div className={styles.dropdownButton}>>Profile</div></Link>
+        <Link to="/logout"><div className={styles.dropdownButton}>Sign out</div></Link>
       </div>
     );
   }
@@ -92,19 +94,19 @@ class Home extends Component {
   renderAuthenticationOptions() {
     if (this.props.isAuthenticated) {
       return (
-        <a className="user-options-menu" onClick={this.state.showUserOptions ? null : this.showOptions}><div className="home" /></a>
+        <a className={styles.userOptionsMenu} onClick={this.state.showUserOptions ? null : this.showOptions}><div className={styles.home} /></a>
       );
     }
 
     return (
-      <a onClick={() => this.showSignIn()}><div className="signin-button">Sign in</div></a>
+      <a onClick={() => this.showSignIn()}><div className={styles.signinButton}>Sign in</div></a>
     );
   }
 
   renderSignInDialog() {
     return [
-      <div className="signin-background" onClick={() => this.hideOverlay()} />,
-      <div className="signin-dialog">
+      <div className={styles.signinBackground} onClick={() => this.hideOverlay()} />,
+      <div className={styles.signinDialog}>
         {this.state.showSignInDialog ? <Login switchToRegister={() => this.showRegister()} /> : <Register registerUser={() => this.registerUser()} switchToLogin={() => this.showSignIn()} />}
       </div>,
     ];
@@ -112,34 +114,34 @@ class Home extends Component {
 
   renderAccountRegistration() {
     return (
-      <div className="account-registration">
-        <button className="register-button" onClick={() => this.showRegister()}>Register</button>
-        <button className="signin-button" onClick={() => { window.location.href = 'editor'; }}>Try the Editor</button>
+      <div className={styles.accountRegistration}>
+        <button className={styles.registerButton} onClick={() => this.showRegister()}>Register</button>
+        <button className={styles.signinButton} onClick={() => { window.location.href = 'editor'; }}>Try the Editor</button>
       </div>
     );
   }
 
   render() {
     return (
-      <div className="home-container">
-        <div className="navbar">
-          <Link to="/"><div className="home-button">Noteable</div></Link>
+      <div className={styles.homeContainer}>
+        <div className={styles.navbar}>
+          <Link to="/"><div className={styles.homeButton}>Noteable</div></Link>
           {this.renderAuthenticationOptions()}
           {this.state.showUserOptions ? this.renderUserOptions() : null}
           {this.state.showAccountDialog ? this.renderSignInDialog() : null}
         </div>
-        <div className="main-content">
-          <div className="main-background" />
-          <div className="header">
-            <div className="header-container">
-              <h1 className="header-container__title"><span className="cursor">Noteable. Be inspired</span></h1>
-              <h5 className="header-container__sub-title">Connect, Create, and Collaborate with artists near you.</h5>
-              {this.props.isAuthenticated ? <div className="account-registration" /> : this.renderAccountRegistration() }
+        <div className={styles.mainContent}>
+          <div className={styles.mainBackground} />
+          <div className={styles.header}>
+            <div className={styles.headerContainer}>
+              <h1 className={styles.headerContainerTitle}><span className="cursor">Noteable. Be inspired</span></h1>
+              <h5 className={styles.headerContainerSubTitle}>Connect, Create, and Collaborate with artists near you.</h5>
+              {this.props.isAuthenticated ? <div className={styles.accountRegistration} /> : this.renderAccountRegistration() }
             </div>
           </div>
-          <div className="connect">
-            <div className="graphic" />
-            <div className="content">
+          <div className={styles.connect}>
+            <div className={styles.graphic} />
+            <div className={styles.content}>
               <h1>Connect</h1>
               <div>Meet other aspiring songwriters as you grow your network. Get to know established or new songwriters and start creating content together right away.</div>
               <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut placerat neque quis enim convallis, non accumsan nunc posuere. Nam pulvinar laoreet volutpat.
@@ -149,8 +151,8 @@ class Home extends Component {
               Quisque vitae fringilla tellus, quis eleifend diam. Duis eget nisl et metus porta faucibus. Maecenas efficitur eu erat et semper.</div>
             </div>
           </div>
-          <div className="collaborate">
-            <div className="content">
+          <div className={styles.collaborate}>
+            <div className={styles.content}>
               <h1>Collaborate</h1>
               <div>Meet other aspiring songwriters as you grow your network. Get to know established or new songwriters and start creating content together right away.</div>
               <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut placerat neque quis enim convallis, non accumsan nunc posuere. Nam pulvinar laoreet volutpat.
@@ -159,11 +161,11 @@ class Home extends Component {
               <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut placerat neque quis enim convallis, non accumsan nunc posuere. Nam pulvinar laoreet volutpat.
               Quisque vitae fringilla tellus, quis eleifend diam. Duis eget nisl et metus porta faucibus. Maecenas efficitur eu erat et semper.</div>
             </div>
-            <div className="graphic" />
+            <div className={styles.graphic} />
           </div>
-          <div className="create">
-            <div className="graphic" />
-            <div className="content">
+          <div className={styles.create}>
+            <div className={styles.graphic} />
+            <div className={styles.content}>
               <h1>Create</h1>
               <div>Meet other aspiring songwriters as you grow your network. Get to know established or new songwriters and start creating content together right away.</div>
               <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut placerat neque quis enim convallis, non accumsan nunc posuere. Nam pulvinar laoreet volutpat.
@@ -173,7 +175,7 @@ class Home extends Component {
               Quisque vitae fringilla tellus, quis eleifend diam. Duis eget nisl et metus porta faucibus. Maecenas efficitur eu erat et semper.</div>
             </div>
           </div>
-          <Link to="/contact"><div className="signin-button contact" style={{ 'margin-right': '10px' }}>Contact Us</div></Link>
+          <Link to="/contact"><div className={[styles.signinButton, styles.contact]} style={{ 'margin-right': '10px' }}>Contact Us</div></Link>
         </div>
       </div>
     );
