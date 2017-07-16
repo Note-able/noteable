@@ -4,13 +4,13 @@ import { stateFromHTML } from 'draft-js-import-html';
 import React, { Component, PropTypes, cloneElement } from 'react';
 import { connect } from 'react-redux';
 
-import AJAX from '../ajax';
-import { NavigationSidebar } from '../components/shared';
-import ProfileSettings from '../components/profile-settings';
-import { CameraIcon, CogIcon, PencilIcon } from '../components/icons/common-icons.g';
-import { profileActions } from '../actions';
-import styles from '../styles/profile.less';
-import CreateProfile from './profile-create';
+import AJAX from '../../ajax';
+import { NavigationSidebar } from '../../components/shared';
+import ProfileSettings from '../../components/profile-settings';
+import { CameraIcon, CogIcon, PencilIcon } from '../../components/icons/common-icons.g';
+import { profileActions } from '../../actions';
+import styles from './styles.less';
+import CreateProfile from '../profile-create';
 
 const {
   loadUser,

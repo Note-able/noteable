@@ -3,6 +3,7 @@ import GoogleMaps from 'google-maps';
 import EventsListView from './events-list-view';
 import EventsMapView from './events-map-view';
 import ajax from '../../ajax';
+import styles from './styles.less';
 
 let Google;
 
@@ -53,14 +54,14 @@ export default class BrowseEvents extends React.Component {
   renderView() {
     if (this.state.mode === 'list') {
       return (
-        <div className="events-list-container">
+        <div className={styles.eventsListContainer}>
           <EventsListView events={this.state.events}/>
          </div>
       );
     }
 
     return (
-      <div className="events-map-container">
+      <div className={styles.eventsMapContainer}>
         <EventsMapView events={this.state.events}/>
        </div>
     );
@@ -68,15 +69,15 @@ export default class BrowseEvents extends React.Component {
 
   render () {
     return (
-      <div className="events-container">
-        <div className="view-toggle-bar">
-          <div className="toggle">
-            <div className="toggle__option list-view" onClick={this.selectListView}>List</div>
-            <div className="toggle__option map-view" onClick={this.selectMapView}>Map</div>
-            <div className="toggle__option highlight" style={this.state.mode === 'list' ? left : right}></div>
+      <div className={styles.eventContainer}>
+        <div className={styles.viewToggleBar}>
+          <div className={styles.toggle}>
+            <div className={[styles.toggleOption, styles.listView]} onClick={this.selectListView}>List</div>
+            <div className={[styles.toggleOption, styles.mapView]} onClick={this.selectMapView}>Map</div>
+            <div className={[styles.toggleOption, styles.highlight]} style={this.state.mode === 'list' ? left : right}></div>
           </div>
         </div>
-        <div className="events-view">
+        <div className={styles.eventView}>
           {this.renderView()}
         </div>
       </div>

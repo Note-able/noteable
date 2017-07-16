@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { validateEmail, validatePassword } from '../../../util/util.js';
-import styles from '../../styles/auth.less';
+import styles from './styles.less';
 
 import ajax from '../../ajax';
 

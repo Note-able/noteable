@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router-dom';
-import Home from '../components/home';
-import { NavigationSidebar } from '../components/shared';
-import RecordAudio from './record-audio';
-import styles from '../styles/app-controller.less';
+import Home from '../../components/home/index';
+import { NavigationSidebar } from '../../components/shared';
+import RecordAudio from '../record-audio';
+import styles from './styles.less';
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.profile.id !== -1,
@@ -46,17 +46,6 @@ class App extends Component {
     return <Home />;
   }
 
-  renderGrid() {
-    return (
-      <div>
-        <div className={styles.testingVertical} />
-        <div className={styles.testingVertical1} />
-        <div className={styles.testingHorizontal} />
-        <div className={styles.testingHorizontal1} />
-      </div>
-    );
-  }
-
   renderSidebar() {
     return (
       <NavigationSidebar
@@ -69,8 +58,8 @@ class App extends Component {
 
   renderNavbar() {
     return (
-      <div className="navbar navbar__no-home">
-        <Link to="/"><div className="home-button">Noteable</div></Link>
+      <div className={[styles.navbar, styles.navbarNoHome].join(' ')}>
+        <Link to="/"><div className={styles.homeButton}>Noteable</div></Link>
         <div className={styles.searchBarContainer}>
           <div className={styles.searchBarBox}>
             <input className={styles.searchBar} placeholder="Search people, events, or songs" />

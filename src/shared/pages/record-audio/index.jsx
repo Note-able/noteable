@@ -1,5 +1,6 @@
 import React from 'react';
 import Moment from 'moment';
+import styles from './styles.less';
 
 let RecordRTC;
 let recorder;
@@ -98,9 +99,9 @@ export default class RecordAudio extends React.Component {
     return (
       <div>
         <div>
-          <div onClick={this.state.isRecording ? () => { this.stopRecording(); } : () => { this.startRecording(); }} className="record-button" />
-          <div onClick={() => { this.stopRecording(); }} className="stop-button" />
-          <audio src={this.state.audioUrl} ref={(ref) => { this._thing = ref; }} className="audio-player" controls />
+          <div onClick={this.state.isRecording ? () => { this.stopRecording(); } : () => { this.startRecording(); }} className={styles.recordButton} />
+          <div onClick={() => { this.stopRecording(); }} className={styles.stopButton} />
+          <audio src={this.state.audioUrl} ref={(ref) => { this._thing = ref; }} className={styles.audioPlayer} controls />
           <button onClick={() => { this.sendAudioToServer(); }} >Send</button>
         </div>
       </div>

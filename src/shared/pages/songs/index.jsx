@@ -1,5 +1,7 @@
 import React from 'react';
-import AJAX from '../ajax';
+import AJAX from '../../ajax';
+
+import styles from './styles.less';
 
 export default class Songs extends React.Component {
   constructor(props, context) {
@@ -23,20 +25,21 @@ export default class Songs extends React.Component {
   render() {
     return (
       <div>
-        <div className="button-container">
+        <div className={styles.buttonContainer}>
           <form action="/editor">
-            <input className="create-song" type="submit" value="Create" />
+            <input className={styles.createSong} type="submit" value="Create" />
           </form>
         </div>
         <div className="song-list">
-          { this.state.songData.map((song) => {
-            return (
-              <div className="song-list-item">
-                <div className="song-list-item-title">{ song.title }</div>
-                <div className="song-list-item-date">{ song.dateCreated }</div>
-              </div>
-            );
-          })
+          {
+            this.state.songData.map((song) => {
+              return (
+                <div className={styles.songListItem}>
+                  <div className={styles.songListTitle}>{ song.title }</div>
+                  <div className={styles.songListDate}>{ song.dateCreated }</div>
+                </div>
+              );
+            })
           }
         </div>
       </div>
