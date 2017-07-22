@@ -11,7 +11,7 @@ export default class MusicService {
     return new Promise(async (resolve, reject) => {
       const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
       try {
-        const [rows] = await connection.query(`SELECT ${columns('m', 'SELECT')} WHERE m.id = :id;`, { id });
+        const [rows] = await connection.query(`SELECT ${columns('m', 'SELECT')} WHERE m.id = :id AND m.is_deleted = 0;`, { id });
         resolve(musicMapper(rows[0]));
       } catch (error) {
         reject(error);
@@ -25,7 +25,7 @@ export default class MusicService {
       try {
         const [rows] = await connection.query(`
         SELECT ${columns('m', 'SELECT')}
-        WHERE m.author_user_id = :userId
+        WHERE m.author_user_id = :userId AND m.is_deleted = 0
         LIMIT :limit
         OFFSET :offset;`,
           {
