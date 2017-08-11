@@ -15,7 +15,7 @@
   }
 
   .error-message {
-    color: red;
+    color: @red;
     font-size: @message-font-size;
     text-align: center;
   }
@@ -46,7 +46,7 @@
 
   .submit-button-container {
     background: @facebook-blue;
-    color: white;
+    color: @white;
 
     &:hover {
       background: @facebook-hover;
@@ -136,7 +136,7 @@
       }
 
       &-error-message {
-        color: red;
+        color: @red;
         font-size: @message-font-size;
         text-align: center;
       }
@@ -184,7 +184,7 @@
 
     .facebook--button {
       background: @facebook-blue;
-      color: white;
+      color: @white;
       border: none;
       border-radius: @border-radius;
       cursor: pointer;
@@ -200,12 +200,10 @@
 
     .open-register {
       background: linear-gradient(to top left, @orange, @pink);
-      transition: background 0.5s ease;
       color: @white;
       text-align: center;
 
       &:hover {
-        transition: background 0.5s ease;
         background: linear-gradient(to top right, @orange-hover, @pink-hover);
       }
     }
