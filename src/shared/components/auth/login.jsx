@@ -54,7 +54,7 @@ module.exports = class Login extends Component {
           <input
             className={styles.signinFormUsername}
             name="email"
-            onKeyDown={(event) => this.focusPassword}
+            onKeyDown={this.focusPassword}
             onChange={(event) => { this.setState({ email: event.target.value }); }}
             placeholder="Email"
             ref={(ref) => { this._email = ref; }}
@@ -62,14 +62,14 @@ module.exports = class Login extends Component {
           <input
             className={styles.signinFormPassword}
             name="password"
-            onKeyDown={(event) => this.keyDown}
+            onKeyDown={this.keyDown}
             onChange={(event) => { this.setState({ password: event.target.value }); }}
             type="password"
             placeholder="Password"
             ref={(ref) => { this._password = ref; }}
           />
           <button className={styles.submitButton} onClick={() => this.login()}>Submit</button>
-          <a href="auth/facebook"><button className={styles.facebookButton} onClick={() => this.facebookLogin()}>Login with Facebook</button></a>
+          <button className={styles.facebookButton} onClick={() => this.facebookLogin()}>Login with Facebook</button>
           <div className={styles.signinOr}>or</div>
           <div className={styles.buttonContainer}>
             <button className={styles.openRegister} onClick={() => this.props.switchToRegister()}>Create an account</button>
