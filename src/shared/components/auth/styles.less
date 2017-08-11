@@ -107,6 +107,7 @@
 
   .login-container, .register-container {
     border-radius: 2px;
+    background: @black;
     
     &-header {
       background: @blue;
@@ -116,6 +117,43 @@
       text-align: center;
     }
 
+    .signin-form {
+      &-username, {
+        border: 0;
+        border-bottom: 1px solid @grey-medium;
+        border-radius: @border-radius @border-radius 0 0;
+        font: @normal-font;
+        line-height: @normal-line-height;
+        outline: none;
+        padding: 5px;
+        width: 100%;
+      }
+
+      &-password, {
+        border: 0;
+        border-radius: 0 0 @border-radius @border-radius;
+        font: @normal-font;
+        line-height: @normal-line-height;
+        outline: none;
+        padding: 5px;
+        width: 100%;
+        margin-bottom: 16px;
+      }
+    }
+
+    .register-form {
+      &-password, &-username {
+        border: 1px solid @grey-medium;
+        border-radius: @border-radius;
+        font: @normal-font;
+        line-height: @normal-line-height;
+        margin: 10px 0;
+        outline: none;
+        padding: 5px;
+        width: 100%;
+      }
+    }
+
     .signin-form, .register-form {
       left: 0;
       margin: 25px auto 10px;
@@ -123,6 +161,13 @@
       right: 0;
       top: 25px;
       width: 200px;
+      padding: 24px;
+
+      .signin-or {
+        display: flex;
+        justify-content: center;
+        font-size: 11px;
+      }
 
       &-error-message {
         color: red;
@@ -130,7 +175,7 @@
         text-align: center;
       }
 
-      &-username, &-password, &-password-verify, &-lastname, &-firstname {
+      &-password-verify, &-lastname, &-firstname {
         border: 1px solid @grey-medium;
         border-radius: @border-radius;
         font: @normal-font;
@@ -152,9 +197,10 @@
         height: 30px;
         outline: none;
         padding: 5px;
+        width: 100%;
 
         &:hover {
-          background: @blue;
+          background: @green;
           border: 1px solid transparent;
           color: @white;
         }
@@ -169,8 +215,15 @@
       width: 200px;
 
       &-open-register {
-        color: @blue;
+        background: linear-gradient(to top left, @orange, @pink);
+        transition: background 0.5s ease;
+        color: @white;
         text-align: center;
+
+        &:hover {
+          transition: background 0.5s ease;
+          background: linear-gradient(to top right, @orange-hover, @pink-hover);
+        }
       }
 
       &-submit-button {
@@ -185,11 +238,10 @@
 
       &-submit-button, &-open-register {
         border: none;
-        border-radius: 100px;
+        border-radius: @border-radius;
         cursor: pointer;
-        height: 30px;
         line-height: 30px;
-        margin: 9px 0;
+        margin: 8px 0;
         outline: none;
         width: 100%;
       }

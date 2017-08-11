@@ -49,7 +49,6 @@ module.exports = class Login extends Component {
   render() {
     return (
       <div className={styles.loginContainer}>
-        <div className={styles.loginContainerHeader}>Sign In</div>
         <div className={styles.signinForm}>
           { this.state.loginFailed ? <div className={styles.signinFormErrorMessage}>Invalid username or password</div> : null }
           <input
@@ -70,12 +69,11 @@ module.exports = class Login extends Component {
             ref={(ref) => { this._password = ref; }}
           />
           <button className={styles.signinFormSubmitButton} onClick={() => this.login()}>Submit</button>
-        </div>
-        <div className={styles.buttonContainer}>
           <a href="auth/facebook"><button className={styles.buttonContainerSubmitButton} onClick={() => this.facebookLogin()}>Login with Facebook</button></a>
-        </div>
-        <div className={styles.buttonContainer}>
-          <div className={styles.buttonContainerOpenRegister} onClick={() => this.props.switchToRegister()}>Create an account</div>
+          <div className={styles.signinOr}>or</div>
+          <div className={styles.buttonContainer}>
+            <button className={styles.buttonContainerOpenRegister} onClick={() => this.props.switchToRegister()}>Create an account</button>
+          </div>
         </div>
       </div>
     );
