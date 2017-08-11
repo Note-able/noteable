@@ -15,23 +15,6 @@ button {
 }
 
 :local {
-  .logout {
-    border: 1px solid @white;
-    border-radius: 2px;
-    color: @white;
-    font: @normal-font;
-    line-height: 28px;
-    margin: 7px 32px;
-    padding: 0 12px;
-    position: absolute;
-    right: 0;
-    top: 0;
-
-    &:hover {
-      color: @green;
-    }
-  }
-
   .error {
     color: @red;
   }
@@ -51,123 +34,6 @@ button {
     99% { border-right: 2px solid transparent; }
     100% { border-right: 2px solid #ffffff; } 
   };
-
-  .navbar {
-    //background: -webkit-linear-gradient(to right, #f46b45 , @orange); /* Chrome 10-25, Safari 5.1-6 */
-    //background: linear-gradient(to right, #f46b45 , @orange); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    font: @normal-font;
-    height: @navbar-height;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 3;
-
-    &-no-home {
-      background: #1B1F20;
-    }
-
-    button {
-      float: right;
-      font: inherit;
-    }
-  }
-    
-  .navbar {
-    .signin-dialog {
-      background: white;
-      left: 0;
-      margin: 100px auto;
-      position: fixed;
-      right: 0;
-      width: 300px;
-      z-index: 2;
-    }
-    
-    .home-button {
-      color: @white;
-      float: left;
-      font: @large-lobster-font;
-      height: @navbar-height;
-      line-height: @navbar-height;
-      padding: 0 60px 0 28px;
-      width: 100px;
-    }
-      
-    .signin-background {
-      background: rgba(204, 204, 204, 0.5);
-      height: 100%;
-      position: fixed;
-      width: 100%;
-      z-index: 1;
-    }
-      
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-    
-    .user-options {
-      background: rgba(0, 0, 0, .59);
-      color: white;
-      position: absolute;
-      right: 0;
-      top: @navbar-height;
-      width: 200px;
-      z-index: 2;
-      
-      .dropdown-button {
-        font: @normal-font;
-        height: 48px;
-        line-height: 48px;
-        text-align: center;
-        width: 100%;
-        z-index: 2;
-        
-        &:hover {
-          background: #5C8CA7;
-          border: none;
-          color: white;
-          font: @normal-font;
-          line-height: 48px;
-        }
-      }
-    }
-    
-    .signin-button {
-      border: 1px solid @white;
-      border-radius: 2px;
-      color: @white;
-      cursor: pointer;
-      float: right;
-      font: @normal-font;
-      height: 36px;
-      letter-spacing: .5px;
-      line-height: 36px;
-      margin: 8px 24px 8px 0;
-      text-align: center;
-      width: 100px;
-      z-index: 2;
-        
-      
-      &:hover {
-        background-color: @white;
-        color: @orange;
-      }
-    }
-    
-    .home {
-      background: url('/images/harmburger.svg') no-repeat center;
-      background-size: @navbar-height;
-      border-right: 1px solid #ccc;
-      cursor: pointer;
-      font-family: 'Bariol';
-      height: @navbar-height;
-      float: right;
-      line-height: @navbar-height;
-      text-align: center;
-      width: 76px;
-    }
-  }
 
   .home-container {
     .main-content {
@@ -311,7 +177,6 @@ button {
       
       .connect, .create, .collaborate {
         display: flex;
-        height: 500px;
         padding: 20px;
         
         .graphic {
@@ -335,6 +200,17 @@ button {
           padding: 20px;
         }
       }
+    }
+  }
+
+  @media(max-width: 1000px) {
+    .connect, .create {
+      display: flex;
+      flex-direction: column
+    }
+    .collaborate {
+      display: flex;
+      flex-direction: column-reverse;
     }
   }
 }

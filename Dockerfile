@@ -20,8 +20,7 @@ ENV NODE_ENV ${NODE}
 RUN echo ${NODE_ENV}
 
 # Create the lib directory
-RUN npm run styles
-RUN npm run dist
+RUN npm run bundle
 
 EXPOSE 8080
 

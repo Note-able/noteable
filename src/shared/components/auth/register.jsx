@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { validateEmail, validatePassword } from '../../../util/util.js';
+import { validateEmail, validatePassword } from '../../../util/util';
 import styles from './styles.less';
 
-import ajax from '../../ajax';
+import { fetchJson } from '../helpers/request';
 
 export default class Register extends Component {
   static propTypes = {
@@ -13,7 +13,7 @@ export default class Register extends Component {
     registerFailed: false,
   };
 
-  facebookLogin() {
+  facebookLogin = () => {
     window.location.href = 'auth/facebook';
   }
 
