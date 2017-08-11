@@ -68,11 +68,11 @@ module.exports = class Login extends Component {
             placeholder="Password"
             ref={(ref) => { this._password = ref; }}
           />
-          <button className={styles.signinFormSubmitButton} onClick={() => this.login()}>Submit</button>
-          <a href="auth/facebook"><button className={styles.buttonContainerSubmitButton} onClick={() => this.facebookLogin()}>Login with Facebook</button></a>
+          <button className={styles.submitButton} onClick={() => this.login()}>Submit</button>
+          <a href="auth/facebook"><button className={styles.facebookButton} onClick={() => this.facebookLogin()}>Login with Facebook</button></a>
           <div className={styles.signinOr}>or</div>
           <div className={styles.buttonContainer}>
-            <button className={styles.buttonContainerOpenRegister} onClick={() => this.props.switchToRegister()}>Create an account</button>
+            <button className={styles.openRegister} onClick={() => this.props.switchToRegister()}>Create an account</button>
           </div>
         </div>
       </div>

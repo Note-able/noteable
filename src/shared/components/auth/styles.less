@@ -4,14 +4,6 @@
   .login-container, .register-container {
     border-radius: 2px;
   }
-    
-  .header {
-    background: @blue;
-    color: @white;
-    font: @large-font;
-    line-height: 48px;
-    text-align: center;
-  }
 
   .signin-form, .register-form {
     left: 0;
@@ -33,29 +25,10 @@
     border-radius: @border-radius;
     font: @normal-font;
     line-height: @normal-line-height;
-    margin: 10px 0;
+    margin: 4px 0;
     outline: none;
     padding: 5px;
     width: 100%;
-  }
-
-  .submit-button {
-    background: none;
-    border: 1px solid @grey-medium;
-    border-radius: @border-radius;
-    color: @grey-medium;
-    cursor: pointer;
-    float: right;
-    font: @regular-font;
-    height: 30px;
-    outline: none;
-    padding: 5px;
-
-    &:hover {
-      background: @blue;
-      border: 1px solid transparent;
-      color: @white;
-    }
   }
 
   .button-container {
@@ -83,11 +56,11 @@
 
   .submit-button-container, .open-register {
     border: none;
-    border-radius: 100px;
+    border-radius: @border-radius;
     cursor: pointer;
     height: 30px;
     line-height: 30px;
-    margin: 9px 0;
+    margin: 8px 0;
     outline: none;
     width: 100%;
   }
@@ -108,14 +81,6 @@
   .login-container, .register-container {
     border-radius: 2px;
     background: @black;
-    
-    &-header {
-      background: @blue;
-      color: @white;
-      font: @large-font;
-      line-height: 48px;
-      text-align: center;
-    }
 
     .signin-form {
       &-username, {
@@ -167,6 +132,7 @@
         display: flex;
         justify-content: center;
         font-size: 11px;
+        color: @white;
       }
 
       &-error-message {
@@ -186,7 +152,7 @@
         width: 100%;
       }
 
-      &-submit-button {
+      .submit-button {
         background: none;
         border: 1px solid @grey-medium;
         border-radius: @border-radius;
@@ -198,6 +164,7 @@
         outline: none;
         padding: 5px;
         width: 100%;
+        margin: 8px 0;
 
         &:hover {
           background: @green;
@@ -213,37 +180,33 @@
       margin: auto;
       right: 0;
       width: 200px;
+    }
 
-      &-open-register {
-        background: linear-gradient(to top left, @orange, @pink);
+    .facebook--button {
+      background: @facebook-blue;
+      color: white;
+      border: none;
+      border-radius: @border-radius;
+      cursor: pointer;
+      line-height: 30px;
+      margin: 8px 0;
+      outline: none;
+      width: 100%;
+
+      &:hover {
+        background: @facebook-hover;
+      }
+    }
+
+    .open-register {
+      background: linear-gradient(to top left, @orange, @pink);
+      transition: background 0.5s ease;
+      color: @white;
+      text-align: center;
+
+      &:hover {
         transition: background 0.5s ease;
-        color: @white;
-        text-align: center;
-
-        &:hover {
-          transition: background 0.5s ease;
-          background: linear-gradient(to top right, @orange-hover, @pink-hover);
-        }
-      }
-
-      &-submit-button {
-        background: @facebook-blue;
-        color: white;
-
-        &:hover {
-          background: @facebook-hover;
-          color: @white;
-        }
-      }
-
-      &-submit-button, &-open-register {
-        border: none;
-        border-radius: @border-radius;
-        cursor: pointer;
-        line-height: 30px;
-        margin: 8px 0;
-        outline: none;
-        width: 100%;
+        background: linear-gradient(to top right, @orange-hover, @pink-hover);
       }
     }
   }
