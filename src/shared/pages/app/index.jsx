@@ -1,92 +1,72 @@
-import { connect } from 'react-redux';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import Home from '../../components/home/index';
-import { NavigationSidebar } from '../../components/shared';
-import RecordAudio from '../record-audio';
+import Login from '../../components/auth/login';
+import Register from '../../components/auth/register';
 import styles from './styles.less';
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.profile.id !== -1,
-  profile: state.profile,
-});
 
-
-class App extends Component {
+export default class App extends Component {
   static propTypes = {
     location: PropTypes.shape({
       pathname: PropTypes.string.isRequired,
-    }),
-    children: PropTypes.object,
+    }).isRequired,
   }
 
   state = {
-    activeTab: this.props.location.pathname,
-    isRecording: false,
+    showRegister: false,
+    showSignIn: false,
+    user: {},
   }
 
-  componentDidMount() {
-    window.onbeforeunload = () => this.saveState();
-    this.setState(JSON.parse(window.localStorage.getItem('state') || '{}'))
+  showSignIn = () => {
+    this.setState({
+      showSignIn: true,
+      showRegister: false,
+    });
   }
 
-  componentWillUnmount() {
-    this.saveState();
+  hideOverlay = () => {
+    this.setState({
+      showSignIn: false,
+      showRegister: false,
+    });
   }
 
-  saveState() {
-    window.localStorage.setItem('state', JSON.stringify({ ...this.state, isRecording: false }));
+  showRegister = () => {
+    this.setState({
+      showRegister: true,
+      showSignIn: false,
+    });
   }
 
-  renderChildren() {
-    if (this.props.isAuthenticated) {
-      return this.props.children;
-    }
-
-    return <Home />;
+  renderAccountDialog() {
+    return [
+      <div className={styles.signinBackground} onClick={() => this.hideOverlay()} />,
+      <div className={styles.signinDialog}>
+        {this.state.showSignIn ? <Login switchToRegister={() => this.showRegister()} /> : <Register registerUser={() => this.registerUser()} switchToLogin={() => this.showSignIn()} />}
+      </div>,
+    ];
   }
 
-  renderSidebar() {
-    return (
-      <NavigationSidebar
-        activeTab={this.state.activeTab}
-        currentUser={this.props.profile}
-        navigateToPath={url => this.setState({ activeTab: url})}
-      />
-    );
-  }
-
-  renderNavbar() {
-    return (
-      <div className={[styles.navbar, styles.navbarNoHome].join(' ')}>
-        <Link to="/"><div className={styles.homeButton}>Noteable</div></Link>
-        <div className={styles.searchBarContainer}>
-          <div className={styles.searchBarBox}>
-            <input className={styles.searchBar} placeholder="Search people, events, or songs" />
-          </div>
-        </div>
-        {this.state.isRecording ? 
-          <div className={styles.recordContainer}>
-            <RecordAudio />
-          </div>
-          : <div className={styles.record} onClick={() => this.setState({ isRecording: true })}>Record</div>}
-      </div>
-    );
-  }
+  renderNavbar = () => (
+    <div className={[styles.navbar, styles.navbarNoHome].join(' ')}>
+      <Link className={styles.homeButton} to="/">Noteable</Link>
+      {this.state.isAuthenticated ?
+        <button className={styles.signinButton} onClick={() => { console.log('sign out'); }}>Sign Out</button> :
+        <button className={styles.signinButton} onClick={this.showSignIn}>Sign In</button>}
+    </div>
+  )
 
   render() {
     return (
       <div>
-        <link href="/css/bundle.css" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/draft-js/0.7.0/Draft.min.css" />
         {this.renderNavbar()}
-        {this.renderChildren()}
+        {this.state.showRegister || this.state.showSignIn ? this.renderAccountDialog() : null}
+        <Home user={this.state.user} showAccountDialog={this.showRegister} isAuthenticated={this.state.isAuthenticated} />
       </div>
     );
   }
 };
-
-
-export default connect(mapStateToProps)(App);
