@@ -188,7 +188,6 @@ app.post('/auth/facebook/jwt',
           WHERE facebook_id = ?;`,
           [profile.id]);
 
-
         user = rows[0];
         if (!user) {
           [user] = await connection.query(`

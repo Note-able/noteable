@@ -125,14 +125,14 @@ export default class UserService {
             zip_code = :zipCode,
             profession = :profession
           WHERE id = :id;`,
-        { location: profile.location || 'NULL',
-          bio: profile.bio || 'NULL',
-          coverUrl: profile.coverImage || 'NULL',
-          firstName: profile.firstName || 'NULL',
-          lastName: profile.lastName || 'NULL',
-          avatarUrl: profile.avatarUrl || 'NULL',
-          zipCode: profile.zipCode || 'NULL',
-          profession: profile.profession || 'NULL',
+        { location: profile.location || null,
+          bio: profile.bio || null,
+          coverUrl: profile.coverImage || null,
+          firstName: profile.firstName || null,
+          lastName: profile.lastName || null,
+          avatarUrl: profile.avatarUrl || null,
+          zipCode: profile.zipCode || null,
+          profession: profile.profession || null,
           id,
         });
 
@@ -204,7 +204,7 @@ export default class UserService {
     try {
       const [rows, fields] = await connection.query(
           'INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);',
-          { email: email || 'NULL', password: password || 'NULL', facebookId: facebookId || '' },
+          { email: email || null, password: password || null, facebookId: facebookId || '' },
         );
       userId = rows.insertId;
     } catch (err) {
@@ -215,7 +215,7 @@ export default class UserService {
     try {
       const [rows] = await connection.execute(
           'INSERT INTO profiles (email, user_id, first_name, last_name) VALUES (:email, :userId, :firstName, :lastName);',
-          { email: email || 'NULL', userId, firstName, lastName },
+          { email: email || null, userId, firstName, lastName },
         );
       profileId = rows.insertId;
     } catch (err) {
