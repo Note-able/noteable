@@ -52,11 +52,17 @@ CREATE TABLE IF NOT EXISTS messages (
 
 CREATE TABLE IF NOT EXISTS conversations (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  is_one_on_one BOOLEAN NOT NULL,
+  is_deleted BOOLEAN NOT NULL DEFAULT false
+) ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS conversation_participants (
+  conversation_id INT NOT NULL,
   user_id INT NOT NULL,
-  is_deleted BOOLEAN NOT NULL DEFAULT false,
   last_read_message INT,
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (last_read_message) REFERENCES messages(id)
+  FOREIGN KEY (last_read_message) REFERENCES messages(id),
+  UNIQUE KEY `user_per_conversation_id` (user_id, conversation_id)
 ) ENGINE InnoDB;
 
 ALTER TABLE messages ADD CONSTRAINT fk_conversation_id FOREIGN KEY (conversation_id) REFERENCES conversations(id);
