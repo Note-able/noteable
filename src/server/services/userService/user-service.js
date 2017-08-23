@@ -57,7 +57,7 @@ export default class UserService {
           UPDATE users u
           SET facebook_id = :facebookId
           WHERE u.id = :userId;
-        `, { userId, facebookId });
+        `, { userId, facebookId: facebookId || null });
 
       connection.destroy();
 
@@ -91,7 +91,7 @@ export default class UserService {
     }
   })
 
-  getUsers = async (userIds, callback) => (
+  getUsers = async userIds => (
     new Promise(async (resolve, reject) => {
       if (userIds == null || userIds.length === 0) {
         resolve({ id: -1 });
@@ -204,7 +204,7 @@ export default class UserService {
     try {
       const [rows, fields] = await connection.query(
           'INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);',
-          { email: email || null, password: password || null, facebookId: facebookId || '' },
+          { email: email || null, password: password || null, facebookId: facebookId || null },
         );
       userId = rows.insertId;
     } catch (err) {

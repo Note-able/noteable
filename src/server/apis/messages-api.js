@@ -1,5 +1,5 @@
 import { MessageService, UserService } from '../services';
-import { conversationMapper, conversationsMapper } from '../services/messageService/model/conversationDto';
+import { conversationsMapper, conversationMapper } from '../services/messageService/model/conversationDto';
 
 module.exports = function messagesApi(app, options, prefix) {
   const messageService = new MessageService(options);
@@ -37,8 +37,9 @@ module.exports = function messagesApi(app, options, prefix) {
       return;
     }
 
-    const userIds = req.body.userIds.split(',');
-    messageService.createConversation(userIds)
+    const userIds = [ req.user.id, ...req.body.userIds];
+    const isOneOnOne = req.body.isOneOnOne;
+    messageService.createConversation(userIds, isOneOnOne)
       .then((result) => {
         if (typeof (result) === 'object') {
           res.status(200).json(result);
@@ -57,8 +58,9 @@ module.exports = function messagesApi(app, options, prefix) {
     } else {
       messageService.getConversationsByUserId(req.user.id)
         .then((conversations) => {
+          console.log(conversations);
           const userIds = [...new Set(conversations.map(x => x.user_id))];
-          userService.getUsers(userIds, (users) => {
+          userService.getUsers(userIds).then((users) => {
             res.status(200).json(conversationsMapper(users, conversations));
           });
         })
@@ -68,7 +70,7 @@ module.exports = function messagesApi(app, options, prefix) {
     }
   });
 
-  app.get(`${prefix}/conversation/:conversationId`, options.auth, (req, res) => {
+  app.get(`${prefix}/conversations/:conversationId`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
     } else if (req.params.conversationId == null) {
@@ -76,19 +78,20 @@ module.exports = function messagesApi(app, options, prefix) {
     } else {
       messageService.getConversation(req.params.conversationId, req.user.id)
         .then((conversation) => {
-          // TODO: support groups or multiple userIds
+          console.log(conversation);
           const userIds = [...new Set(conversation.messages.map(x => x.user_id))];
-          userService.getUsers(userIds, (users) => {
+          userService.getUsers(userIds).then((users) => {
             res.status(200).json(conversationMapper(users, conversation));
           });
         })
         .catch((error) => {
+          console.log(error);
           res.status(500).json(error);
         });
     }
   });
 
-  app.get(`${prefix}/message/:messageId`, options.auth, (req, res) => {
+  app.get(`${prefix}/messages/:messageId`, options.auth, (req, res) => {
     if (!req.user) {
       res.status(404).send();
       return;
@@ -135,7 +138,7 @@ module.exports = function messagesApi(app, options, prefix) {
       return;
     }
 
-    messageService.createMessage(req.body.conversationId, req.body.userId, req.body.content, req.body.destinationId)
+    messageService.createMessage(req.body.conversationId, req.user.id, req.body.content)
       .then((messageId) => {
         res.status(201).json({ messageId });
       })
@@ -144,7 +147,7 @@ module.exports = function messagesApi(app, options, prefix) {
       });
   });
 
-  app.delete(`${prefix}/message/:messageId`, options.auth, (req, res) => {
+  app.delete(`${prefix}/messages/:messageId`, options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
@@ -161,7 +164,7 @@ module.exports = function messagesApi(app, options, prefix) {
       });
   });
 
-  app.delete(`${prefix}/conversation/:conversationId`, options.auth, (req, res) => {
+  app.delete(`${prefix}/conversations/:conversationId`, options.auth, (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
