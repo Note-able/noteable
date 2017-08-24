@@ -52,42 +52,36 @@ module.exports = function messagesApi(app, options, prefix) {
       });
   });
 
-  app.get(`${prefix}/conversations`, options.auth, (req, res) => {
+  app.get(`${prefix}/conversations`, options.auth, async (req, res) => {
     if (!req.user) {
       res.status(404).send();
     } else {
-      messageService.getConversationsByUserId(req.user.id)
-        .then((conversations) => {
-          console.log(conversations);
-          const userIds = [...new Set(conversations.map(x => x.user_id))];
-          userService.getUsers(userIds).then((users) => {
-            res.status(200).json(conversationsMapper(users, conversations));
-          });
-        })
-        .catch((error) => {
-          res.status(500).json(error);
-        });
+      try {
+        const conversations = await messageService.getConversationsByUserId(req.user.id);
+        const userIds = [...new Set(conversations.reduce((arr, c) => arr.concat(...c.participants), []))];
+        const users = await userService.getUsers(userIds);
+
+        res.status(200).json(conversationsMapper(users, conversations));
+      } catch (error) {
+        res.status(500).json(error);
+      };
     }
   });
 
-  app.get(`${prefix}/conversations/:conversationId`, options.auth, (req, res) => {
+  app.get(`${prefix}/conversations/:conversationId`, options.auth, async (req, res) => {
     if (!req.user) {
       res.status(404).send();
     } else if (req.params.conversationId == null) {
       res.status(400).send();
     } else {
-      messageService.getConversation(req.params.conversationId, req.user.id)
-        .then((conversation) => {
-          console.log(conversation);
-          const userIds = [...new Set(conversation.messages.map(x => x.user_id))];
-          userService.getUsers(userIds).then((users) => {
-            res.status(200).json(conversationMapper(users, conversation));
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          res.status(500).json(error);
-        });
+      try {
+        const conversation = await messageService.getConversation(req.params.conversationId, req.user.id);
+        const userIds = [...new Set(conversation.participants)];
+        const users = await userService.getUsers(userIds);
+        res.status(200).json(conversationMapper(users, conversation));
+      } catch (error) {
+        res.status(500).json(error);
+      };
     }
   });
 
@@ -147,24 +141,7 @@ module.exports = function messagesApi(app, options, prefix) {
       });
   });
 
-  app.delete(`${prefix}/messages/:messageId`, options.auth, (req, res) => {
-    if (req.user == null) {
-      res.status(404).send();
-      return;
-    } else if (req.params.messageId == null) {
-      res.status(400).send();
-    }
-
-    messageService.deleteMessage(req.params.messageId)
-      .then((count) => {
-        res.status(200).json(count);
-      })
-      .catch((error) => {
-        res.status(500).json(error);
-      });
-  });
-
-  app.delete(`${prefix}/conversations/:conversationId`, options.auth, (req, res) => {
+  app.delete(`${prefix}/conversations/:conversationId`, options.auth, async (req, res) => {
     if (req.user == null) {
       res.status(404).send();
       return;
@@ -172,12 +149,12 @@ module.exports = function messagesApi(app, options, prefix) {
       res.status(400).send();
     }
 
-    messageService.deleteConversation(req.params.conversationId)
-      .then((count) => {
-        res.status(200).json(count);
-      })
-      .catch((error) => {
-        res.status(500).json(error);
-      });
+    try {
+      await messageService.deleteConversation(req.params.conversationId);
+      res.status(204).send();
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
   });
 };

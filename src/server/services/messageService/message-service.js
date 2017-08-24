@@ -65,20 +65,20 @@ export default class MessageService {
           { userId },
         );
 
-        const conversations = conversationIds.map(async (conversationId) => {
+        const conversations = await Promise.all(conversationIds.map(async ({ id }) => {
           const [participants] = await connection.query(
             'SELECT user_id FROM conversation_participants WHERE conversation_id = :conversationId;',
-            { conversationId },
+            { conversationId: id },
           );
 
           const [rows] = await connection.query(
             'SELECT * FROM messages WHERE conversation_id = :conversationId ORDER BY time_stamp DESC LIMIT 1;',
-            { conversationId },
+            { conversationId: id },
           );
           const lastMessage = rows[0];
 
-          return { conversationId, lastMessage: messageMapper(lastMessage), participants };
-        });
+          return { conversationId: id, lastMessage: lastMessage ? messageMapper(lastMessage) : null, participants: participants.map(p => p.user_id) };
+        }));
 
         resolve(conversations);
         connection.destroy();
@@ -99,15 +99,15 @@ export default class MessageService {
         const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
         const [rows] = await connection.query(
-          `SELECT c.id FROM conversations c
+          `SELECT c.id, c.is_deleted FROM conversations c
             INNER JOIN conversation_participants p
             ON c.id = p.conversation_id
           WHERE p.user_id = :userId AND c.id = :conversationId;`,
           { userId, conversationId },
         );
-        const id = rows[0];
+        const conversation = rows[0];
 
-        if (!id) {
+        if (!conversation) {
           resolve(null);
         }
 
@@ -121,7 +121,7 @@ export default class MessageService {
           { conversationId },
         );
 
-        resolve({ conversationId, messages: messages.map(messageMapper), participants });
+        resolve({ conversationId, messages: messages.map(messageMapper), participants: participants.map(p => p.user_id), isDeleted: conversation.is_deleted });
         connection.destroy();
       } catch (error) {
         reject(error);
@@ -241,7 +241,7 @@ export default class MessageService {
       try {
         const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
         await connection.execute(
-          'UPDATE messages SET is_deleted = TRUE WHERE message_id = :messageId;',
+          'UPDATE messages SET is_deleted = TRUE WHERE id = :messageId;',
           { messageId },
         );
 
@@ -263,7 +263,7 @@ export default class MessageService {
       try {
         const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
         await connection.execute(
-          'UPDATE conversations SET is_deleted = TRUE WHERE conversation_id = :conversationId;',
+          'UPDATE conversations SET is_deleted = TRUE WHERE id = :conversationId;',
           { conversationId },
         );
 

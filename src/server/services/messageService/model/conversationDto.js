@@ -1,13 +1,13 @@
 export const conversationsMapper = (users, conversations) => {
   const userMap = users.reduce((map, user) => { map[user.id] = user; return map; }, {});
-  return conversations.map(({ conversationid, lastMessage, participants }) => (
-    { id: conversationid, users: participants.map(id => userMap[id]), lastMessage }
+  return conversations.map(({ conversationId, lastMessage, participants }) => (
+    { id: conversationId, users: participants.map(id => userMap[id]), lastMessage }
   ));
 };
 
-export const conversationMapper = (users, { conversationid, participants, messages }) => {
+export const conversationMapper = (users, { conversationId, participants, messages, isDeleted }) => {
   const userMap = users.reduce((map, user) => { map[user.id] = user; return map; }, {});
-  return { id: conversationid, users: participants.map(id => userMap[id]), messages };
+  return { id: conversationId, users: participants.map(id => userMap[id]), messages, isDeleted: !!isDeleted };
 };
 
 export const messageMapper = dbMessage => ({

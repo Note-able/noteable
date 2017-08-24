@@ -68,4 +68,40 @@ mocha.describe('Message API tests', () => {
 
     assert.equal(recreateConversationResponse.status, 500);
   });
+
+  mocha.it('Should create a new group conversation and fetch the user\'s conversations', async () => {
+    const res = await agent.post('/api/v1/conversations')
+    .send({
+      userIds: [userId2, userId3],
+      isOneOnOne: false,
+    });
+
+    assert.equal(res.status, 201);
+    assert.isNotNull(res.body.conversationId);
+
+    const getConversationsResponse = await agent.get('/api/v1/conversations');
+
+    assert.equal(getConversationsResponse.status, 200);
+    assert.isTrue(getConversationsResponse.body.length > 0);
+  });
+
+  mocha.it('Should create a conversation delete the conversation', async () => {
+    const res = await agent.post('/api/v1/conversations')
+    .send({
+      userIds: [userId2, userId3],
+      isOneOnOne: false,
+    });
+
+    assert.equal(res.status, 201);
+    assert.isNotNull(res.body.conversationId);
+
+    const deleteConversationResponse = await agent.delete(`/api/v1/conversations/${res.body.conversationId}`);
+
+    assert.equal(deleteConversationResponse.status, 204);
+
+    const getConversationResponse = await agent.get(`/api/v1/conversations/${res.body.conversationId}`);
+
+    assert.equal(getConversationResponse.status, 200);
+    assert.isTrue(getConversationResponse.body.isDeleted);
+  });
 });

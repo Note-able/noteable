@@ -98,7 +98,7 @@ export default class UserService {
         return;
       }
 
-      const users = userIds.map(async id => (await this.getUser(id)));
+      const users = await Promise.all(userIds.map(async id => (await this.getUser(id))));
 
       if (users.length === 0) {
         resolve({ id: -1 });

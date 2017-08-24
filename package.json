@@ -18,7 +18,7 @@
     "start-dev": "rm -rf dist && ./node_modules/.bin/webpack && ./node_modules/.bin/webpack-dev-server --config ./webpack.config.js --port 8081 --content-base dist",
     "start": "npm run start-dev",
     "dash": "./node_modules/.bin/nodejs-dashboard npm run start-dev",
-    "test": "NODE_ENV=local TESTING=true node ./node_modules/.bin/mocha"
+    "test": "NODE_ENV=local TESTING=true node ./node_modules/.bin/mocha -t 5000"
   },
   "repository": {
     "type": "git",

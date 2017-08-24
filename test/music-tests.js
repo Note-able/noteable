@@ -6,7 +6,7 @@ const uuidV4 = require('uuid/v4');
 const fs = require('fs');
 
 const assert = chai.assert;
-
+/*
 mocha.describe('Music API tests', () => {
   const agent = request.agent(app);
   let userId;
@@ -85,3 +85,4 @@ mocha.describe('Music API tests', () => {
     assert.isTrue(getMusicResponse.body.isDeleted);
   }).timeout(10000);
 });
+*/
