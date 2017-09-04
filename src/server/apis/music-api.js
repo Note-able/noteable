@@ -83,6 +83,7 @@ module.exports = function musicApi(app, options, prefix) {
       description: req.body.description,
       name: req.body.name,
       size: req.body.size,
+      tags: req.body.tags,
     })
       .then(result => res.status(200).json(result))
       .catch(error => res.status(500).json(error));

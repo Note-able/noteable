@@ -101,13 +101,14 @@ mocha.describe('Music API tests', () => {
     assert.equal(res.body.id, getMusicResponse.body.id);
     assert.equal(res.body.tags.length, 2);
 
-    /*const updateMusicResponse = await agent.patch(`/api/v1/recordings/${res.body.id}`)
+    const updateMusicResponse = await agent.patch(`/api/v1/recordings/${res.body.id}`)
       .send({
-        name: 'changed.aac',
+        name: 'updated-tags.aac',
         description: 'THIS SICK BEAT',
+        tags: ['music', 'easy-listening'],
       });
 
-    assert.equal(updateMusicResponse.body.name, 'changed.aac');
-    assert.equal(updateMusicResponse.body.description, 'THIS SICK BEAT');*/
+    assert.equal(updateMusicResponse.body.name, 'updated-tags.aac');
+    assert.equal(JSON.stringify(updateMusicResponse.body.tags.map(t => t.name)), JSON.stringify(['music', 'easy-listening']));
   }).timeout(10000);
 });

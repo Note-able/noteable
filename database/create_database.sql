@@ -128,6 +128,8 @@ CREATE TABLE IF NOT EXISTS music_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id)
 ) ENGINE InnoDB;
 
+ALTER TABLE music_tags ADD UNIQUE KEY `music_tag_ids` (`music_id`, `tag_id`);
+
 CREATE TABLE IF NOT EXISTS preferences (
   id INT PRIMARY KEY AUTO_INCREMENT,
   profile_id INT NOT NULL,
