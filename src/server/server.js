@@ -6,7 +6,6 @@ import FacebookStrategy from 'passport-facebook';
 import LocalStrategy from 'passport-local';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import session from 'express-session';
-import Formidable from 'formidable';
 import fs from 'fs';
 import { UserService } from './services';
 import { ensureAuthenticated, validatePassword, generateToken, validateWithProvider, connectToMysqlDb } from './server-util';
@@ -27,7 +26,7 @@ app.use(express.static(`${__dirname}/../../public`));
 const userService = new UserService({ auth: ensureAuthenticated, connectToMysqlDb, mysqlParameters: config.mysqlConnection });
 
 // set up Jade
-app.use(BodyParser.urlencoded({ extended: false }));
+app.use(BodyParser.urlencoded({ extended: true }));
 app.use(BodyParser.json());
 
 app.set('views', './views');

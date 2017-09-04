@@ -1,7 +1,8 @@
+import multiparty from 'multiparty';
+
 import { UserService } from '../services';
 import config from '../../config';
 
-const Formidable = require('formidable');
 const image = require('../../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
 const bcrypt = require('bcrypt-nodejs');
 
@@ -13,12 +14,11 @@ module.exports = function userApi(app, options, prefix) {
 
   // Currently only works with one picture. No mass upload.
   const uploadPicture = (req, res, next) => {
-    const form = new Formidable.IncomingForm();
-    form.maxFieldsSize = 50 * 1024 * 1024;
+    const form = new multiparty.Form({ maxFieldsSize: (50 * 1024 * 1024) });
 
-    form.onPart = (part) => {
+    form.on('part', (part) => {
       form.handlePart(part);
-    };
+    });
 
     form.parse(req, (err, fields) => {
       const buffer = new Buffer(fields[Object.keys(fields)[0]], 'base64');
