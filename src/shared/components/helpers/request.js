@@ -3,20 +3,18 @@ const validateStatus = (response) => {
     throw response.text();
   }
 
-  return response.json();
-}
-
-export const fetchJson = (url, { method, body }) => {
-  return fetch(url, {
-    headers: {
-      'Content-type': 'application/json',
-      accept: 'application/json',
-      credentials: 'same-origin',
-    },
-    method: method || 'GET',
-    body: body || JSON.stringify(body),
-  }).then(validateStatus);
+  return response.json == null ? null : response.json();
 };
+
+export const fetchJson = (url, { method, body }) => fetch(url, {
+  headers: {
+    'Content-type': 'application/json',
+    accept: 'application/json',
+    credentials: 'same-origin',
+  },
+  method: method || 'GET',
+  body: JSON.stringify(body),
+}).then(validateStatus);
 
 const AJAX = {
   postBlob: (url, data, callback) => {

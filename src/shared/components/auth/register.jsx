@@ -27,7 +27,7 @@ export default class Register extends Component {
   }
 
   registerUser() {
-    const { password, username, firstName, lastName, validEmail, validPassword } = this.state;
+    const { password, email, firstName, lastName, validEmail, validPassword } = this.state;
 
     if (validEmail || validPassword) {
       this.setState({
@@ -36,14 +36,13 @@ export default class Register extends Component {
       return;
     }
 
-    fetchJson('/api/v1/register', { method: 'POST', body: { email: username, password, firstName, lastName } })
+    fetchJson('/api/v1/register', { method: 'POST', body: { email, password, firstName, lastName } })
     .then(() => {
       fetchJson('auth/local', { method: 'POST', body: { username: this.state.email, password: this.state.password } })
-      .then((response) => {
-        this.props.onLogin(response);
+      .then(() => {
+        window.location.reload();
       });
     }).catch((error) => {
-      console.log(error);
       this.setState({
         registerFailed: 'An account with that email already exists.',
       });
@@ -69,4 +68,4 @@ export default class Register extends Component {
       </div>
     );
   }
-};
+}

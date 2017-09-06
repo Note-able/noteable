@@ -200,6 +200,11 @@ export default class UserService {
       }
     });
 
+    const [rows] = await connection.query('SELECT COUNT(*) as count FROM users WHERE email = :email;', { email: email || '' });
+    if (rows[0] != null && rows[0].count === 1) {
+      return reject('A user with that email already exists.');
+    }
+
     let userId;
     try {
       const [rows, fields] = await connection.query(
@@ -208,7 +213,7 @@ export default class UserService {
         );
       userId = rows.insertId;
     } catch (err) {
-      reject(err);
+      return reject(err);
     }
 
     let profileId;
@@ -219,13 +224,13 @@ export default class UserService {
         );
       profileId = rows.insertId;
     } catch (err) {
-      reject(err);
+      return reject(err);
     }
     try {
       await connection.commit();
     } catch (err) {
       connection.rollback();
-      reject(err);
+      return reject(err);
     }
     resolve(profileId);
   })
