@@ -184,53 +184,58 @@ export default class UserService {
     }
   })
 
-  registerUser = async (email, password, firstName, lastName, facebookId) => new Promise(async (resolve, reject) => {
-    if (!email && !facebookId) {
-      reject('Must have either an email or facebook id to register user');
-    }
-    if (!facebookId && !password) {
-      reject('If not using facebook login, must include a password');
-    }
-
-    const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
-    await connection.beginTransaction((err) => {
-      if (err) {
-        reject(err);
+  registerUser = async (email, password, firstName, lastName, facebookId) =>
+    new Promise(async (resolve, reject) => {
+      if (!email && !facebookId) {
+        return reject('Must have either an email or facebook id to register user');
       }
-    });
 
-    const [rows] = await connection.query('SELECT COUNT(*) as count FROM users WHERE email = :email;', { email: email || '' });
-    if (rows[0] != null && rows[0].count === 1) {
-      return reject('A user with that email already exists.');
-    }
+      if (!facebookId && !password) {
+        return reject('If not using facebook login, must include a password');
+      }
 
-    let userId;
-    try {
-      const [rows, fields] = await connection.query(
-          'INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);',
-          { email: email || null, password: password || null, facebookId: facebookId || null },
-        );
-      userId = rows.insertId;
-    } catch (err) {
-      return reject(err);
-    }
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+      await connection.beginTransaction(err => (err == null ? null : reject(err)));
 
-    let profileId;
-    try {
-      const [rows] = await connection.execute(
-          'INSERT INTO profiles (email, user_id, first_name, last_name) VALUES (:email, :userId, :firstName, :lastName);',
-          { email: email || null, userId, firstName, lastName },
-        );
-      profileId = rows.insertId;
-    } catch (err) {
-      return reject(err);
-    }
-    try {
-      await connection.commit();
-    } catch (err) {
-      connection.rollback();
-      return reject(err);
-    }
-    resolve(profileId);
-  })
+      if (email != null && email !== '') {
+        const [emailRows] = await connection.query('SELECT COUNT(*) as count FROM users WHERE email = :email;', { email });
+        if (emailRows[0] != null && emailRows[0].count === 1) {
+          return reject('A user with that email already exists.');
+        }
+      }
+
+      let userId;
+      try {
+        const [rows] = await connection.query(
+            'INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);',
+            { email: email || null, password: password || null, facebookId: facebookId || null },
+          );
+        userId = rows.insertId;
+      } catch (err) {
+        connection.rollback();
+        return reject(err);
+      }
+
+      let profile;
+      try {
+        let [rows] = await connection.execute(
+            'INSERT INTO profiles (email, user_id, first_name, last_name) VALUES (:email, :userId, :firstName, :lastName);',
+            { email: email || null, userId, firstName, lastName },
+          );
+        const profileId = rows.insertId;
+        [rows] = await connection.execute('SELECT * FROM profiles WHERE id = :profileId', { profileId });
+        profile = rows[0];
+      } catch (err) {
+        connection.rollback();
+        return reject(err);
+      }
+
+      try {
+        await connection.commit();
+      } catch (err) {
+        connection.rollback();
+        return reject(err);
+      }
+      resolve(profile);
+    })
 }
