@@ -45,7 +45,6 @@ export default class UserService {
   })
 
   updateUser = async (userId, facebookId) => new Promise(async (resolve, reject) => {
-    console.log(userId, facebookId);
     if (userId == null || facebookId == null) {
       return resolve(-1);
     }

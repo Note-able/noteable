@@ -218,7 +218,6 @@ app.post('/auth/facebook/jwt',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   (req, res) => {
-    console.log('hit callback');
     res.redirect('/');
   });
 

@@ -80,12 +80,11 @@ module.exports = function userApi(app, options, prefix) {
   });
 
   app.post(`${prefix}/users/:userId/profile`, options.auth, (req, res) => {
-    console.log('updating profile');
     if (req.user.id != req.params.userId) {
       res.status(400).send();
       return;
     }
-    console.log('calling user service');
+
     userService.updateProfile(req.body, req.user.id)
     .then(() => {
       res.status(201).send();
@@ -150,7 +149,7 @@ module.exports = function userApi(app, options, prefix) {
           NOT EXISTS (
             SELECT * FROM followers WHERE origin = ${req.user.id} AND destination = ${req.params.userId}
           );
-      `).on('error', error => { console.log(`error following user: ${error}`); })
+      `).on('error', (error) => { console.log(`error following user: ${error}`); })
       .on('end', () => {
         connection.done();
         res.status(200).send();
