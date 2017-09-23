@@ -59,7 +59,7 @@ export function validateWithProvider(network, socialToken) {
   // Send a GET request to Facebook with the token as query string
     request({
       url: providers[network].url,
-      qs: { access_token: socialToken, fields: ['id', 'name', 'email', 'first_name', 'last_name'].toString() },
+      qs: { access_token: socialToken, fields: ['id', 'name', 'email', 'first_name', 'last_name', 'cover', 'picture'].toString() },
     },
     (error, response, body) => {
       if (!error && response.statusCode === 200) {

@@ -149,7 +149,7 @@ app.post('/auth/local/jwt',
   async (req, res) => {
     const connection = await connectToMysqlDb(config.mysqlConnection);
     let user = null;
-    console.log('trying to jwt local auth');
+
     const [rows] = await connection.query(`
       SELECT pr.id, p.password, pr.email
       FROM users p

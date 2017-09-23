@@ -184,7 +184,7 @@ export default class UserService {
     }
   })
 
-  registerUser = async (email, password, firstName, lastName, facebookId) =>
+  registerUser = async (email, password, firstName, lastName, facebookId, cover, avatar) =>
     new Promise(async (resolve, reject) => {
       if (!email && !facebookId) {
         return reject('Must have either an email or facebook id to register user');
@@ -219,8 +219,8 @@ export default class UserService {
       let profile;
       try {
         let [rows] = await connection.execute(
-            'INSERT INTO profiles (email, user_id, first_name, last_name) VALUES (:email, :userId, :firstName, :lastName);',
-            { email: email || null, userId, firstName, lastName },
+            'INSERT INTO profiles (email, user_id, first_name, last_name, cover_url, avatar_url) VALUES (:email, :userId, :firstName, :lastName, :cover, :avatar);',
+            { email: email || null, userId, firstName, lastName, cover: cover || null, avatar: avatar || null },
           );
         const profileId = rows.insertId;
         [rows] = await connection.execute('SELECT * FROM profiles WHERE id = :profileId', { profileId });
