@@ -180,37 +180,25 @@ app.post('/auth/facebook/jwt',
     validateWithProvider('facebook', req.body.token)
       .then(async (profile) => {
         const connection = await connectToMysqlDb(config.mysqlConnection);
-        let user = null;
+        let facebookUser = null;
+
         const [rows] = await connection.query(`
           SELECT *
           FROM users p
           WHERE facebook_id = ?;`,
           [profile.id]);
 
-        user = rows[0];
-        if (!user) {
-          [user] = await connection.query(`
-            SELECT *
-            FROM users p
-            WHERE email = ?;`,
-            [profile.email]);
-          user = user[0];
-
-          connection.destroy();
-          if (!user) {
-            const userId = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id, profile.cover, profile.picture);
-            user = await userService.getUser(userId);
-          } else {
-            const userId = await userService.updateUser(user.id, profile.id);
-            user = await userService.getUser(userId);
-          }
-        } else {
-          connection.destroy();
+        facebookUser = rows[0];
+        if (!facebookUser) {
+          const userId = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id, profile.cover, profile.picture);
+          facebookUser = await userService.getUser(userId);
         }
 
+        connection.destroy();
+
         return res.status(200).json({
-          token: `JWT ${generateToken(user)}`,
-          user,
+          token: `JWT ${generateToken(facebookUser)}`,
+          user: facebookUser,
         });
       });
   });
