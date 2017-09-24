@@ -201,8 +201,7 @@ app.post('/auth/facebook/jwt',
             avatar = profile.picture.data.url;
           }
 
-          const userId = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id, cover, avatar);
-          facebookUser = await userService.getUser(userId);
+          facebookUser = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id, cover, avatar);
         }
 
         connection.destroy();
