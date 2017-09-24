@@ -190,7 +190,18 @@ app.post('/auth/facebook/jwt',
 
         facebookUser = rows[0];
         if (!facebookUser) {
-          const userId = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id, profile.cover, profile.picture);
+          let cover = null;
+          let avatar = null;
+
+          if (profile.cover) {
+            cover = profile.cover.source;
+          }
+
+          if (profile.picture != null) {
+            avatar = profile.picture.data.url;
+          }
+
+          const userId = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id, cover, avatar);
           facebookUser = await userService.getUser(userId);
         }
 
