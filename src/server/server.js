@@ -198,7 +198,7 @@ app.post('/auth/facebook/jwt',
 
           connection.destroy();
           if (!user) {
-            const userId = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id);
+            const userId = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id, profile.cover, profile.picture);
             user = await userService.getUser(userId);
           } else {
             const userId = await userService.updateUser(user.id, profile.id);
