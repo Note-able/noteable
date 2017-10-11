@@ -141,41 +141,45 @@ export default class UserService {
           WHERE pi.profile_id = :id;`,
           { id });
 
-      const instrumentSets = profile.instruments.reduce((obj, instrumentId) => {
-        if (!rows.includes(instrumentId)) {
-          obj.newInstrumentIds.push(instrumentId);
-        }
-        return obj;
-      }, { newInstrumentIds: [], instrumentIdsToRemove: [] });
+      if (profile.instruments != null) {
+        const instrumentSets = profile.instruments.reduce((obj, instrumentId) => {
+          if (!rows.includes(instrumentId)) {
+            obj.newInstrumentIds.push(instrumentId);
+          }
+          return obj;
+        }, { newInstrumentIds: [], instrumentIdsToRemove: [] });
 
-      rows.reduce((obj, instrumentId) => {
-        if (!profile.instruments.includes(instrumentId)) {
-          obj.instrumentIdsToRemove.push(instrumentId);
-        }
-        return obj;
-      }, instrumentSets);
+        rows.reduce((obj, instrumentId) => {
+          if (!profile.instruments.includes(instrumentId)) {
+            obj.instrumentIdsToRemove.push(instrumentId);
+          }
+          return obj;
+        }, instrumentSets);
 
-      for (const instrumentId of instrumentSets.newInstrumentIds) {
-        await connection.execute(`
-            INSERT INTO profiles_instruments (instrument_id, profile_id) VALUES (:instrumentId, :profileId)`,
-            { instrumentId, profileId: id });
+        for (const instrumentId of instrumentSets.newInstrumentIds) {
+          await connection.execute(`
+              INSERT INTO profiles_instruments (instrument_id, profile_id) VALUES (:instrumentId, :profileId)`,
+              { instrumentId, profileId: id });
+        }
+
+        for (const instrumentId of instrumentSets.instrumentIdsToRemove) {
+          await connection.execute(`
+              DELETE FROM profiles_instruments WHERE instrument_id = :instrumentId AND profile_id = :profileId;`,
+              { instrumentId, profileId: id });
+        }
       }
 
-      for (const instrumentId of instrumentSets.instrumentIdsToRemove) {
+      if (profile.preferences != null) {
         await connection.execute(`
-            DELETE FROM profiles_instruments WHERE instrument_id = :instrumentId AND profile_id = :profileId;`,
-            { instrumentId, profileId: id });
+            UPDATE preferences SET is_looking = :isLooking, display_location = :displayLocation
+            WHERE profile_id = :id;`,
+            { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
+
+        await connection.execute(`
+            INSERT INTO preferences (is_looking, display_location, profile_id) SELECT :isLooking, :displayLocation, :id
+              WHERE NOT EXISTS (SELECT * FROM preferences WHERE profile_id = :id);`,
+            { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
       }
-
-      await connection.execute(`
-          UPDATE preferences SET is_looking = :isLooking, display_location = :displayLocation
-          WHERE profile_id = :id;`,
-          { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
-
-      await connection.execute(`
-          INSERT INTO preferences (is_looking, display_location, profile_id) SELECT :isLooking, :displayLocation, :id
-            WHERE NOT EXISTS (SELECT * FROM preferences WHERE profile_id = :id);`,
-          { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
 
       await connection.commit();
       resolve();

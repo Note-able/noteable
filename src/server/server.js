@@ -56,7 +56,6 @@ passport.deserializeUser((obj, done) => {
 passport.use(new LocalStrategy({ callbackURL: '/auth/local/callback' }, async (username, password, done) => {
   const connection = await connectToMysqlDb(config.mysqlConnection);
   let user = null;
-  console.log('trying to auth');
   const [rows] = await connection.query(`
     SELECT pr.id, p.password, pr.email
     FROM users p
@@ -119,7 +118,6 @@ const jwtOptions = {
 passport.use(new JwtStrategy(jwtOptions, async (profile, done) => {
   const connection = await connectToMysqlDb(config.mysqlConnection);
   let user = null;
-  console.log('trying to jwt auth');
   const [rows] = await connection.query(`
     SELECT *
     FROM users p
