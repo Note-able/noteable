@@ -21,6 +21,11 @@ module.exports = function userApi(app, options, prefix) {
     });
 
     form.parse(req, (err, fields) => {
+      if (!fields) {
+        next(null);
+        return;
+      }
+
       const buffer = new Buffer(fields[Object.keys(fields)[0]], 'base64');
       const splits = Object.keys(fields)[0].split('.');
 
