@@ -30,13 +30,13 @@ module.exports = function userApi(app, options, prefix) {
       const splits = Object.keys(fields)[0].split('.');
 
       image.sendUploadToGCS(splits[splits.length - 1], buffer)
-      .then((response) => {
-        next(response);
-      })
-      .catch((error) => {
-        console.log(error);
-        next(null);
-      });
+        .then((response) => {
+          next(response);
+        })
+        .catch((error) => {
+          console.log(error);
+          next(null);
+        });
     });
   };
 
@@ -55,7 +55,7 @@ module.exports = function userApi(app, options, prefix) {
   /** USER API **/
 
   app.post(`${prefix}/users/edit`, options.auth, options.auth, (req, res) => {
-    options.connect(options.database, (connection) => {
+    options.connectToMysqlDb(options.database, (connection) => {
       console.log(connection);
     });
     res.send('lol');
@@ -124,7 +124,7 @@ module.exports = function userApi(app, options, prefix) {
         return;
       }
 
-      options.connect(options.database, (connection) => {
+      options.connectToMysqlDb(options.database, (connection) => {
         const user = [];
         connection.client.query(`INSERT INTO pictures (user_id, filename, picture_type) VALUES (${req.user.id}, '${gcloudResponse.cloudStorageObject}', 1);`)
         .on('row', (row) => { user.push(row); })
@@ -146,7 +146,7 @@ module.exports = function userApi(app, options, prefix) {
       res.status(204).send();
     }
 
-    options.connect(options.database, (connection) => {
+    options.connectToMysqlDb(options.database, (connection) => {
       connection.client.query(`
         INSERT INTO followers (origin, destination)
         SELECT 1, 2
