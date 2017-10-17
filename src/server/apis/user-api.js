@@ -91,9 +91,9 @@ module.exports = function userApi(app, options, prefix) {
     }
 
     userService.updateProfile(req.body, req.user.id)
-    .then(() => {
-      res.status(201).send();
-    });
+      .then(() => {
+        res.status(201).send();
+      });
   });
 
   app.get(`${prefix}/users/:id`, options.auth, (req, res) => {
@@ -118,22 +118,22 @@ module.exports = function userApi(app, options, prefix) {
       res.status(400).send();
     }
 
-    uploadPicture(req, res, (gcloudResponse) => {
+    uploadPicture(req, res, async (gcloudResponse) => {
       if (gcloudResponse == null) {
         res.status(500).send();
         return;
       }
 
-      options.connectToMysqlDb(options.database, (connection) => {
-        const user = [];
-        connection.client.query(`INSERT INTO pictures (user_id, filename, picture_type) VALUES (${req.user.id}, '${gcloudResponse.cloudStorageObject}', 1);`)
-        .on('row', (row) => { user.push(row); })
-        .on('error', (error) => { console.log(`error encountered ${error}`); })
-        .on('end', () => {
-          connection.done();
-          res.status(200).send(gcloudResponse);
-        });
-      });
+      const connection = await options.connectToMysqlDb(options.mysqlParameters);
+      const user = [];
+      try {
+        await connection.query(`INSERT INTO pictures (user_id, file_name, picture_type) VALUES (${req.user.id}, '${gcloudResponse.cloudStorageObject}', 1);`);
+        await connection.commit();
+        res.status(200).send(gcloudResponse);
+      } catch (e) {
+        console.log(e);
+        res.status(500).send();
+      }
     });
   });
 
