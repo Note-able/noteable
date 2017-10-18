@@ -1,4 +1,5 @@
 import multiparty from 'multiparty';
+import fs from 'fs';
 
 import { UserService } from '../services';
 import config from '../../config';
@@ -14,29 +15,30 @@ module.exports = function userApi(app, options, prefix) {
 
   // Currently only works with one picture. No mass upload.
   const uploadPicture = (req, res, next) => {
-    const form = new multiparty.Form({ maxFieldsSize: (50 * 1024 * 1024) });
+    const form = new multiparty.Form({ maxFieldsSize: (50 * 1024 * 1024), uploadDir: './uploads' });
 
-    form.on('part', (part) => {
-      form.handlePart(part);
-    });
-
-    form.parse(req, (err, fields) => {
-      if (!fields) {
+    form.parse(req, (err, fields, files) => {
+      if (fields == null && files == null) {
         next(null);
         return;
       }
 
-      const buffer = new Buffer(fields[Object.keys(fields)[0]], 'base64');
-      const splits = Object.keys(fields)[0].split('.');
-
-      image.sendUploadToGCS(splits[splits.length - 1], buffer)
-        .then((response) => {
-          next(response);
-        })
-        .catch((error) => {
-          console.log(error);
-          next(null);
-        });
+      files.file.forEach((file) => {
+        try {
+          const data = fs.readFileSync(`./${file.path}`);
+          image.sendUploadToGCS(file.path.split('.')[1], data)
+            .then((response) => {
+              fs.unlink(file.path);
+              next(response);
+            })
+            .catch((e) => {
+              console.log(e);
+              next(null);
+            });
+        } catch (e) {
+          console.log(e);
+        }
+      });
     });
   };
 
