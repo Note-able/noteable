@@ -9,7 +9,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - "/etc/nginx/conf.d"
+      - "/etc/nginx/nginx.conf"
       - "/etc/nginx/vhost.d"
       - "/usr/share/nginx/html"
       - "./volumes/proxy/certs:/etc/nginx/certs:ro"
