@@ -94,7 +94,7 @@ module.exports = function userApi(app, options, prefix) {
 
     userService.updateProfile(req.body, req.user.id)
       .then(() => {
-        res.status(201).send();
+        res.status(202).send();
       });
   });
 
