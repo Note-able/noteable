@@ -39,7 +39,7 @@ module.exports = function (gcloudConfig, cloudStorageBucket) {
     const remoteWriteStream = bucket.file(gcsname).createWriteStream();
     return new Promise((resolve, reject) => {
       remoteWriteStream
-        .on('error', error => console.log('error', error))
+        .on('error', error => reject(error))
         .on('finish', () => {
           resolve({ cloudStorageObject: gcsname, cloudStoragePublicUrl: getPublicUrl(gcsname) });
         })

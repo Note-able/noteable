@@ -19,6 +19,7 @@ module.exports = function userApi(app, options, prefix) {
 
     form.parse(req, (err, fields, files) => {
       if (fields == null && files == null) {
+        console.log('form parse', err, fields, files);
         next(null);
         return;
       }
@@ -28,6 +29,7 @@ module.exports = function userApi(app, options, prefix) {
           const data = fs.readFileSync(`./${file.path}`);
           image.sendUploadToGCS(file.path.split('.')[1], data)
             .then((response) => {
+              console.log(response);
               fs.unlink(file.path);
               next(response);
             })
