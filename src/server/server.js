@@ -14,8 +14,6 @@ import config from '../config';
 const MongoStore = require('connect-mongo')(session);
 
 const env = process.env.NODE_ENV;
-console.log(env);
-console.log(process.env.TESTING);
 global.DEBUG = env !== 'production' && env !== 'internal';
 global.PRODUCTION = env === 'production';
 global.CLIENT = false;
