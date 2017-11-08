@@ -66,7 +66,7 @@ export function validateWithProvider(network, socialToken) {
       if (!error && response.statusCode === 200) {
         const user = JSON.parse(body);
         request({
-          url: `https://graph.facebook.com/${user.id}/picture?type=square&height=300`,
+          url: `https://graph.facebook.com/${user.id}/picture?type=square&height=300&format=json&method=get&pretty=0&redirect=false&suppress_http_code=1`,
         }, (err, res, bdy) => {
           user.picture = JSON.parse(bdy);
           resolve(user);
