@@ -45,6 +45,7 @@ export default class UserService {
   })
 
   updateUser = async (userId, facebookId) => new Promise(async (resolve, reject) => {
+
     if (userId == null || facebookId == null) {
       return resolve(-1);
     }
@@ -124,6 +125,7 @@ export default class UserService {
             zip_code = :zipCode,
             profession = :profession
           WHERE id = :id;`,
+
         { location: profile.location || null,
           bio: profile.bio || null,
           coverUrl: profile.coverImage || null,
