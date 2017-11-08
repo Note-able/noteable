@@ -1,352 +1,277 @@
-import { conversationMapper } from './model/conversationDto';
-import { UserService } from '../index';
+import { messageMapper } from './model/conversationDto';
 
-/** MESSAGES API ***/
-/**
- * MESSAGE {
- *  CONTENT
- *  ID
- *  SOURCE
- *  DESTINATION
- *  CONVERSATION
- * }
- *
- * SEQUENCE CONVERSATION ID
- *
- * CONVERSATION {
- *  USERID
- *  CONVERSATIONID
- *  LAST READ MESSAGE
- *  ID
- * }
- *
- * CREATE CONVERSATION
- * CREATE MESSAGE
- *
- * DELETE CONVERSATION
- *
- * GET CONVERSATION BY ID
- * GET CONVERSATIONS BY USER ID
- * GET MESSAGE BY ID
- * GET MESSAGES BY CONVERSATION ID
- * GET MESSAGES BY USER ID
- * GET MESSAGE BY ID
- */
-
-const createConversationSql = (userIds, next) => {
-  if (userIds.length === 0) {
-    return '';
-  }
-
-  return userIds.map(userId => `INSERT INTO public.conversations (user_id, conversation_id, last_read_message) VALUES (${userId}, ${next}, -1);`).join(' ');
-};
 
 export default class MessageService {
   constructor(options) {
     this.options = options;
-    this.m_userService = new UserService(options);
   }
 
-  createConversation(userIds) {
-    return new Promise((resolve, reject) => {
+  createConversation(userIds, isOneOnOne) {
+    return new Promise(async (resolve, reject) => {
       if (userIds == null || userIds.length === 0) {
         reject('Cannot have empty userIds');
         return;
+      } else if (userIds.length > 2 && isOneOnOne) {
+        reject('Cannot have more than 2 participants in 1 on 1 conversation');
+        return;
       }
 
-      this.options.connect(this.options.database, (connection) => {
-        if (connection.client == null) {
-          reject('Failed to connect to database.');
-          return;
-        }
+      if (isOneOnOne && await this.checkIfConversationExists(userIds[0], userIds[1])) {
+        reject(`A conversation already exists between ${userIds[0]} and ${userIds[1]}`);
+        return;
+      }
 
-        this.getConversationByUserIds(userIds[0], userIds[1]).then((result) => {
-          if (result) {
-            resolve(result);
-            return;
-          }
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
-          const conversation = [];
-          connection.client.query(`
-            BEGIN;
-              CREATE OR REPLACE FUNCTION createConversation() RETURNS int LANGUAGE plpgsql AS $$
-              DECLARE conversationId integer;
-              BEGIN
-              SELECT nextval('conversation_ids') INTO conversationId;
-              ${createConversationSql(userIds, 'conversationId')}
-              RETURN conversationId;
-              END $$;
-              SELECT createConversation();
-            COMMIT;
-          `)
-          .on('row', (row) => { conversation.push(row); })
-          .on('error', (error) => { reject(error); })
-          .on('end', () => {
-            connection.done();
-            resolve(conversation[0].createconversation);
-          });
+        await connection.beginTransaction();
+
+        const [rows] = await connection.query(
+          'INSERT INTO conversations (is_one_on_one) VALUES(:isOneOnOne);',
+          { isOneOnOne: !!isOneOnOne },
+        );
+        const conversationId = rows.insertId;
+
+        userIds.forEach((userId) => {
+          connection.execute(
+            'INSERT INTO conversation_participants (conversation_id, user_id) VALUES (:conversationId, :userId);',
+            { conversationId, userId },
+          );
         });
-      });
+
+        await connection.commit();
+        resolve(conversationId);
+        connection.destroy();
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   getConversationsByUserId(userId) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (userId == null) {
         reject('Empty userId');
         return;
       }
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
-      this.options.connect(this.options.database, (connection) => {
-        if (connection.client == null) {
-          reject('Failed to connect to database.');
-          return;
-        }
+        const [conversationIds] = await connection.query(
+          `SELECT c.id FROM conversations c
+            INNER JOIN conversation_participants p
+            ON c.id = p.conversation_id
+          WHERE p.user_id = :userId;`,
+          { userId },
+        );
 
-        const conversations = [];
-        connection.client.query(`
-          BEGIN;
-            SELECT conversation_id INTO conversations_temp
-            FROM conversations
-            WHERE is_deleted = 0 AND user_id = ${userId};
-            
+        const conversations = await Promise.all(conversationIds.map(async ({ id }) => {
+          const [participants] = await connection.query(
+            'SELECT user_id FROM conversation_participants WHERE conversation_id = :conversationId;',
+            { conversationId: id },
+          );
 
-            SELECT
-              c.conversation_id as conversationId,
-              c.user_id,
-              m.id AS message_id,
-              m.content AS message_content,
-              m.user_id AS message_user_id
-            FROM conversations_temp ct
-              INNER JOIN conversations c
-                ON ct.conversation_id = c.conversation_id
-              INNER JOIN (
-                SELECT DISTINCT ON (conversation_id) id, content, user_id, conversation_id
-                FROM messages
-                ORDER BY conversation_id, id DESC
-              ) as m
-                ON ct.conversation_id = m.conversation_id;
-            
-            DROP TABLE conversations_temp;
-          COMMIT;`)
-          .on('row', (row) => { conversations.push(row); })
-          .on('error', (error) => { reject(error); })
-          .on('end', () => {
-            connection.done();
-            resolve(conversations);
-          });
-      });
+          const [rows] = await connection.query(
+            'SELECT * FROM messages WHERE conversation_id = :conversationId ORDER BY time_stamp DESC LIMIT 1;',
+            { conversationId: id },
+          );
+          const lastMessage = rows[0];
+
+          return { conversationId: id, lastMessage: lastMessage ? messageMapper(lastMessage) : null, participants: participants.map(p => p.user_id) };
+        }));
+
+        resolve(conversations);
+        connection.destroy();
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   getConversation(conversationId, userId) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (conversationId == null) {
         reject('Empty conversation or user id.');
         return;
       }
 
-      this.options.connect(this.options.database, (connection) => {
-        if (connection.client == null) {
-          reject('Failed to connect to database.');
-          return;
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+
+        const [rows] = await connection.query(
+          `SELECT c.id, c.is_deleted FROM conversations c
+            INNER JOIN conversation_participants p
+            ON c.id = p.conversation_id
+          WHERE p.user_id = :userId AND c.id = :conversationId;`,
+          { userId, conversationId },
+        );
+        const conversation = rows[0];
+
+        if (!conversation) {
+          resolve(null);
         }
 
-        const conversation = [];
-        connection.client.query(`
-          SELECT *
-          FROM conversations
-          WHERE conversation_id = ${conversationId} AND is_deleted = 0 AND user_id = ${userId};
-          
-          SELECT *
-          FROM messages
-          WHERE is_deleted = 0 AND conversation_id = ${conversationId}
-          LIMIT 20;
-        `)
-        .on('row', (row) => { conversation.push(row); })
-        .on('error', (error) => { reject(error); })
-        .on('end', () => {
-          connection.done();
-          const messages = [  ...conversation ];
-          messages.splice(0, 1);
-          resolve(conversation.length > 0 ? { conversation: conversation[0], messages } : null);
-        });
-      });
+        const [participants] = await connection.query(
+          'SELECT user_id FROM conversation_participants WHERE conversation_id = :conversationId;',
+          { conversationId },
+        );
+
+        const [messages] = await connection.query(
+          'SELECT * FROM messages WHERE conversation_id = :conversationId AND is_deleted = FALSE ORDER BY time_stamp DESC LIMIT 50;',
+          { conversationId },
+        );
+
+        resolve({ conversationId, messages: messages.map(messageMapper), participants: participants.map(p => p.user_id), isDeleted: conversation.is_deleted });
+        connection.destroy();
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
-  getConversationByUserIds(userId, otherUserId) {
-    return new Promise((resolve, reject) => {
+  checkIfConversationExists(userId, otherUserId) {
+    return new Promise(async (resolve, reject) => {
       if (userId == null || otherUserId == null) {
-        reject('Empty conversation or user id.');
+        reject('Empty user id.');
         return;
       }
 
-      this.options.connect(this.options.database, (connection) => {
-        if (connection.client == null) {
-          reject('Failed to connect to database.');
-          return;
-        }
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
-        const conversation = [];
-        connection.client.query(`
-          SELECT c1.user_id, c1.last_read_message, c1.conversation_id, c1.id, c1.is_deleted, c2.user_id as other_user_id
-          FROM conversations c1
-          INNER JOIN conversations c2
-          ON c2.conversation_id = c1.conversation_id
-          WHERE c1.user_id = ${userId} and c2.user_id = ${otherUserId};
-        `)
-        .on('row', (row) => { conversation.push(row); })
-        .on('error', (error) => { reject(error); })
-        .on('end', () => {
-          connection.done();
-          if (conversation.length !== 0) {
-            return this.getConversation(conversation[0].conversation_id, userId)
-              .then((result) => { resolve(result); });
-          }
+        const [rows] = (await connection.query(
+          `SELECT c.id FROM conversations c
+            INNER JOIN conversation_participants p1
+            ON c.id = p1.conversation_id
+            INNER JOIN conversation_participants p2
+            ON c.id = p2.conversation_id AND p2.user_id != p1.user_id
+          WHERE p1.user_id = :userId AND p2.user_id = :otherUserId AND is_one_on_one = TRUE;`,
+          { userId, otherUserId },
+        ));
+        const conversationId = rows[0];
 
-          resolve(null);
-        });
-      });
+        resolve(!!conversationId);
+        connection.destroy();
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   getMessage(messageId, userId) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (messageId == null) {
         reject('Empty message or user id.');
         return;
       }
 
-      this.options.connect(this.options.database, (connection) => {
-        if (connection.client == null) {
-          reject('Failed to connect to database.');
-          return;
-        }
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
-        const message = [];
-        let errorMessage;
-        connection.client.query(`
-          SELECT * FROM messages WHERE user_id = ${userId} AND id = ${messageId} AND is_deleted = 0 LIMIT 20;
-        `)
-        .on('row', (row) => { message.push(row); })
-        .on('error', (error) => { reject(error); })
-        .on('end', () => {
-          connection.done();
-          resolve(message[0]);
-        });
-      });
-    });
-  }
+        const [rows] = await connection.query(
+          'SELECT * FROM messages WHERE user_id = :userId AND id = :messageId AND is_deleted = FALSE LIMIT 1;',
+          { userId, messageId },
+        );
+        const message =  rows[0];
 
-  getMessages(userId, conversationId, start, count) {
-    return new Promise((resolve, reject) => {
-      if (userId == null || conversationId == null) {
-        reject('Empty userId or conversationId');
-      } else {
-        this.options.connect(this.options.database, (connection) => {
-          if (connection.client == null) {
-            reject('Failed to connect to database.');
-            return;
-          }
-          const query = `
-            SELECT m.id, m.user_id, m.content, m.conversation_id, m.time_stamp FROM messages AS m INNER JOIN conversations AS c
-            ON c.conversation_id = m.conversation_id
-            WHERE m.is_deleted = 0 AND c.is_deleted = 0 AND c.user_id = ${userId} AND m.conversation_id = ${conversationId} LIMIT ${count || 10} OFFSET ${start || 0};
-          `;
-          const messages = [];
-          connection.client.query(query)
-          .on('row', (row) => { messages.push(row); })
-          .on('error', (error) => { reject({ error, query }); })
-          .on('end', (end) => {
-            connection.done();
-            resolve(messages);
-          });
-        });
+        resolve(messageMapper(message));
+        connection.destroy();
+      } catch (error) {
+        reject(error);
       }
     });
   }
 
-  createMessage(conversationId, userId, content, destinationId) {
-    return new Promise((resolve, reject) => {
+  getMessages(userId, conversationId, offset, limit) {
+    return new Promise(async (resolve, reject) => {
+      if (userId == null || conversationId == null) {
+        reject('Empty userId or conversationId');
+      } else {
+        try {
+          const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+          if (connection.client == null) {
+            reject('Failed to connect to database.');
+            return;
+          }
+
+          const [messages] = await connection.query(
+            'SELECT * FROM messages WHERE conversation_id = :conversationId AND is_deleted = FALSE  LIMIT :limit OFFSET :offset;',
+            { conversationId, offset: offset || 0, limit: limit || 50 },
+          );
+
+          resolve(messages.map(messageMapper));
+          connection.destroy();
+        } catch (error) {
+          reject(error);
+        }
+      }
+    });
+  }
+
+  createMessage(conversationId, userId, content) {
+    return new Promise(async (resolve, reject) => {
       if (conversationId == null || userId == null) {
         reject('Empty conversation or user id.');
         return;
       }
 
-      this.options.connect(this.options.database, (connection) => {
-        if (connection.client == null) {
-          reject('Failed to connect to database.');
-          return;
-        }
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+        const [rows] = await connection.query(
+          `INSERT INTO messages (content, user_id, time_stamp, conversation_id) 
+          VALUES (:content, :userId, UTC_TIMESTAMP(), :conversationId);`,
+          { conversationId, content, userId },
+        );
 
-        let messageId = -1;
-        connection.client.query(`
-          INSERT INTO messages (content, user_id, time_stamp, destination_id, conversation_id) 
-          VALUES ('${content}', ${userId}, now(), ${destinationId == null ? 'default' : destinationId}, ${conversationId})
-          RETURNING id;
-        `)
-        .on('row', (row) => { messageId = row.id; })
-        .on('error', (error) => { reject(error); })
-        .on('end', () => {
-          connection.done();
-          resolve(messageId);
-        });
-      });
+        resolve(rows.insertId);
+        connection.destroy();
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   deleteMessage(messageId) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (messageId == null) {
         reject('Empty messageId.');
         return;
       }
 
-      this.options.connect(this.options.database, (connection) => {
-        if (connection.client == null) {
-          reject('Failed to connect to database.');
-          return;
-        }
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+        await connection.execute(
+          'UPDATE messages SET is_deleted = TRUE WHERE id = :messageId;',
+          { messageId },
+        );
 
-        let messageId = -1;
-        connection.client.query(`
-          UPDATE messages SET is_deleted = 1 where id = ${messageId} RETURNING id;
-        `)
-        .on('row', (row) => { messageId = row.id; })
-        .on('error', (error) => { reject(error); })
-        .on('end', () => {
-          connection.done();
-          resolve(messageId);
-        });
-      });
+        resolve();
+        connection.destroy();
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   deleteConversation(conversationId) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (conversationId == null) {
         reject('Empty conversationId.');
         return;
       }
 
-      this.options.connect(this.options.database, (connection) => {
-        if (connection.client == null) {
-          reject('Failed to connect to database.');
-          return;
-        }
+      try {
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+        await connection.execute(
+          'UPDATE conversations SET is_deleted = TRUE WHERE id = :conversationId;',
+          { conversationId },
+        );
 
-        const conversations = [];
-        connection.client.query(`
-          UPDATE messages SET is_deleted = 1 where conversation_id = ${conversationId} RETURNING id;
-        `)
-        .on('row', (row) => { conversations.push(row.id); })
-        .on('error', (error) => { reject(error); })
-        .on('end', () => {
-          connection.done();
-          resolve(conversations.length);
-        });
-      });
+        resolve();
+        connection.destroy();
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 }

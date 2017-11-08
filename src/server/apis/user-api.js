@@ -1,7 +1,9 @@
+import multiparty from 'multiparty';
+import fs from 'fs';
+
 import { UserService } from '../services';
 import config from '../../config';
 
-const Formidable = require('formidable');
 const image = require('../../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
 const bcrypt = require('bcrypt-nodejs');
 
@@ -13,24 +15,29 @@ module.exports = function userApi(app, options, prefix) {
 
   // Currently only works with one picture. No mass upload.
   const uploadPicture = (req, res, next) => {
-    const form = new Formidable.IncomingForm();
-    form.maxFieldsSize = 50 * 1024 * 1024;
+    const form = new multiparty.Form({ maxFieldsSize: (50 * 1024 * 1024), uploadDir: './uploads' });
 
-    form.onPart = (part) => {
-      form.handlePart(part);
-    };
-
-    form.parse(req, (err, fields) => {
-      const buffer = new Buffer(fields[Object.keys(fields)[0]], 'base64');
-      const splits = Object.keys(fields)[0].split('.');
-
-      image.sendUploadToGCS(splits[splits.length - 1], buffer)
-      .then((response) => {
-        next(response);
-      })
-      .catch((error) => {
-        console.log(error);
+    form.parse(req, (err, fields, files) => {
+      if (fields == null && files == null) {
         next(null);
+        return;
+      }
+
+      files.file.forEach((file) => {
+        try {
+          const data = fs.readFileSync(`./${file.path}`);
+          image.sendUploadToGCS(file.path.split('.')[1], data)
+            .then((response) => {
+              fs.unlink(file.path, () => {});
+              next(response);
+            })
+            .catch((e) => {
+              fs.unlink(file.path, () => {});
+              next(null);
+            });
+        } catch (e) {
+          fs.unlink(file.path);
+        }
       });
     });
   };
@@ -50,7 +57,7 @@ module.exports = function userApi(app, options, prefix) {
   /** USER API **/
 
   app.post(`${prefix}/users/edit`, options.auth, options.auth, (req, res) => {
-    options.connect(options.database, (connection) => {
+    options.connectToMysqlDb(options.database, (connection) => {
       console.log(connection);
     });
     res.send('lol');
@@ -80,16 +87,15 @@ module.exports = function userApi(app, options, prefix) {
   });
 
   app.post(`${prefix}/users/:userId/profile`, options.auth, (req, res) => {
-    console.log('updating profile');
     if (req.user.id != req.params.userId) {
       res.status(400).send();
       return;
     }
-    console.log('calling user service');
+
     userService.updateProfile(req.body, req.user.id)
-    .then(() => {
-      res.status(201).send();
-    });
+      .then(() => {
+        res.status(202).send();
+      });
   });
 
   app.get(`${prefix}/users/:id`, options.auth, (req, res) => {
@@ -114,22 +120,22 @@ module.exports = function userApi(app, options, prefix) {
       res.status(400).send();
     }
 
-    uploadPicture(req, res, (gcloudResponse) => {
+    uploadPicture(req, res, async (gcloudResponse) => {
       if (gcloudResponse == null) {
         res.status(500).send();
         return;
       }
 
-      options.connect(options.database, (connection) => {
-        const user = [];
-        connection.client.query(`INSERT INTO pictures (user_id, filename, picture_type) VALUES (${req.user.id}, '${gcloudResponse.cloudStorageObject}', 1);`)
-        .on('row', (row) => { user.push(row); })
-        .on('error', (error) => { console.log(`error encountered ${error}`); })
-        .on('end', () => {
-          connection.done();
-          res.status(200).send(gcloudResponse);
-        });
-      });
+      const connection = await options.connectToMysqlDb(options.mysqlParameters);
+      const user = [];
+      try {
+        await connection.query(`INSERT INTO pictures (user_id, file_name, picture_type) VALUES (${req.user.id}, '${gcloudResponse.cloudStorageObject}', 1);`);
+        await connection.commit();
+        res.status(200).send(gcloudResponse);
+      } catch (e) {
+        console.log(e);
+        res.status(500).send();
+      }
     });
   });
 
@@ -142,7 +148,7 @@ module.exports = function userApi(app, options, prefix) {
       res.status(204).send();
     }
 
-    options.connect(options.database, (connection) => {
+    options.connectToMysqlDb(options.database, (connection) => {
       connection.client.query(`
         INSERT INTO followers (origin, destination)
         SELECT 1, 2
@@ -150,7 +156,7 @@ module.exports = function userApi(app, options, prefix) {
           NOT EXISTS (
             SELECT * FROM followers WHERE origin = ${req.user.id} AND destination = ${req.params.userId}
           );
-      `).on('error', error => { console.log(`error following user: ${error}`); })
+      `).on('error', (error) => { console.log(`error following user: ${error}`); })
       .on('end', () => {
         connection.done();
         res.status(200).send();

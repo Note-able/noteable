@@ -45,7 +45,7 @@ export default class UserService {
   })
 
   updateUser = async (userId, facebookId) => new Promise(async (resolve, reject) => {
-    console.log(userId, facebookId);
+
     if (userId == null || facebookId == null) {
       return resolve(-1);
     }
@@ -57,7 +57,7 @@ export default class UserService {
           UPDATE users u
           SET facebook_id = :facebookId
           WHERE u.id = :userId;
-        `, { userId, facebookId });
+        `, { userId, facebookId: facebookId || null });
 
       connection.destroy();
 
@@ -91,14 +91,14 @@ export default class UserService {
     }
   })
 
-  getUsers = async (userIds, callback) => (
+  getUsers = async userIds => (
     new Promise(async (resolve, reject) => {
       if (userIds == null || userIds.length === 0) {
         resolve({ id: -1 });
         return;
       }
 
-      const users = userIds.map(async id => (await this.getUser(id)));
+      const users = await Promise.all(userIds.map(async id => (await this.getUser(id))));
 
       if (users.length === 0) {
         resolve({ id: -1 });
@@ -125,14 +125,15 @@ export default class UserService {
             zip_code = :zipCode,
             profession = :profession
           WHERE id = :id;`,
-        { location: profile.location || 'NULL',
-          bio: profile.bio || 'NULL',
-          coverUrl: profile.coverImage || 'NULL',
-          firstName: profile.firstName || 'NULL',
-          lastName: profile.lastName || 'NULL',
-          avatarUrl: profile.avatarUrl || 'NULL',
-          zipCode: profile.zipCode || 'NULL',
-          profession: profile.profession || 'NULL',
+
+        { location: profile.location || null,
+          bio: profile.bio || null,
+          coverUrl: profile.coverImage || null,
+          firstName: profile.firstName || null,
+          lastName: profile.lastName || null,
+          avatarUrl: profile.avatarUrl || null,
+          zipCode: profile.zipCode || null,
+          profession: profile.profession || null,
           id,
         });
 
@@ -142,41 +143,45 @@ export default class UserService {
           WHERE pi.profile_id = :id;`,
           { id });
 
-      const instrumentSets = profile.instruments.reduce((obj, instrumentId) => {
-        if (!rows.includes(instrumentId)) {
-          obj.newInstrumentIds.push(instrumentId);
-        }
-        return obj;
-      }, { newInstrumentIds: [], instrumentIdsToRemove: [] });
+      if (profile.instruments != null) {
+        const instrumentSets = profile.instruments.reduce((obj, instrumentId) => {
+          if (!rows.includes(instrumentId)) {
+            obj.newInstrumentIds.push(instrumentId);
+          }
+          return obj;
+        }, { newInstrumentIds: [], instrumentIdsToRemove: [] });
 
-      rows.reduce((obj, instrumentId) => {
-        if (!profile.instruments.includes(instrumentId)) {
-          obj.instrumentIdsToRemove.push(instrumentId);
-        }
-        return obj;
-      }, instrumentSets);
+        rows.reduce((obj, instrumentId) => {
+          if (!profile.instruments.includes(instrumentId)) {
+            obj.instrumentIdsToRemove.push(instrumentId);
+          }
+          return obj;
+        }, instrumentSets);
 
-      for (const instrumentId of instrumentSets.newInstrumentIds) {
-        await connection.execute(`
-            INSERT INTO profiles_instruments (instrument_id, profile_id) VALUES (:instrumentId, :profileId)`,
-            { instrumentId, profileId: id });
+        for (const instrumentId of instrumentSets.newInstrumentIds) {
+          await connection.execute(`
+              INSERT INTO profiles_instruments (instrument_id, profile_id) VALUES (:instrumentId, :profileId)`,
+              { instrumentId, profileId: id });
+        }
+
+        for (const instrumentId of instrumentSets.instrumentIdsToRemove) {
+          await connection.execute(`
+              DELETE FROM profiles_instruments WHERE instrument_id = :instrumentId AND profile_id = :profileId;`,
+              { instrumentId, profileId: id });
+        }
       }
 
-      for (const instrumentId of instrumentSets.instrumentIdsToRemove) {
+      if (profile.preferences != null) {
         await connection.execute(`
-            DELETE FROM profiles_instruments WHERE instrument_id = :instrumentId AND profile_id = :profileId;`,
-            { instrumentId, profileId: id });
+            UPDATE preferences SET is_looking = :isLooking, display_location = :displayLocation
+            WHERE profile_id = :id;`,
+            { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
+
+        await connection.execute(`
+            INSERT INTO preferences (is_looking, display_location, profile_id) SELECT :isLooking, :displayLocation, :id
+              WHERE NOT EXISTS (SELECT * FROM preferences WHERE profile_id = :id);`,
+            { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
       }
-
-      await connection.execute(`
-          UPDATE preferences SET is_looking = :isLooking, display_location = :displayLocation
-          WHERE profile_id = :id;`,
-          { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
-
-      await connection.execute(`
-          INSERT INTO preferences (is_looking, display_location, profile_id) SELECT :isLooking, :displayLocation, :id
-            WHERE NOT EXISTS (SELECT * FROM preferences WHERE profile_id = :id);`,
-          { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
 
       await connection.commit();
       resolve();
@@ -185,48 +190,58 @@ export default class UserService {
     }
   })
 
-  registerUser = async (email, password, firstName, lastName, facebookId) => new Promise(async (resolve, reject) => {
-    if (!email && !facebookId) {
-      reject('Must have either an email or facebook id to register user');
-    }
-    if (!facebookId && !password) {
-      reject('If not using facebook login, must include a password');
-    }
-
-    const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
-    await connection.beginTransaction((err) => {
-      if (err) {
-        reject(err);
+  registerUser = async (email, password, firstName, lastName, facebookId, cover, avatar) =>
+    new Promise(async (resolve, reject) => {
+      if (!email && !facebookId) {
+        return reject('Must have either an email or facebook id to register user');
       }
-    });
 
-    let userId;
-    try {
-      const [rows, fields] = await connection.query(
-          'INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);',
-          { email: email || 'NULL', password: password || 'NULL', facebookId: facebookId || '' },
-        );
-      userId = rows.insertId;
-    } catch (err) {
-      reject(err);
-    }
+      if (!facebookId && !password) {
+        return reject('If not using facebook login, must include a password');
+      }
 
-    let profileId;
-    try {
-      const [rows] = await connection.execute(
-          'INSERT INTO profiles (email, user_id, first_name, last_name) VALUES (:email, :userId, :firstName, :lastName);',
-          { email: email || 'NULL', userId, firstName, lastName },
-        );
-      profileId = rows.insertId;
-    } catch (err) {
-      reject(err);
-    }
-    try {
-      await connection.commit();
-    } catch (err) {
-      connection.rollback();
-      reject(err);
-    }
-    resolve(profileId);
-  })
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+      await connection.beginTransaction(err => (err == null ? null : reject(err)));
+
+      if (email != null && email !== '') {
+        const [emailRows] = await connection.query('SELECT COUNT(*) as count FROM users WHERE email = :email;', { email });
+        if (emailRows[0] != null && emailRows[0].count === 1) {
+          return reject('A user with that email already exists.');
+        }
+      }
+
+      let userId;
+      try {
+        const [rows] = await connection.query(
+            'INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);',
+            { email: email || null, password: password || null, facebookId: facebookId || null },
+          );
+        userId = rows.insertId;
+      } catch (err) {
+        connection.rollback();
+        return reject(err);
+      }
+
+      let profile;
+      try {
+        let [rows] = await connection.execute(
+            'INSERT INTO profiles (email, user_id, first_name, last_name, cover_url, avatar_url) VALUES (:email, :userId, :firstName, :lastName, :cover, :avatar);',
+            { email: email || null, userId, firstName, lastName, cover: cover || null, avatar: avatar || null },
+          );
+        const profileId = rows.insertId;
+        [rows] = await connection.execute('SELECT * FROM profiles WHERE id = :profileId', { profileId });
+        profile = rows[0];
+      } catch (err) {
+        connection.rollback();
+        return reject(err);
+      }
+
+      try {
+        await connection.commit();
+      } catch (err) {
+        connection.rollback();
+        return reject(err);
+      }
+      resolve(profile);
+    })
 }

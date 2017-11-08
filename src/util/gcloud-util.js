@@ -11,10 +11,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-'use strict';
-
-const gcloud = require('google-cloud');
 const path = require('path');
+
+const Storage = require('@google-cloud/storage');
 
 function guid() {
   function s4() {
@@ -22,35 +21,32 @@ function guid() {
       .toString(16)
       .substring(1);
   }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-    s4() + '-' + s4() + s4() + s4();
+  return `${s4() + s4()}-${s4()}-${s4()}-${
+    s4()}-${s4()}${s4()}${s4()}`;
 }
 
 module.exports = function (gcloudConfig, cloudStorageBucket) {
-
-  const storage = gcloud.storage(gcloudConfig);
+  const storage = Storage({
+    projectId: gcloudConfig.projectId,
+    keyFilename: gcloudConfig.keyFilename,
+  });
   const bucket = storage.bucket(cloudStorageBucket);
 
   function sendUploadToGCS(extension, buffer, next) {
-    let gcsname = `${Date.now()}${guid()}${extension}`;
+    let gcsname = `${Date.now()}${guid()}.${extension}`;
 
     if (gcsname.length >= 101) {
       gcsname = gcsname.substring(gcsname.length - 100);
     }
 
-    const file = bucket.file(gcsname);
+    const remoteWriteStream = bucket.file(gcsname).createWriteStream();
     return new Promise((resolve, reject) => {
-      const stream = file.createWriteStream();
-
-      stream.on('error', err => {
-        reject({ error: err });
-      });
-
-      stream.on('finish', () => {
-        resolve({ cloudStorageObject: gcsname, cloudStoragePublicUrl: getPublicUrl(gcsname) });
-      });
-
-      stream.end(buffer);
+      remoteWriteStream
+        .on('error', error => reject(error))
+        .on('finish', () => {
+          resolve({ cloudStorageObject: gcsname, cloudStoragePublicUrl: getPublicUrl(gcsname) });
+        })
+        .end(buffer);
     });
   }
 
@@ -59,7 +55,7 @@ module.exports = function (gcloudConfig, cloudStorageBucket) {
   }
 
   return {
-    getPublicUrl: getPublicUrl,
-    sendUploadToGCS: sendUploadToGCS
+    getPublicUrl,
+    sendUploadToGCS,
   };
 };

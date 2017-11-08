@@ -45,4 +45,15 @@ module.exports = {
       },
     ],
   },
+  devServer: {
+    // webpack-dev-server options
+    inline: true,
+    hot: false,
+    stats: { colors: true },
+    contentBase: './lib/public',
+    headers: { 'Access-Control-Allow-Origin': '*' },
+    watchOptions: {
+      poll: 1000,
+    },
+  },
 };

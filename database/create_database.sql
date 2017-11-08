@@ -52,11 +52,17 @@ CREATE TABLE IF NOT EXISTS messages (
 
 CREATE TABLE IF NOT EXISTS conversations (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  is_one_on_one BOOLEAN NOT NULL,
+  is_deleted BOOLEAN NOT NULL DEFAULT false
+) ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS conversation_participants (
+  conversation_id INT NOT NULL,
   user_id INT NOT NULL,
-  is_deleted BOOLEAN NOT NULL DEFAULT false,
   last_read_message INT,
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (last_read_message) REFERENCES messages(id)
+  FOREIGN KEY (last_read_message) REFERENCES messages(id),
+  UNIQUE KEY `user_per_conversation_id` (user_id, conversation_id)
 ) ENGINE InnoDB;
 
 ALTER TABLE messages ADD CONSTRAINT fk_conversation_id FOREIGN KEY (conversation_id) REFERENCES conversations(id);
@@ -109,6 +115,20 @@ CREATE TABLE IF NOT EXISTS music (
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   FOREIGN KEY (author_user_id) REFERENCES users(id)
 ) ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS tags (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(25) UNIQUE NOT NULL
+) ENGINE InnoDB;
+
+CREATE TABLE IF NOT EXISTS music_tags (
+  tag_id INT NOT NULL,
+  music_id INT NOT NULL,
+  FOREIGN KEY (music_id) REFERENCES music(id),
+  FOREIGN KEY (tag_id) REFERENCES tags(id)
+) ENGINE InnoDB;
+
+ALTER TABLE music_tags ADD UNIQUE KEY `music_tag_ids` (`music_id`, `tag_id`);
 
 CREATE TABLE IF NOT EXISTS preferences (
   id INT PRIMARY KEY AUTO_INCREMENT,

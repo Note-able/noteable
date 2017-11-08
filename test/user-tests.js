@@ -4,7 +4,7 @@ const request = require('supertest');
 const app = require('../lib/src/server/server');
 const uuidV4 = require('uuid/v4');
 const Browser = require('zombie');
-
+/*
 Browser.localhost('local.noteable.me', 8080);
 const assert = chai.assert;
 

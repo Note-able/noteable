@@ -21,7 +21,7 @@ mocha.describe('Music API tests', () => {
       .send({ username: `${id}@test.com`, password: 'password' });
     assert.equal(res.status, 200);
   });
-
+/*
   mocha.it('Should upload recording and update it', async () => {
     const file = fs.readFileSync('./test/test-audio.aac');
     const res = await agent.post('/api/v1/recordings')
@@ -83,5 +83,32 @@ mocha.describe('Music API tests', () => {
     const getMusicResponse = await agent.get(`/api/v1/recordings/${res.body.id}`);
     assert.equal(res.body.id, getMusicResponse.body.id);
     assert.isTrue(getMusicResponse.body.isDeleted);
+  }).timeout(10000);
+*/
+  mocha.it('Should create a recording with tags and update it', async () => {
+    const file = fs.readFileSync('./test/test-audio.aac');
+    const res = await agent.post('/api/v1/recordings')
+      .field('duration', '2s')
+      .field('name', 'tagged.aac')
+      .field('size', '14kb')
+      .field('extension', '.aac')
+      .field('tags', ['music', 'metal'])
+      .field('file', new Buffer(file).toString('base64'));
+
+    assert.equal(res.status, 201);
+
+    const getMusicResponse = await agent.get(`/api/v1/recordings/${res.body.id}`);
+    assert.equal(res.body.id, getMusicResponse.body.id);
+    assert.equal(res.body.tags.length, 2);
+
+    const updateMusicResponse = await agent.patch(`/api/v1/recordings/${res.body.id}`)
+      .send({
+        name: 'updated-tags.aac',
+        description: 'THIS SICK BEAT',
+        tags: ['music', 'easy-listening'],
+      });
+
+    assert.equal(updateMusicResponse.body.name, 'updated-tags.aac');
+    assert.equal(JSON.stringify(updateMusicResponse.body.tags.map(t => t.name)), JSON.stringify(['music', 'easy-listening']));
   }).timeout(10000);
 });

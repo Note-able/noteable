@@ -1,4 +1,4 @@
-export const musicMapper = dbMusic => (dbMusic == null ? null : {
+export const musicMapper = (dbMusic, dbTags = []) => (dbMusic == null ? null : {
   audioUrl: dbMusic.audio_url,
   author: dbMusic.author,
   coverUrl: dbMusic.cover_url,
@@ -10,6 +10,7 @@ export const musicMapper = dbMusic => (dbMusic == null ? null : {
   name: dbMusic.name,
   size: dbMusic.size,
   isDeleted: !!dbMusic.is_deleted,
+  tags: dbTags,
 });
 
 export const columns = (t, kind) => {

@@ -6,7 +6,6 @@ import FacebookStrategy from 'passport-facebook';
 import LocalStrategy from 'passport-local';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import session from 'express-session';
-import Formidable from 'formidable';
 import fs from 'fs';
 import { UserService } from './services';
 import { ensureAuthenticated, validatePassword, generateToken, validateWithProvider, connectToMysqlDb } from './server-util';
@@ -15,8 +14,6 @@ import config from '../config';
 const MongoStore = require('connect-mongo')(session);
 
 const env = process.env.NODE_ENV;
-console.log(env);
-console.log(process.env.TESTING);
 global.DEBUG = env !== 'production' && env !== 'internal';
 global.PRODUCTION = env === 'production';
 global.CLIENT = false;
@@ -27,7 +24,7 @@ app.use(express.static(`${__dirname}/../../public`));
 const userService = new UserService({ auth: ensureAuthenticated, connectToMysqlDb, mysqlParameters: config.mysqlConnection });
 
 // set up Jade
-app.use(BodyParser.urlencoded({ extended: false }));
+app.use(BodyParser.urlencoded({ extended: true }));
 app.use(BodyParser.json());
 
 app.set('views', './views');
@@ -57,7 +54,6 @@ passport.deserializeUser((obj, done) => {
 passport.use(new LocalStrategy({ callbackURL: '/auth/local/callback' }, async (username, password, done) => {
   const connection = await connectToMysqlDb(config.mysqlConnection);
   let user = null;
-  console.log('trying to auth');
   const [rows] = await connection.query(`
     SELECT pr.id, p.password, pr.email
     FROM users p
@@ -120,7 +116,6 @@ const jwtOptions = {
 passport.use(new JwtStrategy(jwtOptions, async (profile, done) => {
   const connection = await connectToMysqlDb(config.mysqlConnection);
   let user = null;
-  console.log('trying to jwt auth');
   const [rows] = await connection.query(`
     SELECT *
     FROM users p
@@ -150,7 +145,7 @@ app.post('/auth/local/jwt',
   async (req, res) => {
     const connection = await connectToMysqlDb(config.mysqlConnection);
     let user = null;
-    console.log('trying to jwt local auth');
+
     const [rows] = await connection.query(`
       SELECT pr.id, p.password, pr.email
       FROM users p
@@ -181,38 +176,35 @@ app.post('/auth/facebook/jwt',
     validateWithProvider('facebook', req.body.token)
       .then(async (profile) => {
         const connection = await connectToMysqlDb(config.mysqlConnection);
-        let user = null;
+        let facebookUser = null;
+
         const [rows] = await connection.query(`
           SELECT *
           FROM users p
           WHERE facebook_id = ?;`,
           [profile.id]);
 
+        facebookUser = rows[0];
+        if (!facebookUser) {
+          let cover = null;
+          let avatar = null;
 
-        user = rows[0];
-        if (!user) {
-          [user] = await connection.query(`
-            SELECT *
-            FROM users p
-            WHERE email = ?;`,
-            [profile.email]);
-          user = user[0];
-
-          connection.destroy();
-          if (!user) {
-            const userId = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id);
-            user = await userService.getUser(userId);
-          } else {
-            const userId = await userService.updateUser(user.id, profile.id);
-            user = await userService.getUser(userId);
+          if (profile.cover) {
+            cover = profile.cover.source;
           }
-        } else {
-          connection.destroy();
+
+          if (profile.picture != null) {
+            avatar = profile.picture.data.url;
+          }
+
+          facebookUser = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id, cover, avatar);
         }
 
+        connection.destroy();
+
         return res.status(200).json({
-          token: `JWT ${generateToken(user)}`,
-          user,
+          token: `JWT ${generateToken(facebookUser)}`,
+          user: facebookUser,
         });
       });
   });

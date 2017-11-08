@@ -1,7 +1,8 @@
+
+import multiparty from 'multiparty';
 import { MediaService } from '../services';
 import config from '../../config';
 
-const Formidable = require('formidable');
 const audio = require('../../util/gcloud-util')(config.gcloud, config.cloudAudioStorageBucket);
 
 module.exports = function musicApi(app, options, prefix) {
@@ -15,8 +16,7 @@ module.exports = function musicApi(app, options, prefix) {
   /** queryParams: limit, offset */
 
   app.post(`${prefix}/recordings`, options.auth, (req, res) => {
-    const form = new Formidable.IncomingForm();
-    form.uploadDir = './uploads';
+    const form = new multiparty.Form({ uploadDir: './uploads' });
 
     form.parse(req, (err, fields) => {
       const buffer = new Buffer(fields.file, 'base64');
@@ -28,7 +28,8 @@ module.exports = function musicApi(app, options, prefix) {
             authorUserId: req.user.id,
             name: fields.name,
             size: fields.size,
-            description: req.body.description,
+            description: fields.description,
+            tags: fields.tags,
           })
             .then((music) => {
               res.status(201).json(music);
@@ -82,6 +83,7 @@ module.exports = function musicApi(app, options, prefix) {
       description: req.body.description,
       name: req.body.name,
       size: req.body.size,
+      tags: req.body.tags,
     })
       .then(result => res.status(200).json(result))
       .catch(error => res.status(500).json(error));

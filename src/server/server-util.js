@@ -57,13 +57,20 @@ const providers = {
 export function validateWithProvider(network, socialToken) {
   return new Promise((resolve, reject) => {
   // Send a GET request to Facebook with the token as query string
+  // assumes facebook for now.
     request({
       url: providers[network].url,
-      qs: { access_token: socialToken, fields: ['id', 'name', 'email', 'first_name', 'last_name'].toString() },
+      qs: { access_token: socialToken, fields: ['id', 'name', 'email', 'first_name', 'last_name', 'cover'].toString() },
     },
     (error, response, body) => {
       if (!error && response.statusCode === 200) {
-        resolve(JSON.parse(body));
+        const user = JSON.parse(body);
+        request({
+          url: `https://graph.facebook.com/${user.id}/picture?type=square&height=300&format=json&method=get&pretty=0&redirect=false&suppress_http_code=1`,
+        }, (err, res, bdy) => {
+          user.picture = JSON.parse(bdy);
+          resolve(user);
+        });
       } else {
         reject(error);
       }
