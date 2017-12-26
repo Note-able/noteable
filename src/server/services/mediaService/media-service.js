@@ -1,5 +1,4 @@
 import { musicMapper, columns, values } from './model/musicDto.js';
-import mysql2 from 'mysql2';
 
 const defaultMusicLimit = 10;
 
@@ -70,7 +69,6 @@ export default class MusicService {
           }
   
           const tagsToInsert = dbTags.map(tag => [id, tag.id]);
-          console.log(mysql2.format('INSERT INTO music_tags (music_id, tag_id) VALUES ?;', [tagsToInsert]));
           await connection.query('INSERT INTO music_tags (music_id, tag_id) VALUES ?;', [tagsToInsert]);
         }
 
