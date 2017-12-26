@@ -19,16 +19,19 @@ module.exports = function musicApi(app, options, prefix) {
     const form = new multiparty.Form({ uploadDir: './uploads' });
 
     form.parse(req, (err, fields) => {
-      const buffer = new Buffer(fields.file, 'base64');
+      if (!fields.file) {
+        return res.status(400).json({ error: 'No file' });
+      }
+      const buffer = new Buffer(fields.file[0], 'base64');
 
-      audio.sendUploadToGCS(fields.extension ? fields.extension : '.mp3', buffer)
+      audio.sendUploadToGCS(fields.extension ? fields.extension[0] : '.mp3', buffer)
         .then((result) => {
           mediaService.createMusic({
             audioUrl: result.cloudStoragePublicUrl,
             authorUserId: req.user.id,
-            name: fields.name,
-            size: fields.size,
-            description: fields.description,
+            name: fields.name ? fields.name[0] : '',
+            size: fields.size ? fields.size[0] : '',
+            description: fields.description ? fields.description[0] : '',
             tags: fields.tags,
           })
             .then((music) => {
