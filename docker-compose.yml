@@ -46,7 +46,7 @@ services:
     volumes:
       - "~/keys:/var/keys"
     environment:
-      - VIRTUAL_HOST=beta.notable.me
+      - VIRTUAL_HOST=beta.noteable.me
       - VIRTUAL_NETWORK=nginx-proxy
       - VIRTUAL_PORT=8082
       - LETSENCRYPT_HOST=beta.noteable.me
@@ -69,5 +69,6 @@ services:
     links:
       - "mongodb:mongo"
   mongodb:
+
     restart: always
     image: mongo
