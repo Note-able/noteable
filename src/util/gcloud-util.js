@@ -33,7 +33,7 @@ module.exports = function (gcloudConfig, cloudStorageBucket) {
   const bucket = storage.bucket(cloudStorageBucket);
 
   function sendUploadToGCS(extension, buffer, next) {
-    let gcsname = `${Date.now()}${guid()}.${extension}`;
+    let gcsname = `${Date.now()}${guid()}.${`${extension}`.replace(/^\.+/, '')}`;
 
     if (gcsname.length >= 101) {
       gcsname = gcsname.substring(gcsname.length - 100);
