@@ -45,7 +45,6 @@ export default class UserService {
   })
 
   updateUser = async (userId, facebookId) => new Promise(async (resolve, reject) => {
-
     if (userId == null || facebookId == null) {
       return resolve(-1);
     }
@@ -126,7 +125,8 @@ export default class UserService {
             profession = :profession
           WHERE id = :id;`,
 
-        { location: profile.location || null,
+        {
+          location: profile.location || null,
           bio: profile.bio || null,
           coverUrl: profile.coverImage || null,
           firstName: profile.firstName || null,
@@ -141,7 +141,7 @@ export default class UserService {
           SELECT pi.instrument_id
           FROM profiles_instruments pi
           WHERE pi.profile_id = :id;`,
-          { id });
+        { id });
 
       if (profile.instruments != null) {
         const instrumentSets = profile.instruments.reduce((obj, instrumentId) => {
@@ -161,13 +161,13 @@ export default class UserService {
         for (const instrumentId of instrumentSets.newInstrumentIds) {
           await connection.execute(`
               INSERT INTO profiles_instruments (instrument_id, profile_id) VALUES (:instrumentId, :profileId)`,
-              { instrumentId, profileId: id });
+            { instrumentId, profileId: id });
         }
 
         for (const instrumentId of instrumentSets.instrumentIdsToRemove) {
           await connection.execute(`
               DELETE FROM profiles_instruments WHERE instrument_id = :instrumentId AND profile_id = :profileId;`,
-              { instrumentId, profileId: id });
+            { instrumentId, profileId: id });
         }
       }
 
@@ -175,12 +175,12 @@ export default class UserService {
         await connection.execute(`
             UPDATE preferences SET is_looking = :isLooking, display_location = :displayLocation
             WHERE profile_id = :id;`,
-            { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
+          { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
 
         await connection.execute(`
             INSERT INTO preferences (is_looking, display_location, profile_id) SELECT :isLooking, :displayLocation, :id
               WHERE NOT EXISTS (SELECT * FROM preferences WHERE profile_id = :id);`,
-            { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
+          { isLooking: profile.preferences.isLooking ? 1 : 0, displayLocation: profile.preferences.displayLocation ? 1 : 0, id });
       }
 
       await connection.commit();
@@ -213,9 +213,9 @@ export default class UserService {
       let userId;
       try {
         const [rows] = await connection.query(
-            'INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);',
-            { email: email || null, password: password || null, facebookId: facebookId || null },
-          );
+          'INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);',
+          { email: email || null, password: password || null, facebookId: facebookId || null },
+        );
         userId = rows.insertId;
       } catch (err) {
         connection.rollback();
@@ -225,9 +225,9 @@ export default class UserService {
       let profile;
       try {
         let [rows] = await connection.execute(
-            'INSERT INTO profiles (email, user_id, first_name, last_name, cover_url, avatar_url) VALUES (:email, :userId, :firstName, :lastName, :cover, :avatar);',
-            { email: email || null, userId, firstName, lastName, cover: cover || null, avatar: avatar || null },
-          );
+          'INSERT INTO profiles (email, user_id, first_name, last_name, cover_url, avatar_url) VALUES (:email, :userId, :firstName, :lastName, :cover, :avatar);',
+          { email: email || null, userId, firstName, lastName, cover: cover || null, avatar: avatar || null },
+        );
         const profileId = rows.insertId;
         [rows] = await connection.execute('SELECT * FROM profiles WHERE id = :profileId', { profileId });
         profile = rows[0];
@@ -242,6 +242,7 @@ export default class UserService {
         connection.rollback();
         return reject(err);
       }
-      resolve(profile);
+
+      return resolve(Users.userMapper(profile));
     })
 }

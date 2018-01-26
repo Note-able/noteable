@@ -1,5 +1,6 @@
 import multiparty from 'multiparty';
 import fs from 'fs';
+import request from 'request-promise-native';
 
 import { UserService } from '../services';
 import config from '../../config';
@@ -7,10 +8,22 @@ import config from '../../config';
 const image = require('../../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
 const bcrypt = require('bcrypt-nodejs');
 
+const indexUser = async (user) => {
+  const newUser = {
+    fullname: `${user.firstName} ${user.lastName}`,
+    userId: user.userId,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    avatarUrl: user.avatarUrl,
+  };
+
+  await request.put(`http://localhost:9200/local-noteable/users/${user.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newUser) });
+};
+
 module.exports = function userApi(app, options, prefix) {
   const userService = new UserService(options);
 
-  /** *PICTURES API* **/
+  /** *PICTURES API* * */
 
 
   // Currently only works with one picture. No mass upload.
@@ -28,11 +41,11 @@ module.exports = function userApi(app, options, prefix) {
           const data = fs.readFileSync(`./${file.path}`);
           image.sendUploadToGCS(file.path.split('.')[1], data)
             .then((response) => {
-              fs.unlink(file.path, () => {});
+              fs.unlink(file.path, () => { });
               next(response);
             })
             .catch((e) => {
-              fs.unlink(file.path, () => {});
+              fs.unlink(file.path, () => { });
               next(null);
             });
         } catch (e) {
@@ -46,15 +59,7 @@ module.exports = function userApi(app, options, prefix) {
     res.redirect(`/user/${req.user.id}`);
   });
 
-  app.get(`${prefix}/users/search/{text}`, options.auth, (req, res) => {
-    if (req.params.text.length === 0) {
-      res.status(400).send();
-    } else {
-      // elasticsearch for users
-    }
-  });
-
-  /** USER API **/
+  /** USER API * */
 
   app.post(`${prefix}/users/edit`, options.auth, options.auth, (req, res) => {
     options.connectToMysqlDb(options.database, (connection) => {
@@ -81,19 +86,25 @@ module.exports = function userApi(app, options, prefix) {
       }
 
       userService.registerUser(req.body.email, password, req.body.firstName, req.body.lastName)
-        .then(user => res.json(user))
+        .then(async (user) => {
+          indexUser(user);
+          res.json(user);
+        })
         .catch(error => res.status(500).json(error));
     });
   });
 
   app.post(`${prefix}/users/:userId/profile`, options.auth, (req, res) => {
-    if (req.user.id != req.params.userId) {
+    if (req.user.id !== req.params.userId) {
       res.status(400).send();
       return;
     }
 
-    userService.updateProfile(req.body, req.user.id)
-      .then(() => {
+    userService.updateProfile(req.body, req.params.userId)
+      .then(async () => {
+        const user = await userService.getUser(req.params.userId);
+        indexUser(user);
+
         res.status(202).send();
       });
   });
@@ -157,10 +168,61 @@ module.exports = function userApi(app, options, prefix) {
             SELECT * FROM followers WHERE origin = ${req.user.id} AND destination = ${req.params.userId}
           );
       `).on('error', (error) => { console.log(`error following user: ${error}`); })
-      .on('end', () => {
-        connection.done();
-        res.status(200).send();
-      });
+        .on('end', () => {
+          connection.done();
+          res.status(200).send();
+        });
     });
+  });
+
+  app.get(`${prefix}/admin/users/all`, options.auth, async (req, res) => {
+    try {
+      if (req.user.id !== 1) {
+        res.status(404).send();
+      }
+
+      const connection = await options.connectToMysqlDb(options.mysqlParameters);
+      const [rows] = await connection.query(`
+          SELECT * FROM profiles limit 100;
+        `);
+
+      res.json(rows);
+    } catch (err) {
+      res.json(err);
+    }
+  });
+
+  app.get(`${prefix}/users/search/:query`, options.auth, async (req, res) => {
+    if (!req.user) {
+      return res.status(400).send();
+    }
+
+    if (req.params.query == null || req.params.query === '') {
+      return res.status(204).send();
+    }
+
+    try {
+      const response = await request({
+        method: 'POST',
+        url: 'http://elastic:9200/local-noteable/users/_search',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: {
+            match: {
+              fullname: {
+                query: req.params.query,
+                fuzziness: '1',
+              },
+            },
+          },
+        }),
+      });
+
+      res.json(JSON.parse(response));
+    } catch (error) {
+      res.json(error);
+    }
   });
 };
