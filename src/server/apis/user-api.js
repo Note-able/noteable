@@ -186,9 +186,9 @@ module.exports = function userApi(app, options, prefix) {
           SELECT COUNT(*) FROM profiles limit 100;
         `);
 
-      Array(Math.min(count, 10)).fill(0).forEach(async () => {
+      Array(Math.min(count, 10)).fill(0).forEach(async (_, index) => {
         const [rows] = await connection.query(`
-          SELECT * FROM profiles ORDER BY id DESC LIMIT 100 OFFSET ${i * 100}
+          SELECT * FROM profiles ORDER BY id DESC LIMIT 100 OFFSET ${index * 100}
         `);
 
         rows.forEach(user => indexUser(user));
