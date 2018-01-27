@@ -182,11 +182,17 @@ module.exports = function userApi(app, options, prefix) {
       }
 
       const connection = await options.connectToMysqlDb(options.mysqlParameters);
-      const [rows] = await connection.query(`
-          SELECT * FROM profiles limit 100;
+      const [count] = await connection.query(`
+          SELECT COUNT(*) FROM profiles limit 100;
         `);
 
-      res.json(rows);
+      Array(Math.min(count, 10)).fill(0).forEach(async () => {
+        const [rows] = await connection.query(`
+          SELECT * FROM profiles ORDER BY id DESC LIMIT 100 OFFSET ${i * 100}
+        `);
+
+        rows.forEach(user => indexUser(user));
+      });
     } catch (err) {
       res.json(err);
     }
