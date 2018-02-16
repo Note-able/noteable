@@ -22,11 +22,15 @@ module.exports = {
       filename: 'style.css',
       allChunks: true,
     }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': '"production"',
+    }),
+    new webpack.optimize.UglifyJsPlugin(),
   ],
 
   resolve: {
-    extensions: [ '.js', '.jsx' ],
-    modules: [ 'node_modules' ],
+    extensions: ['.js', '.jsx'],
+    modules: ['node_modules'],
   },
 
   module: {
@@ -40,13 +44,12 @@ module.exports = {
         test: /\.(less|css)$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: [ 'css-loader?camelCase&localIdentName=[name]--[local]--[hash:base64:5]', { loader: 'postcss-loader', options: { plugins: [ autoprefixer ] } }, 'less-loader' ],
+          use: ['css-loader?camelCase&localIdentName=[name]--[local]--[hash:base64:5]', { loader: 'postcss-loader', options: { plugins: [autoprefixer] } }, 'less-loader'],
         }),
       },
     ],
   },
   devServer: {
-    // webpack-dev-server options
     inline: true,
     hot: false,
     stats: { colors: true },
