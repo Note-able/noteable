@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import express from 'express';
 import https from 'https';
 import BodyParser from 'body-parser';
@@ -28,7 +29,7 @@ app.use(BodyParser.urlencoded({ extended: true }));
 app.use(BodyParser.json());
 
 app.set('views', './views');
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 app.use(session({
   secret: 'theAssyrianCameDownLikeAWolfOnTheFold',
   resave: true,
