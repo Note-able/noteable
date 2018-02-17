@@ -1,6 +1,6 @@
 # Dockerfile extending the generic Node image with application files for a
 # single application.
-FROM node:9
+FROM node:alpine
 
 ARG NODE=production
 
@@ -11,7 +11,7 @@ COPY package.json /app
 
 # This will only run when there is a change to package.json.
 # add npm set progress=false
-RUN  npm install -g -s --no-progress yarn && yarn --ignore-engines --ignore-scripts --silent --non-interactive
+RUN  npm install -g -s --no-progress yarn && yarn --ignore-engines --ignore-scripts --silent
 
 COPY . /app
 
