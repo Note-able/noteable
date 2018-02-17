@@ -24,4 +24,4 @@ RUN npm run dist
 EXPOSE 8080
 
 # Run the server
-CMD node lib/server.js
+CMD node lib/src/server/server.js
