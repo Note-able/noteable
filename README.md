@@ -15,6 +15,7 @@ jam wit me
 * `cd noteable && yarn --ignore-engines` - this will install the necessary dependencies.
 * `yarn run mongo` - starts up a local cache for authentication.
 * `yarn run start-dev` - starts up a hot webpack dev server. This should rebuild when you make changes to front-end code.
+ * You shouldn't have to run this command if you are only making API changes.
 * `yarn run server-dev` - runs the server using babel-node so you can write in es6. 
 
 ## Workflow
