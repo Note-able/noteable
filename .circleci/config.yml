@@ -29,7 +29,7 @@ jobs:
       - setup_remote_docker:
           version: 17.05.0-ce
 
-      - run: docker build -t sportnak/noteable:staging
+      - run: docker build -t sportnak/noteable:staging .
       - run: docker push sportnak/noteable:staging
 
       - save_cache:
