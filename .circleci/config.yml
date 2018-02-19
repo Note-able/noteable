@@ -28,8 +28,11 @@ jobs:
 
       - setup_remote_docker:
           version: 17.05.0-ce
+          docker_layer_caching: true
+
 
       - run: docker build -t sportnak/noteable:staging .
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker push sportnak/noteable:staging
 
       - save_cache:
