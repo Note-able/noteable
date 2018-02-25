@@ -210,7 +210,7 @@ module.exports = function userApi(app, options, prefix) {
     try {
       const response = await request({
         method: 'POST',
-        url: 'http://elastic:9200/local-noteable/users/_search',
+        url: 'http://elastic:9200/beta-noteable/users/_search',
         headers: {
           'content-type': 'application/json',
         },
