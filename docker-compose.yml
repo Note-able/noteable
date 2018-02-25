@@ -45,6 +45,11 @@ services:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m -XX:-AssumeMP"
+      - VIRTUAL_HOST=elastic.noteable.me
+      - VIRTUAL_NETWORK=nginx-proxy
+      - VIRTUAL_PORT=9200
+      - LETSENCRYPT_HOST=elastic.noteable.me
+      - LETSENCRYPT_EMAIL=team@noteable.me
     ulimits:
       memlock:
         soft: -1
@@ -53,25 +58,6 @@ services:
       - esdata1:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-    networks:
-      - esnet
-
-  elasticsearch2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
-    container_name: elasticsearch2
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m -XX:-AssumeMP"
-      - "discovery.zen.ping.unicast.hosts=elastic"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata2:/usr/share/elasticsearch/data
-    networks:
-      - esnet
 
   beta:
     restart: always
@@ -89,6 +75,7 @@ services:
       - LETSENCRYPT_EMAIL=team@noteable.me
     links:
       - "mongodb:mongo"
+      - elastic
 
   production:
     restart: always
@@ -104,6 +91,7 @@ services:
       - LETSENCRYPT_EMAIL=team@noteable.me
     links:
       - "mongodb:mongo"
+      - elastic
 
   mongodb:
     restart: always
@@ -112,6 +100,3 @@ services:
 volumes:
   esdata1:
   esdata2:
-
-networks:
-  esnet:

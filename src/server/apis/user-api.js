@@ -17,7 +17,7 @@ const indexUser = async (user) => {
     avatarUrl: user.avatarUrl,
   };
 
-  await request.put(`http://localhost:9200/local-noteable/users/${user.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newUser) });
+  await request.put(`http://elastic:9200/beta-noteable/users/${user.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newUser) });
 };
 
 module.exports = function userApi(app, options, prefix) {
@@ -186,7 +186,7 @@ module.exports = function userApi(app, options, prefix) {
           SELECT COUNT(*) FROM profiles limit 100;
         `);
 
-      Array(Math.min(count, 10)).fill(0).forEach(async (_, index) => {
+      Array(10).fill(0).forEach(async (_, index) => {
         const [rows] = await connection.query(`
           SELECT * FROM profiles ORDER BY id DESC LIMIT 100 OFFSET ${index * 100}
         `);

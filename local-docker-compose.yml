@@ -1,9 +1,9 @@
 version: "2.2"
 
 services:
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
-    container_name: elasticsearch
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.2
+    container_name: elastic
     environment:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
@@ -19,7 +19,7 @@ services:
     networks:
       - esnet
   elasticsearch2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.2
     container_name: elasticsearch2
     environment:
       - cluster.name=docker-cluster
@@ -37,12 +37,12 @@ services:
 
   beta:
     restart: always
-    image: sportnak/noteable:latest
+    image: superman
     container_name: beta
     ports:
       - "8082:8080"
     volumes:
-      - "~/keys:/var/keys"
+      - "./var/keys:/var/keys"
     environment:
       - VIRTUAL_HOST=beta.noteable.me
       - VIRTUAL_NETWORK=nginx-proxy
@@ -51,11 +51,15 @@ services:
       - LETSENCRYPT_EMAIL=team@noteable.me
     links:
       - "mongodb:mongo"
-      - "elasticsearch:elasticsearch"
-  mongodb:
+      - elastic
+    networks:
+      - esnet
 
+  mongodb:
     restart: always
     image: mongo
+    networks:
+      - esnet
 
 volumes:
   esdata1:
