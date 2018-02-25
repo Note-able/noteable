@@ -31,7 +31,7 @@ jobs:
           docker_layer_caching: true
 
 
-      - run: docker build -t sportnak/noteable .
+      - run: docker build -t sportnak/noteable:latest .
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker push sportnak/noteable:latest
 
