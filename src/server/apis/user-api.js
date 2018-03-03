@@ -226,9 +226,19 @@ module.exports = function userApi(app, options, prefix) {
         }),
       });
 
-      res.json(JSON.parse(response));
+      // this might be a prime time to update the user data in the index.
+      if (response.hits.total === 0) {
+        return res.status(204).send();
+      }
+
+      /* eslint-disable no-underscore-dangle */
+      return res.json(JSON.parse(response.hits.hits.map(hit => ({
+        order: hit._score,
+        ...hit._source,
+      }))));
+      /* eslint-enable */
     } catch (error) {
-      res.json(error);
+      return res.json(error);
     }
   });
 };
