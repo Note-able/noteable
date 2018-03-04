@@ -14,9 +14,11 @@ const indexUser = async (user) => {
     ...user,
   };
 
-  console.log(newUser.fullname);
-
-  await request.put(`http://127.0.0.1:9200/beta-noteable/users/${user.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newUser) });
+  try {
+    await request.put(`http://elastic:9200/beta-noteable/users/${user.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newUser) });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = function userApi(app, options, prefix) {
