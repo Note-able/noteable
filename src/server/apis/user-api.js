@@ -3,24 +3,11 @@ import fs from 'fs';
 import request from 'request-promise-native';
 import { guid } from '../../util/util.js';
 import { UserService } from '../services';
+import { UserDbHelper } from '../services/userService/model/userDto.js';
 import config from '../../config';
 
 const image = require('../../util/gcloud-util')(config.gcloud, config.cloudImageStorageBucket);
 const bcrypt = require('bcrypt-nodejs');
-
-const indexUser = async (user) => {
-  const newUser = {
-    fullname: `${user.first_name} ${user.last_name}`,
-    ...user,
-  };
-
-  try {
-    await request.put(`http://elastic:9200/beta-noteable/users/${user.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newUser) });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 
 // Currently only works with one picture. No mass upload.
 export const uploadPicture = (req, res, next) => {
@@ -75,6 +62,29 @@ export const uploadPictureFromUrl = url => new Promise((resolve, reject) => {
     });
   });
 });
+
+const indexUser = async (user) => {
+  const newUser = {
+    fullname: `${user.first_name} ${user.last_name}`,
+    ...user,
+  };
+
+  try {
+    const response = await request({
+      method: 'PUT',
+      url: `http://elastic:9200/beta-noteable/users/${user.id}`,
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(newUser),
+    });
+
+    console.log(response, newUser.fullname);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
 export const userApi = (app, options, prefix) => {
   const userService = new UserService(options);
@@ -218,7 +228,28 @@ export const userApi = (app, options, prefix) => {
         `);
 
         for (const i in rows) {
-          await indexUser({ ...rows[i] });
+          const user = { ...rows[i] };
+          console.log(user.first_name, user.avatar_url);
+          if (user.avatar_url && user.avatar_url.indexOf('scontent.xx.fbcdn.net)') !== -1) {
+            try {
+              const response = await uploadPictureFromUrl(user.avatar_url);
+              user.avatar_url = response.cloudStoragePublicUrl;
+            } catch (error) {
+              console.log(error);
+            }
+          }
+
+          if (user.cover_image && user.cover_image.indexOf('scontent.xx.fbcdn.net)') !== -1) {
+            try {
+              const response = await uploadPictureFromUrl(user.cover_image);
+              user.cover_image = response.cloudStoragePublicUrl;
+            } catch (error) {
+              console.log(error);
+            }
+          }
+
+          await userService.updateProfile(UserDbHelper().userMapper(user), user.user_id);
+          await indexUser(user);
         }
       });
     } catch (err) {

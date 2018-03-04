@@ -184,6 +184,7 @@ export default class UserService {
       }
 
       await connection.commit();
+      connection.destroy();
       resolve();
     } catch (err) {
       reject(err);
