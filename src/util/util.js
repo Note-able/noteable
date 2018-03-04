@@ -21,16 +21,23 @@ export function validateProfile(profile) {
   }
 
   if (profile.firstName == null || profile.firstName.length === 0) {
-    invalidState = { ...invalidState, firstName: 'Required field'};
+    invalidState = { ...invalidState, firstName: 'Required field' };
   }
 
   if (profile.lastName == null || profile.lastName.length === 0) {
-    invalidState = { ...invalidState, lastName: 'Required field'};
+    invalidState = { ...invalidState, lastName: 'Required field' };
   }
 
-if (profile.zipCode.length != 0 && profile.zipCode.match(/^\d{5}$/) == null) {
-    invalidState = { ...invalidState, zipCode: 'Invalid zip'};
+  if (profile.zipCode.length != 0 && profile.zipCode.match(/^\d{5}$/) == null) {
+    invalidState = { ...invalidState, zipCode: 'Invalid zip' };
   }
 
   return invalidState;
 }
+
+export const s4 = () => Math.floor((1 + Math.random()) * 0x10000)
+  .toString(16)
+  .substring(1);
+
+export const guid = () => `${s4() + s4()}-${s4()}-${s4()}-${
+  s4()}-${s4()}${s4()}${s4()}`;

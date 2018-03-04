@@ -9,6 +9,7 @@ import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import session from 'express-session';
 import fs from 'fs';
 import { UserService } from './services';
+import { uploadPictureFromUrl } from './apis/user-api.js';
 import { ensureAuthenticated, validatePassword, generateToken, validateWithProvider, connectToMysqlDb } from './server-util';
 import config from '../config';
 
@@ -87,6 +88,14 @@ passport.use(new FacebookStrategy({
   async (accessToken, refreshToken, profile, done) => {
     let user = await userService.getUserByFacebookId(profile.id);
 
+    if (user.avatarUrl.indexOf('scontent.xx.fbcdn.net)') !== -1) {
+      const response = await uploadPictureFromUrl(user.avatarUrl);
+      userService.updateProfile({
+        ...user,
+        avatarUrl: response.cloudStoragePublicUrl,
+      }, user.userId);
+    }
+
     if (user.id === -1) {
       let firstName = profile.name.givenName;
       let lastName = profile.name.familyName;
@@ -96,7 +105,6 @@ passport.use(new FacebookStrategy({
         lastName = names[names.length - 1];
       }
 
-      console.log('registering new fb user');
       const userId = await userService.registerUser(profile.email, '', firstName, lastName, profile.id);
       user = await userService.getUser(userId);
     }
@@ -192,13 +200,13 @@ app.post('/auth/facebook/jwt',
 
           if (profile.cover) {
             cover = profile.cover.source;
+            avatar = await uploadPictureFromUrl(cover);
           }
 
           if (profile.picture != null) {
             avatar = profile.picture.data.url;
+            avatar = await uploadPictureFromUrl(avatar);
           }
-
-          facebookUser = await userService.registerUser(profile.email, '', profile.first_name, profile.last_name, profile.id, cover, avatar);
         }
 
         connection.destroy();
@@ -213,7 +221,6 @@ app.post('/auth/facebook/jwt',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   (req, res) => {
-    console.log('hit callback');
     res.redirect('/');
   });
 

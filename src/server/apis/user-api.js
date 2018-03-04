@@ -1,7 +1,7 @@
 import multiparty from 'multiparty';
 import fs from 'fs';
 import request from 'request-promise-native';
-
+import { guid } from '../../util/util.js';
 import { UserService } from '../services';
 import config from '../../config';
 
@@ -21,40 +21,65 @@ const indexUser = async (user) => {
   }
 };
 
-module.exports = function userApi(app, options, prefix) {
+
+// Currently only works with one picture. No mass upload.
+export const uploadPicture = (req, res, next) => {
+  const form = new multiparty.Form({ maxFieldsSize: (50 * 1024 * 1024), uploadDir: './uploads' });
+
+  form.parse(req, (err, fields, files) => {
+    if (fields == null && files == null) {
+      next(null);
+      return;
+    }
+
+    files.file.forEach((file) => {
+      try {
+        const data = fs.readFileSync(`./${file.path}`);
+        image.sendUploadToGCS(file.path.split('.')[1], data)
+          .then((response) => {
+            fs.unlink(file.path, () => { });
+            next(response);
+          })
+          .catch((e) => {
+            fs.unlink(file.path, () => { });
+            next(null);
+          });
+      } catch (e) {
+        fs.unlink(file.path);
+      }
+    });
+  });
+};
+
+export const uploadPictureFromUrl = url => new Promise((resolve, reject) => {
+  const extension = url.split('?')[0].split('.').slice(-1)[0];
+  const name = `${guid()}.${extension}`;
+
+  request.head(url, (err, res, body) => {
+    request(url).pipe(fs.createWriteStream(name)).on('close', () => {
+      try {
+        const data = fs.readFileSync(name);
+        image.sendUploadToGCS(extension, data)
+          .then((response) => {
+            fs.unlink(name, () => { });
+            resolve(response);
+          })
+          .catch((e) => {
+            fs.unlink(name, () => { });
+            reject(e);
+          });
+      } catch (e) {
+        fs.unlink(name);
+        reject(e);
+      }
+    });
+  });
+});
+
+export const userApi = (app, options, prefix) => {
   const userService = new UserService(options);
 
   /** *PICTURES API* * */
-
-
-  // Currently only works with one picture. No mass upload.
-  const uploadPicture = (req, res, next) => {
-    const form = new multiparty.Form({ maxFieldsSize: (50 * 1024 * 1024), uploadDir: './uploads' });
-
-    form.parse(req, (err, fields, files) => {
-      if (fields == null && files == null) {
-        next(null);
-        return;
-      }
-
-      files.file.forEach((file) => {
-        try {
-          const data = fs.readFileSync(`./${file.path}`);
-          image.sendUploadToGCS(file.path.split('.')[1], data)
-            .then((response) => {
-              fs.unlink(file.path, () => { });
-              next(response);
-            })
-            .catch((e) => {
-              fs.unlink(file.path, () => { });
-              next(null);
-            });
-        } catch (e) {
-          fs.unlink(file.path);
-        }
-      });
-    });
-  };
 
   app.get(`${prefix}/users/me`, options.auth, (req, res) => {
     res.redirect(`/user/${req.user.id}`);

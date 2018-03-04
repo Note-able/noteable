@@ -14,7 +14,7 @@ const config = {
   },
   gcloud: {
     projectId: process.env.GCLOUD_PROJECT || 'jovial-welder-128202',
-    keyFilename: path.resolve(__dirname, '../Noteable-e4d2cea40c15.json'),
+    keyFilename: path.resolve(__dirname, '../../Noteable-e4d2cea40c15.json'),
   },
   cloudAudioStorageBucket: 'noteable-audio-storage',
   cloudImageStorageBucket: 'user-image-files-staging',

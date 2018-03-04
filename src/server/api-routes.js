@@ -1,4 +1,4 @@
-import userApi from './apis/user-api.js';
+import { userApi } from './apis/user-api.js';
 import eventsApi from './apis/events-api.js';
 import documentsApi from './apis/documents-api.js';
 import messagesApi from './apis/messages-api.js';
