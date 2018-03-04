@@ -88,11 +88,9 @@ passport.use(new FacebookStrategy({
   async (accessToken, refreshToken, profile, done) => {
     let user = await userService.getUserByFacebookId(profile.id);
 
-    console.log(user);
     if (user.avatarUrl && user.avatarUrl.indexOf('scontent.xx.fbcdn.net)') !== -1) {
       try {
         const response = await uploadPictureFromUrl(user.avatarUrl);
-        console.log(response);
         userService.updateProfile({
           ...user,
           avatarUrl: response.cloudStoragePublicUrl,
@@ -101,6 +99,19 @@ passport.use(new FacebookStrategy({
         console.log(error);
       }
     }
+
+    if (user.coverImage && user.coverImage.indexOf('scontent.xx.fbcdn.net)') !== -1) {
+      try {
+        const response = await uploadPictureFromUrl(user.coverImage);
+        userService.updateProfile({
+          ...user,
+          coverImage: response.cloudStoragePublicUrl,
+        }, user.userId);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
 
     if (user.id === -1) {
       let firstName = profile.name.givenName;
