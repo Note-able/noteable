@@ -10,14 +10,13 @@ const bcrypt = require('bcrypt-nodejs');
 
 const indexUser = async (user) => {
   const newUser = {
-    fullname: `${user.firstName} ${user.lastName}`,
-    userId: user.userId,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    avatarUrl: user.avatarUrl,
+    fullname: `${user.first_name} ${user.last_name}`,
+    ...user,
   };
 
-  await request.put(`http://elastic:9200/beta-noteable/users/${user.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newUser) });
+  console.log(newUser.fullname);
+
+  await request.put(`http://127.0.0.1:9200/beta-noteable/users/${user.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newUser) });
 };
 
 module.exports = function userApi(app, options, prefix) {
@@ -191,7 +190,9 @@ module.exports = function userApi(app, options, prefix) {
           SELECT * FROM profiles ORDER BY id DESC LIMIT 100 OFFSET ${index * 100}
         `);
 
-        rows.forEach(user => indexUser(user));
+        for (const i in rows) {
+          await indexUser({ ...rows[i] });
+        }
       });
     } catch (err) {
       res.json(err);
@@ -208,7 +209,7 @@ module.exports = function userApi(app, options, prefix) {
     }
 
     try {
-      const response = await request({
+      let response = await request({
         method: 'POST',
         url: 'http://elastic:9200/beta-noteable/users/_search',
         headers: {
@@ -226,16 +227,18 @@ module.exports = function userApi(app, options, prefix) {
         }),
       });
 
+      response = JSON.parse(response);
+
       // this might be a prime time to update the user data in the index.
       if (response.hits.total === 0) {
         return res.status(204).send();
       }
 
       /* eslint-disable no-underscore-dangle */
-      return res.json(JSON.parse(response.hits.hits.map(hit => ({
+      return res.json(response.hits.hits.map(hit => ({
         order: hit._score,
         ...hit._source,
-      }))));
+      })));
       /* eslint-enable */
     } catch (error) {
       return res.json(error);
