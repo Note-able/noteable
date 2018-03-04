@@ -78,8 +78,6 @@ const indexUser = async (user) => {
       },
       body: JSON.stringify(newUser),
     });
-
-    console.log(response, newUser.fullname);
   } catch (error) {
     console.log(error);
   }
@@ -229,7 +227,6 @@ export const userApi = (app, options, prefix) => {
 
         for (const i in rows) {
           const user = { ...rows[i] };
-          console.log(user.first_name, user.avatar_url);
           if (user.avatar_url && user.avatar_url.indexOf('scontent.xx.fbcdn.net)') !== -1) {
             try {
               const response = await uploadPictureFromUrl(user.avatar_url);
