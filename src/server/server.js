@@ -88,12 +88,18 @@ passport.use(new FacebookStrategy({
   async (accessToken, refreshToken, profile, done) => {
     let user = await userService.getUserByFacebookId(profile.id);
 
-    if (user.avatarUrl.indexOf('scontent.xx.fbcdn.net)') !== -1) {
-      const response = await uploadPictureFromUrl(user.avatarUrl);
-      userService.updateProfile({
-        ...user,
-        avatarUrl: response.cloudStoragePublicUrl,
-      }, user.userId);
+    console.log(user);
+    if (user.avatarUrl && user.avatarUrl.indexOf('scontent.xx.fbcdn.net)') !== -1) {
+      try {
+        const response = await uploadPictureFromUrl(user.avatarUrl);
+        console.log(response);
+        userService.updateProfile({
+          ...user,
+          avatarUrl: response.cloudStoragePublicUrl,
+        }, user.userId);
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     if (user.id === -1) {
