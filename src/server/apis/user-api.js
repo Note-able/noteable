@@ -129,18 +129,22 @@ export const userApi = (app, options, prefix) => {
   });
 
   app.post(`${prefix}/users/:userId/profile`, options.auth, (req, res) => {
-    if (req.user.id !== req.params.userId) {
+    try {
+      if (req.user.id !== parseInt(req.params.userId, 10)) {
+        res.status(400).send();
+        return;
+      }
+
+      userService.updateProfile(req.body, req.params.userId)
+        .then(async () => {
+          const user = await userService.getUser(req.params.userId);
+          indexUser(user);
+
+          res.status(202).send();
+        });
+    } catch (error) {
       res.status(400).send();
-      return;
     }
-
-    userService.updateProfile(req.body, req.params.userId)
-      .then(async () => {
-        const user = await userService.getUser(req.params.userId);
-        indexUser(user);
-
-        res.status(202).send();
-      });
   });
 
   app.get(`${prefix}/users/:id`, options.auth, (req, res) => {
