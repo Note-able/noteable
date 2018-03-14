@@ -121,7 +121,11 @@ export const userApi = (app, options, prefix) => {
 
       userService.registerUser(req.body.email, password, req.body.firstName, req.body.lastName)
         .then(async (user) => {
-          indexUser(user);
+          try {
+            await indexUser(user);
+          } catch (error) {
+            console.log(error);
+          }
           res.json(user);
         })
         .catch(error => res.status(500).json(error));
@@ -138,7 +142,11 @@ export const userApi = (app, options, prefix) => {
       userService.updateProfile(req.body, req.params.userId)
         .then(async () => {
           const user = await userService.getUser(req.params.userId);
-          indexUser(user);
+          try {
+            await indexUser(user);
+          } catch (error) {
+            console.log(error);
+          }
 
           res.status(202).send();
         });
