@@ -1,4 +1,4 @@
-import { google } from 'google-apis';
+import { google } from 'googleapis';
 import fetch from 'node-fetch';
 import { firebase as firebaseConfig } from '../../../config';
 
@@ -76,7 +76,7 @@ export default class FirebaseService {
       },
     };
 
-    deviceTokens.foreach((token) => {
+    deviceTokens.forEach((token) => {
       fetch(`${firebaseConfig.url}/${firebaseConfig.projectId}/messages`, {
         method: 'POST',
         body: JSON.stringify({ ...message, token }),
@@ -92,7 +92,7 @@ function getAccessToken(key) {
       key.client_email,
       null,
       key.private_key,
-      null,
+      'https://www.googleapis.com/auth/firebase.database https://www.googleapis.com/auth/userinfo.email',
       null,
     );
     jwtClient.authorize((err, tokens) => {
