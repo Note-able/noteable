@@ -16,6 +16,11 @@ const config = {
     projectId: process.env.GCLOUD_PROJECT || 'jovial-welder-128202',
     keyFilename: path.resolve(__dirname, '../Noteable-e4d2cea40c15.json'),
   },
+  firebase: {
+    projectId: 'noteable-46b46',
+    webAPIKey: 'AIzaSyDWoUET3ndBTbzMKL1Pk0PiewviWZuAEDU',
+    url: 'https://fcm.googleapis.com/v1/projects/',
+  },
   cloudAudioStorageBucket: 'noteable-audio-storage',
   cloudImageStorageBucket: 'user-image-files-staging',
   connectionString: process.env.DATABASE_URL || 'postgres://bxujcozubyosgb:m1rgVoS1lEpdCZVRos6uWZVouU@ec2-54-235-146-58.compute-1.amazonaws.com:5432/d42dnjskegivlt?ssl=true',

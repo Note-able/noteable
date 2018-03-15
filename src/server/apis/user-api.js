@@ -2,7 +2,7 @@ import multiparty from 'multiparty';
 import fs from 'fs';
 import request from 'request-promise-native';
 import { guid } from '../../util/util.js';
-import { UserService } from '../services';
+import { UserService, FirebaseService } from '../services';
 import { UserDbHelper } from '../services/userService/model/userDto.js';
 import config from '../../config';
 
@@ -86,6 +86,7 @@ const indexUser = async (user) => {
 
 export const userApi = (app, options, prefix) => {
   const userService = new UserService(options);
+  const firebaseService = new FirebaseService({ databaseOptions: options });
 
   /** *PICTURES API* * */
 
@@ -129,6 +130,16 @@ export const userApi = (app, options, prefix) => {
           res.json(user);
         })
         .catch(error => res.status(500).json(error));
+    });
+  });
+
+  app.post(`${prefix}/users/:userId/devices`, (req, res) => {
+    if (req.body.deviceToken == null) {
+      return res.status(400).json({ badRequest: 'empty device token' });
+    }
+
+    firebaseService.registerDeviceForUser(req.user.id, req.body.deviceToken).then(() => {
+      res.status(204).send();
     });
   });
 

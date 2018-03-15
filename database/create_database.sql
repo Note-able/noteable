@@ -195,4 +195,11 @@ CREATE TABLE IF NOT EXISTS newsfeed (
   FOREIGN KEY (recipient_id) REFERENCES profiles(id)
 ) ENGINE InnoDB;
 
+CREATE TABLE `user_firebase_device_tokens` (
+	`id` INT PRIMARY KEY AUTO_INCREMENT,
+    `user_id` INT NOT NULL,
+    `device_id` VARCHAR(255) NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(`id`)
+);
+
 COMMIT;

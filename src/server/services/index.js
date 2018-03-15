@@ -4,3 +4,4 @@ export { default as EventService } from './eventService/event-service';
 export { default as MediaService } from './mediaService/media-service';
 export { default as NotificationService } from './notificationService/notification-service';
 export { default as NewsfeedService } from './newsfeed-service/newsfeed-service';
+export { default as FirebaseService } from './firebaseService';

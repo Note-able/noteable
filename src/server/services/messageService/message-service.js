@@ -1,9 +1,11 @@
 import { messageMapper } from './model/conversationDto';
+import FirebaseService from '../firebaseService';
 
 
 export default class MessageService {
   constructor(options) {
     this.options = options;
+    this.firebaseService = new FirebaseService();
   }
 
   createConversation(userIds, isOneOnOne) {
@@ -225,6 +227,7 @@ export default class MessageService {
 
         resolve(rows.insertId);
         connection.destroy();
+        this.firebaseService.sendMessage(content, userId, conversationId);
       } catch (error) {
         reject(error);
       }
