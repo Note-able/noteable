@@ -10,7 +10,7 @@
             "args": [],
             "cwd": "${workspaceRoot}",
             "env": {
-                "NODE_ENV": "development"
+                "NODE_ENV": "local"
             },
             "externalConsole": false,
             "sourceMaps": false,

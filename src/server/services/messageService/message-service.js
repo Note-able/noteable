@@ -5,7 +5,7 @@ import FirebaseService from '../firebaseService';
 export default class MessageService {
   constructor(options) {
     this.options = options;
-    this.firebaseService = new FirebaseService();
+    this.firebaseService = new FirebaseService(options);
   }
 
   createConversation(userIds, isOneOnOne) {

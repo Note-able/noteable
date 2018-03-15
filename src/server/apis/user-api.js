@@ -133,7 +133,7 @@ export const userApi = (app, options, prefix) => {
     });
   });
 
-  app.post(`${prefix}/users/:userId/devices`, (req, res) => {
+  app.post(`${prefix}/users/:userId/devices`, options.auth, (req, res) => {
     if (req.body.deviceToken == null) {
       return res.status(400).json({ badRequest: 'empty device token' });
     }
