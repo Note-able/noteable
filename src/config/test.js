@@ -17,9 +17,9 @@ const config = {
     keyFilename: path.resolve(__dirname, '../Noteable-e4d2cea40c15.json'),
   },
   firebase: {
-    projectId: 'noteable-46b46',
+    projectId: 'noteablemobile',
     webAPIKey: 'AIzaSyDWoUET3ndBTbzMKL1Pk0PiewviWZuAEDU',
-    url: 'https://fcm.googleapis.com/v1/projects/',
+    url: 'https://fcm.googleapis.com/v1/projects',
   },
   cloudAudioStorageBucket: 'noteable-audio-storage',
   cloudImageStorageBucket: 'user-image-files-staging',

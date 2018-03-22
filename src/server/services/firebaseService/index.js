@@ -1,6 +1,8 @@
 import { google } from 'googleapis';
 import fetch from 'node-fetch';
-import { firebase as firebaseConfig } from '../../../config';
+import config from '../../../config';
+
+const firebaseConfig = config.firebase;
 
 export default class FirebaseService {
   constructor({ databaseOptions }) {
@@ -58,28 +60,28 @@ export default class FirebaseService {
     const message = {
       data: {
         content,
-        userId,
-        conversationId,
+        userId: `${userId}`,
+        conversationId: `${conversationId}`,
       },
       notification: {
         title: 'Noteable',
         body: content.substring(0, 100),
       },
       android: {
-        collapse_key: conversationId,
+        collapse_key: `${conversationId}`,
         priority: 'normal',
       },
       apns: {
         headers: {
-          'apns-collapse-id': conversationId,
+          'apns-collapse-id': `${conversationId}`,
         },
       },
     };
 
     deviceTokens.forEach((token) => {
-      fetch(`${firebaseConfig.url}/${firebaseConfig.projectId}/messages`, {
+      fetch(`${firebaseConfig.url}/${firebaseConfig.projectId}/messages:send`, {
         method: 'POST',
-        body: JSON.stringify({ ...message, token }),
+        body: JSON.stringify({ message: { ...message, token } }),
         headers: { ...this.firebaseHeaders, Authorization: `Bearer ${accessToken}` },
       });
     });
@@ -92,7 +94,7 @@ function getAccessToken(key) {
       key.client_email,
       null,
       key.private_key,
-      'https://www.googleapis.com/auth/firebase.database https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/firebase.messaging https://www.googleapis.com/auth/firebase.database https://www.googleapis.com/auth/userinfo.email',
       null,
     );
     jwtClient.authorize((err, tokens) => {
