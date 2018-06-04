@@ -18,8 +18,8 @@ export default class UserService {
       const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
       let user = {};
       let [rows] = await connection.query(`
-          SELECT ${Users.columns('p', 'SELECT')} FROM profiles p
-          WHERE p.id = :id;
+          SELECT ${Users.profileColumns('p', 'SELECT')} FROM profiles p
+          WHERE p.user_id = :id;
         `, { id: userId });
 
       user = { ...rows[0] };
@@ -28,13 +28,13 @@ export default class UserService {
             SELECT * FROM profiles_instruments pi
               INNER JOIN instruments i
               ON i.id = pi.instrument_id
-            WHERE pi.profile_id = :id;`, { id: userId });
+            WHERE pi.profile_id = :id;`, { id: user.profile_id });
 
       user.instruments = rows;
 
       [rows] = await connection.query(`
             SELECT * FROM preferences pr
-            WHERE pr.profile_id = :id;`, { id: userId });
+            WHERE pr.profile_id = :id;`, { id: user.profile_id });
 
       user = { ...user, ...rows[0] };
 
