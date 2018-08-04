@@ -1,9 +1,9 @@
-import bcrypt from 'bcrypt-nodejs';
-import jwt from 'jsonwebtoken';
-import pg from 'pg';
-import request from 'request';
-import passport from 'passport';
-import mysql from 'mysql2/promise';
+import bcrypt from "bcrypt-nodejs";
+import jwt from "jsonwebtoken";
+import pg from "pg";
+import request from "request";
+import passport from "passport";
+import mysql from "mysql2/promise";
 
 export function connectToDb(connectionString, callback) {
   pg.connect(connectionString, (err, client, done) => {
@@ -12,7 +12,9 @@ export function connectToDb(connectionString, callback) {
       error = err;
     }
     console.log(error);
-    const connection = err ? { status: 'ERROR', error } : { status: 'SUCCESS', client, done };
+    const connection = err
+      ? { status: "ERROR", error }
+      : { status: "SUCCESS", client, done };
     if (callback) {
       callback(connection);
       return null;
@@ -21,19 +23,29 @@ export function connectToDb(connectionString, callback) {
   });
 }
 
-export function connectToMysqlDb(connectionParameters) {
-  return mysql.createConnection(connectionParameters);
+let connectionPool;
+export async function connectToMysqlDb(connectionParameters) {
+  if (!connectionPool) {
+    connectionPool = await mysql.createPool({
+      ...connectionParameters,
+      connectionLimit: 100,
+      queueLimit: 100,
+      waitForConnection: true
+    });
+  }
+
+  return connectionPool;
 }
 
 export function ensureAuthenticated(req, res, next) {
-  passport.authenticate('jwt', { session: false }, (err, user, info) => {
+  passport.authenticate("jwt", { session: false }, (err, user, info) => {
     if (err || !user) {
       if (req.isAuthenticated()) {
         next();
         return;
       }
-      console.log('not authenticated');
-      return res.redirect('/');
+      console.log("not authenticated");
+      return res.redirect("/");
     }
     req.user = user;
     return next();
@@ -45,35 +57,52 @@ export function validatePassword(password, userPassword) {
 }
 
 export function generateToken(user) {
-  return jwt.sign(user, 'theAssyrianCameDownLikeAWolfOnTheFold', null);
+  return jwt.sign(user, "theAssyrianCameDownLikeAWolfOnTheFold", null);
 }
 
 const providers = {
   facebook: {
-    url: 'https://graph.facebook.com/me',
-  },
+    url: "https://graph.facebook.com/me"
+  }
 };
 
 export function validateWithProvider(network, socialToken) {
   return new Promise((resolve, reject) => {
-  // Send a GET request to Facebook with the token as query string
-  // assumes facebook for now.
-    request({
-      url: providers[network].url,
-      qs: { access_token: socialToken, fields: ['id', 'name', 'email', 'first_name', 'last_name', 'cover'].toString() },
-    },
-    (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        const user = JSON.parse(body);
-        request({
-          url: `https://graph.facebook.com/${user.id}/picture?type=square&height=300&format=json&method=get&pretty=0&redirect=false&suppress_http_code=1`,
-        }, (err, res, bdy) => {
-          user.picture = JSON.parse(bdy);
-          resolve(user);
-        });
-      } else {
-        reject(error);
+    // Send a GET request to Facebook with the token as query string
+    // assumes facebook for now.
+    request(
+      {
+        url: providers[network].url,
+        qs: {
+          access_token: socialToken,
+          fields: [
+            "id",
+            "name",
+            "email",
+            "first_name",
+            "last_name",
+            "cover"
+          ].toString()
+        }
+      },
+      (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+          const user = JSON.parse(body);
+          request(
+            {
+              url: `https://graph.facebook.com/${
+                user.id
+              }/picture?type=square&height=300&format=json&method=get&pretty=0&redirect=false&suppress_http_code=1`
+            },
+            (err, res, bdy) => {
+              user.picture = JSON.parse(bdy);
+              resolve(user);
+            }
+          );
+        } else {
+          reject(error);
+        }
       }
-    });
+    );
   });
 }
