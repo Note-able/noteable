@@ -1,9 +1,9 @@
-import bcrypt from "bcrypt-nodejs";
-import jwt from "jsonwebtoken";
-import pg from "pg";
-import request from "request";
-import passport from "passport";
-import mysql from "mysql2/promise";
+import bcrypt from 'bcrypt-nodejs';
+import jwt from 'jsonwebtoken';
+import pg from 'pg';
+import request from 'request';
+import passport from 'passport';
+import mysql from 'mysql2/promise';
 
 export function connectToDb(connectionString, callback) {
   pg.connect(connectionString, (err, client, done) => {
@@ -12,9 +12,7 @@ export function connectToDb(connectionString, callback) {
       error = err;
     }
     console.log(error);
-    const connection = err
-      ? { status: "ERROR", error }
-      : { status: "SUCCESS", client, done };
+    const connection = err ? { status: 'ERROR', error } : { status: 'SUCCESS', client, done };
     if (callback) {
       callback(connection);
       return null;
@@ -38,14 +36,14 @@ export async function connectToMysqlDb(connectionParameters) {
 }
 
 export function ensureAuthenticated(req, res, next) {
-  passport.authenticate("jwt", { session: false }, (err, user, info) => {
+  passport.authenticate('jwt', { session: false }, (err, user, info) => {
     if (err || !user) {
       if (req.isAuthenticated()) {
         next();
         return;
       }
-      console.log("not authenticated");
-      return res.redirect("/");
+      console.log('not authenticated');
+      return res.redirect('/');
     }
     req.user = user;
     return next();
@@ -57,12 +55,12 @@ export function validatePassword(password, userPassword) {
 }
 
 export function generateToken(user) {
-  return jwt.sign(user, "theAssyrianCameDownLikeAWolfOnTheFold", null);
+  return jwt.sign(user, 'theAssyrianCameDownLikeAWolfOnTheFold', null);
 }
 
 const providers = {
   facebook: {
-    url: "https://graph.facebook.com/me"
+    url: 'https://graph.facebook.com/me'
   }
 };
 
@@ -75,14 +73,7 @@ export function validateWithProvider(network, socialToken) {
         url: providers[network].url,
         qs: {
           access_token: socialToken,
-          fields: [
-            "id",
-            "name",
-            "email",
-            "first_name",
-            "last_name",
-            "cover"
-          ].toString()
+          fields: ['id', 'name', 'email', 'first_name', 'last_name', 'cover'].toString()
         }
       },
       (error, response, body) => {

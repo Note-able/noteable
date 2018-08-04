@@ -1,5 +1,5 @@
-import { messageMapper } from "./model/conversationDto";
-import FirebaseService from "../firebaseService";
+import { messageMapper } from './model/conversationDto';
+import FirebaseService from '../firebaseService';
 
 export default class MessageService {
   constructor(options) {
@@ -10,41 +10,32 @@ export default class MessageService {
   createConversation(userIds, isOneOnOne) {
     return new Promise(async (resolve, reject) => {
       if (userIds == null || userIds.length === 0) {
-        reject("Cannot have empty userIds");
+        reject('Cannot have empty userIds');
         return;
       } else if (userIds.length > 2 && isOneOnOne) {
-        reject("Cannot have more than 2 participants in 1 on 1 conversation");
+        reject('Cannot have more than 2 participants in 1 on 1 conversation');
         return;
       }
 
-      if (
-        isOneOnOne &&
-        (await this.checkIfConversationExists(userIds[0], userIds[1]))
-      ) {
-        reject(
-          `A conversation already exists between ${userIds[0]} and ${
-            userIds[1]
-          }`
-        );
+      if (isOneOnOne && (await this.checkIfConversationExists(userIds[0], userIds[1]))) {
+        reject(`A conversation already exists between ${userIds[0]} and ${userIds[1]}`);
         return;
       }
 
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
         await connection.beginTransaction();
 
         const [rows] = await connection.query(
-          "INSERT INTO conversations (is_one_on_one) VALUES(:isOneOnOne);",
+          'INSERT INTO conversations (is_one_on_one) VALUES(:isOneOnOne);',
           { isOneOnOne: !!isOneOnOne }
         );
         const conversationId = rows.insertId;
 
         userIds.forEach(userId => {
           connection.execute(
-            "INSERT INTO conversation_participants (conversation_id, user_id) VALUES (:conversationId, :userId);",
+            'INSERT INTO conversation_participants (conversation_id, user_id) VALUES (:conversationId, :userId);',
             { conversationId, userId }
           );
         });
@@ -60,13 +51,11 @@ export default class MessageService {
   getConversationsByUserId(userId) {
     return new Promise(async (resolve, reject) => {
       if (userId == null) {
-        reject("Empty userId");
+        reject('Empty userId');
         return;
       }
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
         const [conversationIds] = await connection.query(
           `SELECT c.id FROM conversations c
@@ -79,12 +68,12 @@ export default class MessageService {
         const conversations = await Promise.all(
           conversationIds.map(async ({ id }) => {
             const [participants] = await connection.query(
-              "SELECT user_id FROM conversation_participants WHERE conversation_id = :conversationId;",
+              'SELECT user_id FROM conversation_participants WHERE conversation_id = :conversationId;',
               { conversationId: id }
             );
 
             const [rows] = await connection.query(
-              "SELECT * FROM messages WHERE conversation_id = :conversationId ORDER BY time_stamp DESC LIMIT 1;",
+              'SELECT * FROM messages WHERE conversation_id = :conversationId ORDER BY time_stamp DESC LIMIT 1;',
               { conversationId: id }
             );
             const lastMessage = rows[0];
@@ -107,14 +96,12 @@ export default class MessageService {
   getConversation(conversationId, userId) {
     return new Promise(async (resolve, reject) => {
       if (conversationId == null) {
-        reject("Empty conversation or user id.");
+        reject('Empty conversation or user id.');
         return;
       }
 
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
         const [rows] = await connection.query(
           `SELECT c.id, c.is_deleted FROM conversations c
@@ -130,12 +117,12 @@ export default class MessageService {
         }
 
         const [participants] = await connection.query(
-          "SELECT user_id FROM conversation_participants WHERE conversation_id = :conversationId;",
+          'SELECT user_id FROM conversation_participants WHERE conversation_id = :conversationId;',
           { conversationId }
         );
 
         const [messages] = await connection.query(
-          "SELECT * FROM messages WHERE conversation_id = :conversationId AND is_deleted = FALSE ORDER BY time_stamp DESC LIMIT 50;",
+          'SELECT * FROM messages WHERE conversation_id = :conversationId AND is_deleted = FALSE ORDER BY time_stamp DESC LIMIT 50;',
           { conversationId }
         );
 
@@ -154,14 +141,12 @@ export default class MessageService {
   checkIfConversationExists(userId, otherUserId) {
     return new Promise(async (resolve, reject) => {
       if (userId == null || otherUserId == null) {
-        reject("Empty user id.");
+        reject('Empty user id.');
         return;
       }
 
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
         const [rows] = await connection.query(
           `SELECT c.id FROM conversations c
@@ -184,17 +169,15 @@ export default class MessageService {
   getMessage(messageId, userId) {
     return new Promise(async (resolve, reject) => {
       if (messageId == null) {
-        reject("Empty message or user id.");
+        reject('Empty message or user id.');
         return;
       }
 
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
         const [rows] = await connection.query(
-          "SELECT * FROM messages WHERE user_id = :userId AND id = :messageId AND is_deleted = FALSE LIMIT 1;",
+          'SELECT * FROM messages WHERE user_id = :userId AND id = :messageId AND is_deleted = FALSE LIMIT 1;',
           { userId, messageId }
         );
         const message = rows[0];
@@ -209,19 +192,17 @@ export default class MessageService {
   getMessages(userId, conversationId, offset, limit) {
     return new Promise(async (resolve, reject) => {
       if (userId == null || conversationId == null) {
-        reject("Empty userId or conversationId");
+        reject('Empty userId or conversationId');
       } else {
         try {
-          const connection = await this.options.connectToMysqlDb(
-            this.options.mysqlParameters
-          );
+          const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
           if (connection.client == null) {
-            reject("Failed to connect to database.");
+            reject('Failed to connect to database.');
             return;
           }
 
           const [messages] = await connection.query(
-            "SELECT * FROM messages WHERE conversation_id = :conversationId AND is_deleted = FALSE  LIMIT :limit OFFSET :offset;",
+            'SELECT * FROM messages WHERE conversation_id = :conversationId AND is_deleted = FALSE  LIMIT :limit OFFSET :offset;',
             { conversationId, offset: offset || 0, limit: limit || 50 }
           );
 
@@ -236,14 +217,12 @@ export default class MessageService {
   createMessage(conversationId, userId, content) {
     return new Promise(async (resolve, reject) => {
       if (conversationId == null || userId == null) {
-        reject("Empty conversation or user id.");
+        reject('Empty conversation or user id.');
         return;
       }
 
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
         const [rows] = await connection.query(
           `INSERT INTO messages (content, user_id, time_stamp, conversation_id) 
           VALUES (:content, :userId, UTC_TIMESTAMP(), :conversationId);`,
@@ -261,18 +240,15 @@ export default class MessageService {
   deleteMessage(messageId) {
     return new Promise(async (resolve, reject) => {
       if (messageId == null) {
-        reject("Empty messageId.");
+        reject('Empty messageId.');
         return;
       }
 
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
-        await connection.execute(
-          "UPDATE messages SET is_deleted = TRUE WHERE id = :messageId;",
-          { messageId }
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+        await connection.execute('UPDATE messages SET is_deleted = TRUE WHERE id = :messageId;', {
+          messageId
+        });
 
         resolve();
       } catch (error) {
@@ -284,16 +260,14 @@ export default class MessageService {
   deleteConversation(conversationId) {
     return new Promise(async (resolve, reject) => {
       if (conversationId == null) {
-        reject("Empty conversationId.");
+        reject('Empty conversationId.');
         return;
       }
 
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
         await connection.execute(
-          "UPDATE conversations SET is_deleted = TRUE WHERE id = :conversationId;",
+          'UPDATE conversations SET is_deleted = TRUE WHERE id = :conversationId;',
           { conversationId }
         );
 

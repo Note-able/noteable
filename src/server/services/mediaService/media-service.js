@@ -1,4 +1,4 @@
-import { musicMapper, columns, values } from "./model/musicDto.js";
+import { musicMapper, columns, values } from './model/musicDto.js';
 
 const defaultMusicLimit = 10;
 
@@ -9,12 +9,10 @@ export default class MusicService {
 
   getMusic(id) {
     return new Promise(async (resolve, reject) => {
-      const connection = await this.options.connectToMysqlDb(
-        this.options.mysqlParameters
-      );
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
       try {
         const [rows] = await connection.query(
-          `SELECT ${columns("m", "SELECT")} WHERE m.id = :id;`,
+          `SELECT ${columns('m', 'SELECT')} WHERE m.id = :id;`,
           { id }
         );
         const [tagRows] = await connection.query(
@@ -35,13 +33,11 @@ export default class MusicService {
 
   getMusicByUser(userId, options) {
     return new Promise(async (resolve, reject) => {
-      const connection = await this.options.connectToMysqlDb(
-        this.options.mysqlParameters
-      );
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
       try {
         const [rows] = await connection.query(
           `
-        SELECT ${columns("m", "SELECT")}
+        SELECT ${columns('m', 'SELECT')}
         WHERE m.author_user_id = :userId AND m.is_deleted = 0
         LIMIT :limit
         OFFSET :offset;`,
@@ -62,13 +58,11 @@ export default class MusicService {
 
   createMusic(musicDto) {
     return new Promise(async (resolve, reject) => {
-      const connection = await this.options.connectToMysqlDb(
-        this.options.mysqlParameters
-      );
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
       try {
         const [rows] = await connection.execute(`
-          INSERT INTO ${columns("", "INSERT")}
-          VALUES ${await values(musicDto, "INSERT", connection)};`);
+          INSERT INTO ${columns('', 'INSERT')}
+          VALUES ${await values(musicDto, 'INSERT', connection)};`);
         const id = rows.insertId;
 
         const { tags = [] } = musicDto;
@@ -81,10 +75,9 @@ export default class MusicService {
           }
 
           const tagsToInsert = dbTags.map(tag => [id, tag.id]);
-          await connection.query(
-            "INSERT INTO music_tags (music_id, tag_id) VALUES ?;",
-            [tagsToInsert]
-          );
+          await connection.query('INSERT INTO music_tags (music_id, tag_id) VALUES ?;', [
+            tagsToInsert
+          ]);
         }
 
         resolve(this.getMusic(id));
@@ -97,21 +90,15 @@ export default class MusicService {
 
   // creates tag If Not Exists
   getOrCreateTagByName = async name => {
-    const connection = await this.options.connectToMysqlDb(
-      this.options.mysqlParameters
-    );
+    const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
     try {
       let id;
-      const [rows] = await connection.query(
-        "SELECT * FROM tags WHERE name = :name;",
-        { name }
-      );
+      const [rows] = await connection.query('SELECT * FROM tags WHERE name = :name;', { name });
 
       if (rows.length === 0) {
-        const [insertRows] = await connection.execute(
-          "INSERT INTO tags (name) VALUES (:name);",
-          { name }
-        );
+        const [insertRows] = await connection.execute('INSERT INTO tags (name) VALUES (:name);', {
+          name
+        });
         id = insertRows.insertId;
       } else {
         id = rows[0].id;
@@ -126,14 +113,12 @@ export default class MusicService {
 
   updateMusic(musicDto) {
     return new Promise(async (resolve, reject) => {
-      const connection = await this.options.connectToMysqlDb(
-        this.options.mysqlParameters
-      );
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
       try {
         const { tags, id } = musicDto;
         await connection.execute(
           `
-          UPDATE ${await values(musicDto, "UPDATE", connection)}
+          UPDATE ${await values(musicDto, 'UPDATE', connection)}
           WHERE id = :id`,
           { id: musicDto.id }
         );
@@ -148,10 +133,10 @@ export default class MusicService {
         );
 
         const tagsToRemove = oldTagRows.filter(tag => !tags.includes(tag.name));
-        await connection.query(
-          "DELETE FROM music_tags WHERE music_id = ? AND tag_id IN (?);",
-          [id, tagsToRemove.map(t => t.id)]
-        );
+        await connection.query('DELETE FROM music_tags WHERE music_id = ? AND tag_id IN (?);', [
+          id,
+          tagsToRemove.map(t => t.id)
+        ]);
 
         const oldTagNames = oldTagRows.map(t => t.name);
         const tagsToAdd = tags.filter(tag => !oldTagNames.includes(tag));
@@ -162,10 +147,9 @@ export default class MusicService {
         }
 
         const tagsToInsert = dbTagsToAdd.map(tag => [id, tag.id]);
-        await connection.query(
-          "INSERT INTO music_tags (music_id, tag_id) VALUES ?;",
-          [tagsToInsert]
-        );
+        await connection.query('INSERT INTO music_tags (music_id, tag_id) VALUES ?;', [
+          tagsToInsert
+        ]);
 
         resolve(this.getMusic(musicDto.id));
       } catch (error) {
@@ -177,9 +161,7 @@ export default class MusicService {
 
   deleteMusic(id) {
     return new Promise(async (resolve, reject) => {
-      const connection = await this.options.connectToMysqlDb(
-        this.options.mysqlParameters
-      );
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
       try {
         await connection.execute(
           `

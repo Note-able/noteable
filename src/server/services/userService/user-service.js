@@ -1,6 +1,6 @@
-import mysql from "mysql2";
+import mysql from 'mysql2';
 
-import { UserDbHelper } from "./model/userDto";
+import { UserDbHelper } from './model/userDto';
 
 const Users = UserDbHelper();
 
@@ -16,13 +16,11 @@ export default class UserService {
       }
 
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
         let user = {};
         let [rows] = await connection.query(
           `
-          SELECT ${Users.profileColumns("p", "SELECT")} FROM profiles p
+          SELECT ${Users.profileColumns('p', 'SELECT')} FROM profiles p
           WHERE p.user_id = :id;
         `,
           { id: userId }
@@ -63,9 +61,7 @@ export default class UserService {
       }
 
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
 
         await connection.query(
           `
@@ -88,9 +84,7 @@ export default class UserService {
         return resolve({ id: -1 });
       }
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
         let user = {};
         const [rows] = await connection.query(
           `
@@ -119,9 +113,7 @@ export default class UserService {
         return;
       }
 
-      const users = await Promise.all(
-        userIds.map(async id => await this.getUser(id))
-      );
+      const users = await Promise.all(userIds.map(async id => await this.getUser(id)));
 
       if (users.length === 0) {
         resolve({ id: -1 });
@@ -134,9 +126,7 @@ export default class UserService {
   updateProfile = async (profile, id) =>
     new Promise(async (resolve, reject) => {
       try {
-        const connection = await this.options.connectToMysqlDb(
-          this.options.mysqlParameters
-        );
+        const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
         await connection.beginTransaction(err => reject(err));
 
         await connection.execute(
@@ -239,47 +229,33 @@ export default class UserService {
       }
     });
 
-  registerUser = async (
-    email,
-    password,
-    firstName,
-    lastName,
-    facebookId,
-    cover,
-    avatar
-  ) =>
+  registerUser = async (email, password, firstName, lastName, facebookId, cover, avatar) =>
     new Promise(async (resolve, reject) => {
       if (!email && !facebookId) {
-        return reject(
-          "Must have either an email or facebook id to register user"
-        );
+        return reject('Must have either an email or facebook id to register user');
       }
 
       if (!facebookId && !password) {
-        return reject("If not using facebook login, must include a password");
+        return reject('If not using facebook login, must include a password');
       }
 
-      const connection = await this.options.connectToMysqlDb(
-        this.options.mysqlParameters
-      );
-      await connection.beginTransaction(
-        err => (err == null ? null : reject(err))
-      );
+      const connection = await this.options.connectToMysqlDb(this.options.mysqlParameters);
+      await connection.beginTransaction(err => (err == null ? null : reject(err)));
 
-      if (email != null && email !== "") {
+      if (email != null && email !== '') {
         const [emailRows] = await connection.query(
-          "SELECT COUNT(*) as count FROM users WHERE email = :email;",
+          'SELECT COUNT(*) as count FROM users WHERE email = :email;',
           { email }
         );
         if (emailRows[0] != null && emailRows[0].count === 1) {
-          return reject("A user with that email already exists.");
+          return reject('A user with that email already exists.');
         }
       }
 
       let userId;
       try {
         const [rows] = await connection.query(
-          "INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);",
+          'INSERT INTO users (email, password, facebook_id) VALUES(:email, :password, :facebookId);',
           {
             email: email || null,
             password: password || null,
@@ -295,7 +271,7 @@ export default class UserService {
       let profile;
       try {
         let [rows] = await connection.execute(
-          "INSERT INTO profiles (email, user_id, first_name, last_name, cover_url, avatar_url) VALUES (:email, :userId, :firstName, :lastName, :cover, :avatar);",
+          'INSERT INTO profiles (email, user_id, first_name, last_name, cover_url, avatar_url) VALUES (:email, :userId, :firstName, :lastName, :cover, :avatar);',
           {
             email: email || null,
             userId,
@@ -306,10 +282,9 @@ export default class UserService {
           }
         );
         const profileId = rows.insertId;
-        [rows] = await connection.execute(
-          "SELECT * FROM profiles WHERE id = :profileId",
-          { profileId }
-        );
+        [rows] = await connection.execute('SELECT * FROM profiles WHERE id = :profileId', {
+          profileId
+        });
         profile = rows[0];
       } catch (err) {
         connection.rollback();
