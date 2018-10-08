@@ -5,7 +5,7 @@ const config = {
   dataBackend: 'datastore',
   apiUrl: 'http://test.noteable.me/api/v1',
   mysqlConnection: {
-    host: '104.236.157.202',
+    host: '206.189.68.128',
     user: 'noteable_test',
     database: 'noteable_test',
     password: 'jamsesh_tester',
