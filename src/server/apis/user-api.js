@@ -86,7 +86,7 @@ const indexUser = async (user) => {
 
 export const userApi = (app, options, prefix) => {
   const userService = new UserService(options);
-  const firebaseService = new FirebaseService({ databaseOptions: options });
+  // const firebaseService = new FirebaseService({ databaseOptions: options });
 
   /** *PICTURES API* * */
 
@@ -138,9 +138,9 @@ export const userApi = (app, options, prefix) => {
       return res.status(400).json({ badRequest: 'empty device token' });
     }
 
-    firebaseService.registerDeviceForUser(req.user.id, req.body.deviceToken).then(() => {
-      res.status(204).send();
-    });
+    // firebaseService.registerDeviceForUser(req.user.id, req.body.deviceToken).then(() => {
+    //   res.status(204).send();
+    // });
   });
 
   app.post(`${prefix}/users/:userId/profile`, options.auth, (req, res) => {
