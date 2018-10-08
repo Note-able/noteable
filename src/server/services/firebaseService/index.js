@@ -10,7 +10,7 @@ export default class FirebaseService {
       'Content-type': 'application/json',
     };
     this.databaseOptions = databaseOptions;
-    this.firebaseKey = require('./service-account.json');
+    // this.firebaseKey = require('./service-account.json');
   }
 
   async registerDeviceForUser(userId, deviceToken) {

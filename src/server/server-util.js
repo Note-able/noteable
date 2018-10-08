@@ -83,7 +83,7 @@ export function validateWithProvider(network, socialToken) {
             {
               url: `https://graph.facebook.com/${
                 user.id
-              }/picture?type=square&height=300&format=json&method=get&pretty=0&redirect=false&suppress_http_code=1`
+                }/picture?type=square&height=300&format=json&method=get&pretty=0&redirect=false&suppress_http_code=1`
             },
             (err, res, bdy) => {
               user.picture = JSON.parse(bdy);

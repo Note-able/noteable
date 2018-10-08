@@ -15,7 +15,7 @@ import {
   validatePassword,
   generateToken,
   validateWithProvider,
-  connectToMysqlDb
+  connectToMysqlDb,
 } from './server-util';
 import config from '../config';
 
@@ -32,7 +32,7 @@ app.use(express.static(`${__dirname}/../../public`));
 const userService = new UserService({
   auth: ensureAuthenticated,
   connectToMysqlDb,
-  mysqlParameters: config.mysqlConnection
+  mysqlParameters: config.mysqlConnection,
 });
 
 // set up Jade
@@ -47,9 +47,9 @@ app.use(
     resave: true,
     saveUninitialized: true,
     store: new MongoStore({
-      url: 'mongodb://mongo:27017/'
-    })
-  })
+      url: 'mongodb://mongo:27017/',
+    }),
+  }),
 );
 app.use(passport.initialize());
 app.use(passport.session());
@@ -75,7 +75,7 @@ passport.use(
     INNER JOIN profiles pr
     ON p.id = pr.user_id
     WHERE pr.email = ?;`,
-      [username]
+      [username],
     );
 
     user = rows[0];
@@ -88,7 +88,7 @@ passport.use(
     }
 
     return done(null, false);
-  })
+  }),
 );
 
 // set up passport
@@ -98,7 +98,7 @@ passport.use(
       clientID: '1668133090067160',
       clientSecret: '3e4ad4e3d0d1f5602797b46753be7e01',
       callbackURL: '/auth/facebook/callback',
-      enableProof: false
+      enableProof: false,
     },
     async (accessToken, refreshToken, profile, done) => {
       let user = await userService.getUserByFacebookId(profile.id);
@@ -109,9 +109,9 @@ passport.use(
           userService.updateProfile(
             {
               ...user,
-              avatarUrl: response.cloudStoragePublicUrl
+              avatarUrl: response.cloudStoragePublicUrl,
             },
-            user.userId
+            user.userId,
           );
         } catch (error) {
           console.log(error);
@@ -124,9 +124,9 @@ passport.use(
           userService.updateProfile(
             {
               ...user,
-              coverImage: response.cloudStoragePublicUrl
+              coverImage: response.cloudStoragePublicUrl,
             },
-            user.userId
+            user.userId,
           );
         } catch (error) {
           console.log(error);
@@ -147,7 +147,7 @@ passport.use(
           '',
           firstName,
           lastName,
-          profile.id
+          profile.id,
         );
         user = await userService.getUser(userId);
       }
@@ -157,13 +157,13 @@ passport.use(
       }
 
       return done(null, user);
-    }
-  )
+    },
+  ),
 );
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeader(),
-  secretOrKey: 'theAssyrianCameDownLikeAWolfOnTheFold'
+  secretOrKey: 'theAssyrianCameDownLikeAWolfOnTheFold',
 };
 
 passport.use(
@@ -175,7 +175,7 @@ passport.use(
     SELECT *
     FROM users p
     WHERE facebook_id = ? OR id = ?;`,
-      [profile.facebook_id, profile.id]
+      [profile.facebook_id, profile.id],
     );
 
     user = rows[0];
@@ -184,7 +184,7 @@ passport.use(
     }
 
     return done(null, user);
-  })
+  }),
 );
 
 app.get('/auth/facebook', passport.authenticate('facebook'));
@@ -204,26 +204,31 @@ app.post('/auth/local/jwt', async (req, res) => {
       INNER JOIN profiles pr
       ON p.id = pr.user_id
       WHERE pr.email = ?;`,
-    [req.body.username]
+    [req.body.username],
   );
 
   user = rows[0];
-  if (!user) {
+  if (user == null || user.password == null || user.password === 'NULL' || user.password.length === 0) {
     return res.status(404).send();
   }
 
-  if (validatePassword(req.body.password, user.password)) {
-    return res.status(200).json({
-      token: `JWT ${generateToken(user)}`,
-      user
-    });
+  try {
+    if (validatePassword(req.body.password, user.password)) {
+      return res.status(200).json({
+        token: `JWT ${generateToken(user)}`,
+        user,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send();
   }
 
   return res.status(401).send();
 });
 
 app.post('/auth/facebook/jwt', (req, res) => {
-  validateWithProvider('facebook', req.body.token).then(async profile => {
+  validateWithProvider('facebook', req.body.token).then(async (profile) => {
     const connection = await connectToMysqlDb(config.mysqlConnection);
     let facebookUser = null;
 
@@ -232,7 +237,7 @@ app.post('/auth/facebook/jwt', (req, res) => {
           SELECT *
           FROM users p
           WHERE facebook_id = ?;`,
-      [profile.id]
+      [profile.id],
     );
 
     facebookUser = rows[0];
@@ -253,7 +258,7 @@ app.post('/auth/facebook/jwt', (req, res) => {
 
     return res.status(200).json({
       token: `JWT ${generateToken(facebookUser)}`,
-      user: facebookUser
+      user: facebookUser,
     });
   });
 });
@@ -263,7 +268,7 @@ app.get(
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   (req, res) => {
     res.redirect('/');
-  }
+  },
 );
 
 app.get('/logout', (req, res) => {
@@ -276,20 +281,20 @@ require('./api-routes')(app, {
   auth: ensureAuthenticated,
   database: config.connectionString,
   connectToMysqlDb,
-  mysqlParameters: config.mysqlConnection
+  mysqlParameters: config.mysqlConnection,
 });
 
 /* Normal Routes */
 app.get('/*', (req, res) => {
-  userService.getUser(req.user ? req.user.id : null).then(user => {
+  userService.getUser(req.user ? req.user.id : null).then((user) => {
     res.render('index', {
       props: encodeURIComponent(
         JSON.stringify({
           isAuthenticated: user == null,
-          profile: user
-        })
+          profile: user,
+        }),
       ),
-      env: global.PRODUCTION ? 'production' : 'dev'
+      env: global.PRODUCTION ? 'production' : 'dev',
     });
   });
 });
@@ -299,7 +304,7 @@ if (fs.existsSync('./src/server/keys/server.key') && process.env.TESTING !== 'tr
     key: fs.readFileSync('./src/server/keys/server.key'),
     cert: fs.readFileSync('./src/server/keys/server.crt'),
     requestCert: false,
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
   };
 
   const httpsServer = https.createServer(options, app).listen(443, () => {
@@ -311,7 +316,7 @@ if (fs.existsSync('./src/server/keys/server.key') && process.env.TESTING !== 'tr
 
   require('./sockets')(httpsServer, {
     auth: ensureAuthenticated,
-    database: config.connectionString
+    database: config.connectionString,
   });
 }
 
@@ -324,7 +329,7 @@ const httpServer = app.listen(config.port, () => {
 
 require('./sockets')(httpServer, {
   auth: ensureAuthenticated,
-  database: config.connectionString
+  database: config.connectionString,
 });
 
 module.exports = app;
